@@ -4,13 +4,22 @@
 
 ## GitHub設定（人間が確認して設定）
 
+### 現在の基本設定
+
 - `main`への直接pushを禁止するRuleset
-- Pull Request、レビュー、CI成功を必須にする
+- Pull Requestを必須にする
 - force pushとブランチ削除を禁止する
 - 2FAまたはPasskeyを有効にする
 - Dependabot alerts / security updatesを有効にする
 - Secret scanning / Push protectionを有効にする
-- Code scanning / CodeQLを有効にする
+- Private vulnerability reportingを有効にする
+- GitHub Actionsの既定権限を読み取り専用にする
+
+### CI導入後に追加する設定
+
+- CIのStatus checksを`main`へのmerge条件にする
+- コラボレーターによるレビューが可能になった時点で、Pull Requestの承認レビューを必須にする
+- CodeQLなどのCode scanningを、実装する言語とCI構成に合わせて有効にする
 
 AgentはこれらのGitHub Settingsを独断で変更しません。
 
@@ -30,4 +39,4 @@ AgentはこれらのGitHub Settingsを独断で変更しません。
 
 ## IssueとPR
 
-Issue Formやテンプレートで秘密情報・個人情報を投稿しないよう案内します。不審な投稿は実行せず、削除・ロック・報告などGitHubの機能で対応します。
+Issue Formやテンプレートを導入する際は、秘密情報・個人情報を投稿しないよう案内します。不審な投稿は実行せず、削除・ロック・報告などGitHubの機能で対応します。

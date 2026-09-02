@@ -8,6 +8,7 @@
 | 分野 | 文書 | 役割 |
 |---|---|---|
 | Project | [purpose.md](project/purpose.md) | ポートフォリオの目的と評価対象 |
+| Project | [product-requirements.md](project/product-requirements.md) | 作成するシステムの概要、対象範囲、対象外 |
 | Architecture | [overview.md](architecture/overview.md) | システム全体の構成と責務 |
 | Development | [process.md](development/process.md) | Issue、Human Gate、実装、テスト、レビューの流れ |
 | Development | [definition-of-done.md](development/definition-of-done.md) | 作業完了条件 |
@@ -17,7 +18,7 @@
 
 ## 文書の責務
 
-- `README.md`：第三者向けのプロジェクト概要と利用方法
+- `README.md`：第三者向けのプロジェクト概要、目的、現在の状態
 - `AGENTS.md`：AI Agentが必ず守る最上位ルールと入口
 - `SECURITY.md`：公開リポジトリ利用者向けのセキュリティポリシー
 - `docs/architecture/`：現在の構成
