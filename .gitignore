@@ -1,0 +1,97 @@
+# Environment variables and local secrets
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+*.secrets
+secrets/
+private/
+
+# Credentials and keys
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+config/master.key
+config/credentials/*.key
+
+# Ruby / Rails
+/.bundle/
+/vendor/bundle/
+/coverage/
+/tmp/
+/log/
+/storage/
+/public/assets/
+/public/packs/
+/public/packs-test/
+/node_modules/
+/yarn-error.log
+/config/database.yml
+/db/*.sqlite3
+/db/*.sqlite3-*
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+dist/
+build/
+.next/
+.nuxt/
+.vite/
+
+# Logs and runtime data
+*.log
+logs/
+tmp/
+temp/
+*.pid
+*.seed
+*.pid.lock
+
+# Local databases
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# Test and cache output
+.cache/
+.parcel-cache/
+.eslintcache
+.rspec_status
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS / Linux editor noise
+.DS_Store
+*~
+*.swp
+*.swo
+
