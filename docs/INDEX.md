@@ -11,9 +11,12 @@
 | Project | [product-requirements.md](project/product-requirements.md) | 作成するシステムの概要、対象範囲、対象外 |
 | Architecture | [overview.md](architecture/overview.md) | システム全体の構成と責務 |
 | Development | [process.md](development/process.md) | Issue、Human Gate、実装、テスト、レビューの流れ |
+| Development | [issue-workflow.md](development/issue-workflow.md) | 親Issue、Sub-issue、Project Status、Human Gateの詳細 |
 | Development | [definition-of-done.md](development/definition-of-done.md) | 作業完了条件 |
+| Design | [INDEX.md](design/INDEX.md) | 画面・操作設計、テーブル設計、HTMLモックの索引 |
 | Learning | [user-technical-profile.md](learning/user-technical-profile.md) | 技術理解度と説明方針 |
 | AI | [working-agreement.md](ai/working-agreement.md) | ユーザーとAI Agentの協働方針 |
+| AI | [skill-catalog.md](ai/skill-catalog.md) | 継続利用するCodex Skillと権限境界 |
 | Security | [development-guidelines.md](security/development-guidelines.md) | 公開リポジトリとCIの安全基準 |
 
 ## 文書の責務
@@ -22,7 +25,7 @@
 - `AGENTS.md`：AI Agentが必ず守る最上位ルールと入口
 - `SECURITY.md`：公開リポジトリ利用者向けのセキュリティポリシー
 - `docs/architecture/`：現在の構成
-- `docs/design/`：個別機能の設計
+- `docs/design/`：画面・操作単位の設計、テーブル単位の設計、HTMLモック
 - `docs/architecture/decisions/`：重要な設計判断（ADR）
 - `docs/development/`：開発プロセスと完了条件
 - `docs/ai/`：AI Agentの作業方針と活動記録
