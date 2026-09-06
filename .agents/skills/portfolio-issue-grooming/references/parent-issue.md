@@ -1,36 +1,6 @@
 # Parent Issue Format
 
-Use this format for the draft and the resulting GitHub parent Issue.
-
-```markdown
-## 目的
-
-## 要求の要約
-
-## 受入条件
-
-- [ ]
-
-## 対象外
-
--
-
-## 関連する業務フロー・画面
-
-## 人間が判断した事項
-
-## 開発管理
-
-- Project Status：未着手
-- 設計Sub-issue：
-- テストSub-issue：
-- セッションログSub-issue：
-- 関連PR：
-
-## セキュリティ確認
-
-実在患者の情報、個人情報、認証情報、APIキー、Tokenを記載しない。
-```
+Use the body of [the repository feature template](../../../../.github/ISSUE_TEMPLATE/feature.md) for both drafts and GitHub parent Issues. Omit its YAML frontmatter when publishing. This template is the single source of truth; preserve AC IDs and distinguish decisions from proposals.
 
 ## Sub-issue titles
 

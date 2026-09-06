@@ -15,27 +15,33 @@ Use [the phase guide](references/phase-guide.md) for phase-specific deliverables
 
 ## Lead role
 
-Act as the Lead. Run PdM, domain, developer, and test review passes in sequence; they are review perspectives, not a claim that autonomous persistent agents are available. Record concise outcomes in the appropriate Sub-issue.
+Act as the Lead. Follow the review roles in `docs/development/issue-workflow.md`. Use independent reviewers when available; otherwise disclose role-based self-review. Record evidence, findings, resolutions, and remaining issues rather than only approval votes.
 
 Keep the parent Issue as the unit of delivery. Its required Sub-issues are design, automated test, and session log.
 
 ## Human gates
 
-- The user closes the design Sub-issue to approve the design. Do not begin implementation until it is closed.
+- Verify the user's approval-purpose Close against the current design revision and mock. A closed, cancelled, or superseded Issue alone is not approval. Material changes require reopening and renewed design approval as defined in the workflow.
 - The user performs PR acceptance and merge. Do not merge a PR.
 - Ask for direction before changes affecting authentication, authorization, secrets, publication, repository settings, external services, or costs.
 
 ## GitHub write boundary
 
-The user's instruction to work on a specified Issue authorizes ordinary work records for that Issue: creating its reviewed Sub-issues, adding concise progress comments, and updating the parent Issue links. Use authenticated `gh` when available, without exposing credentials.
+Use `docs/development/issue-workflow.md` as the authority for GitHub writes, branch lifecycle, and resuming interrupted work. An instruction to deliver the Issue includes its scoped work records and branch creation. Verify repository identity and reuse existing Sub-issues and PRs. Use authenticated `gh` when available, without exposing credentials; use UTF-8 `--body-file` for multiline bodies and verify writes.
 
-Before opening a PR, present the change summary and verification results. Open the PR only after the user requests or approves that operation. Do not modify unrelated Issues, Project settings, Rulesets, or repository settings.
+Before opening a PR, complete the change summary and verification results. Honor existing authorization for commit, push, and PR creation without asking again; if absent, ask after preparing the reviewable result. Do not modify unrelated Issues, Project settings, Rulesets, or repository settings. Never approve or merge the PR.
 
 ## Local design mocks
 
 During design review, create static HTML mocks only in `tmp/design-mocks/issue-<number>/`. They are for local review and must not use real patient data, APIs, authentication, or external services.
 
-After design approval, move or recreate the approved mock under `docs/design/mocks/` and create or update the corresponding screen-operation and table design documents in the implementation PR.
+After design approval, preserve the reviewed mock under `docs/design/<area>/mocks/<screen>.html` and update the corresponding screen-operation and table documents in the implementation PR. Follow `docs/design/INDEX.md`; update existing documents rather than creating a new copy per Issue.
+
+## Learning and portfolio
+
+Read `docs/ai/working-agreement.md` and `docs/learning/user-technical-profile.md`. Tie one or two Web concepts to the actual change, explain the request-to-DB-to-screen path with concrete files, and offer an optional prediction or review question. The user delegates implementation; do not require manual coding or exams. Do not infer mastery from an OK or a completed task.
+
+Make the portfolio evidence traceable: user problem, observable behavior, design decision, meaningful test evidence, AI work, and human judgment. Keep README implementation status and local setup accurate when changed. Record only concise technical learning evidence, never private chat context.
 
 ## Completion
 
