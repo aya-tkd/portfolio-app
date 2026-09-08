@@ -1,11 +1,11 @@
 ---
 name: portfolio-issue-delivery
-description: Lead a specified PortFolio-App GitHub Issue through design, implementation, automated testing, documentation, and PR preparation while enforcing the project's human approval gates. Use when the user asks to work through an Issue number.
+description: Lead a PortFolio-App Issue through design, implementation, tests, local acceptance preparation, and post-merge feedback. Use for Issue delivery or completion follow-ups when the target Issue is identifiable; preserve human approval gates.
 ---
 
 # Portfolio Issue Delivery
 
-Use this skill only in the repository containing this skill and for a specified parent Issue number.
+Use this skill only in the repository containing this skill and for an identified parent Issue. A completion follow-up may identify it through the current conversation and merged PR; ask if ambiguous.
 
 ## Read first
 
@@ -46,3 +46,5 @@ Make the portfolio evidence traceable: user problem, observable behavior, design
 ## Completion
 
 Before requesting PR creation, complete the Definition of Done, record the automated test evidence in the test Sub-issue, and ensure the session log contains material decisions and changes. After the user merges the PR, record the completion summary and improvement candidates, then close the session log Sub-issue.
+
+On a merge/completion follow-up, automatically perform the bounded Skills/Docs feedback loop in the issue workflow. Do not wait for a separate improvement request, invent changes, broaden permissions, or reuse the merged branch. Report the feedback evidence, changes, validation, and publication status.
