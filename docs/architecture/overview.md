@@ -2,9 +2,11 @@
 
 ## 現在の状態
 
-アプリ本体は未実装です。現時点では、外来フロー管理システムの概要、SQLiteを初期DBとする方針、公開ポートフォリオとして開発プロセスと設計判断を追跡可能にする方針が確定しています。
+Issue #1の承認済み設計（v0.3＋v0.4追補）に基づき、患者登録・編集をVue＋Rails＋SQLiteで実装しています。患者一覧・予約以降は未実装です。公開リポジトリですが、アプリ自体はローカル・架空データ限定です。
 
 ## 構成方針
+
+配置と業務モデルの所有境界は[フォルダ構成と業務モデルの境界](repository-structure.md)を参照する。FEは機能→責務、BEはRailsの責務別配置＋必要時に業務領域の名前空間とする。Patientを無条件のShared Modelとは位置付けない。
 
 - ユーザーが理解できる最も単純な構成から開始する。
 - 要件に必要な技術だけを採用する。
@@ -36,7 +38,19 @@ SQLとRDBの基本は既習であり、今回の主な学習対象はWeb開発�
 - DB製品固有の高度な機能は初期スコープに含めない
 - PostgreSQLへの移行は、同時アクセス、デプロイ先、運用要件などの必要性が生じた場合に検討する
 
-現時点では、Rails、Node.js、Vue、CSSフレームワークの採否や役割分担は未確定です。SQLiteを初期DBとして採用する方針のみ確定しています。
+## Issue #1で採用した構成
+
+- Vue 3：ブラウザの画面・入力・非同期状態管理。患者フォームを親画面から呼び出すコンポーネントとして分離。
+- Rails 8.1：HTTPルーティング、許可パラメータ、Modelの検証・保存、JSON応答。
+- SQLite＋ActiveRecord：DBファイルの永続化とmigration。内部IDと表示Noを別カラムで保持。
+- Bootstrap 5＋共通CSS：画面の基本スタイルと業務向け密度・色・文言の統一。
+- Node.js＋Vite：Vueの開発・ビルド用。第二の業務バックエンドではない。現行Node 22.17で動くVite 6.4.3を固定。
+
+ブラウザ → Vite（127.0.0.1:5173）→ `/api`プロキシ → Rails/Puma（127.0.0.1:3000）→ SQLite。プロキシはHostを保持し、ブラウザから同一オリジンで通信する。ログインなしだがRailsのCSRFトークン・Origin検証とサーバー側入力検証は維持する。development/test以外の起動は拒否する。CORS全許可や外部公開設定は追加しない。
+
+Ruby 4.0.6環境で依存関係を検証した。JSON 3とRailsの解析処理に互換性問題を確認したためGemfileでJSON 2系に制限し、解決版をlockfileへ固定した。具体的な起動方法は[README](../../README.md)、画面契約は[患者登録・編集](../design/patient/patient-form.md)を参照する。
+
+実装時の参照：[Rails Security Guide](https://guides.rubyonrails.org/security.html)、[Vite server options](https://vite.dev/config/server-options)、[Vue form bindings](https://vuejs.org/guide/essentials/forms.html)。
 
 ## 将来の記載内容
 
