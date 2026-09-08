@@ -19,7 +19,16 @@ class SqlQueryTest < ActiveSupport::TestCase
     assert_equal %w[id name], result[:columns]
     assert_equal [0, nil], result[:rows].first
     assert_equal 200, result[:rows].size
-    assert result[:truncated]
+    assert result[:has_next]
+    last = @query.call("SELECT id, name FROM sample ORDER BY id;", page: 2)
+    assert_equal [[200, "架空"]], last[:rows]
+    assert_not last[:has_next]
+    assert_equal 2, last[:page]
+    assert_equal 200, last[:page_size]
+    assert_equal [], @query.call("SELECT * FROM sample LIMIT 200", page: 2)[:rows]
+    [0, -1, "invalid", 1.5, nil].each do |page|
+      assert_raises(Development::SqlQuery::InvalidQuery) { @query.call("SELECT 1", page: page) }
+    end
     assert_equal [[201]], @query.call("SELECT COUNT(*) FROM sample")[:rows]
     assert_equal [], @query.call("SELECT * FROM sample WHERE 0")[:rows]
     assert_equal [[1]], @query.call("WITH x AS (SELECT 1 AS n) SELECT n FROM x")[:rows]

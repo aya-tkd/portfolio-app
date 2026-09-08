@@ -10,8 +10,10 @@ module Development
       @database_path = database_path
     end
 
-    def call(sql)
+    def call(sql, page: 1)
       raise InvalidQuery, "SQLを入力してください（最大10,000文字）。" unless sql.is_a?(String) && sql.strip.present? && sql.length <= 10_000
+      raise InvalidQuery, "ページ番号が不正です。" unless page.to_s.match?(/\A[1-9][0-9]{0,6}\z/)
+      page = page.to_i
 
       database = SQLite3::Database.new(@database_path, readonly: true)
       database.busy_timeout = 2000
@@ -28,11 +30,14 @@ module Development
         result = statement.execute
         columns = result.columns
         raise InvalidQuery, "SELECTなどの読み取りSQLを入力してください。" if columns.empty?
-        result.each do |row|
+        # 元SQLを加工せず、必要なページまで読み飛ばす。LIMIT指定や同名列も維持する。
+        # ページごとに再実行するため、安定した順序には利用者のORDER BYが必要。
+        result.each_with_index do |row, index|
+          next if index < (page - 1) * MAX_ROWS
           rows << row.map { |value| display_value(value) }
           break if rows.length > MAX_ROWS
         end
-        { columns: columns, rows: rows.first(MAX_ROWS), truncated: rows.length > MAX_ROWS, limit: MAX_ROWS }
+        { columns: columns, rows: rows.first(MAX_ROWS), has_next: rows.length > MAX_ROWS, page: page, page_size: MAX_ROWS }
       end
     rescue SQLite3::Exception => error
       raise InvalidQuery, "SQLを実行できません（読み取り専用）：#{error.message}"

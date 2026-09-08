@@ -4,7 +4,7 @@ module Api
   class SqlQueriesController < ApplicationController
     def create
       return head :not_found unless Rails.env.development? || Rails.env.test?
-      render json: Development::SqlQuery.new.call(params[:sql])
+      render json: Development::SqlQuery.new.call(params[:sql], page: params.fetch(:page, 1))
     rescue Development::SqlQuery::InvalidQuery => error
       render json: { message: error.message }, status: :unprocessable_content
     end

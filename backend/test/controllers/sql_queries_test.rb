@@ -2,6 +2,17 @@ require "test_helper"
 
 # SQL APIのCSRFとJSON応答を実際のルーティング経由で確認する。
 class SqlQueriesTest < ActionDispatch::IntegrationTest
+  test "schema API lists tables and rejects unknown names" do
+    get "/api/db-schema"
+    assert_response :ok
+    assert_includes response.parsed_body["tables"], { "name" => "patients", "category" => "master" }
+    get "/api/db-schema", params: { table: "patients" }
+    assert_response :ok
+    assert response.parsed_body["columns"].any? { |column| column["name"] == "id" }
+    get "/api/db-schema", params: { table: "missing" }
+    assert_response :not_found
+  end
+
   test "CSRF is required and rows are returned" do
     post "/api/sql-query", params: { sql: "SELECT 1" }, as: :json
     assert_response :forbidden
