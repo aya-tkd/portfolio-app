@@ -7,6 +7,7 @@
 - Create reviewed design, test, and session-log Sub-issues if they do not exist.
 - Move the parent Project Status to `設計レビュー` when the Project is configured.
 - Write As-Is / To-Be, scope, data CRUD, state changes, settings impact, test plan, and unresolved decisions in the design Sub-issue.
+- Before proposing structure or mocks, read the relevant UI guidelines, data-model index (including table prefixes), repository-structure guide, and code-readability rules. Explain the concrete FE → HTTP → BE → DB path and file responsibilities when new to the user; do not duplicate those rules into the Skill.
 - Run PdM, domain, and developer review passes and record their outcomes.
 - Create a local static HTML mock under `tmp/design-mocks/issue-<number>/` when a UI change is involved.
 - Stop and wait for the user to close the design Sub-issue.
@@ -32,11 +33,13 @@
 - Record commands, results, failures, and resolutions in the test Sub-issue.
 - Map AC IDs to tests and record the tested commit or dirty state and environment. Test visible behavior, boundaries, and relevant regressions; distinguish not-run from pass. UI changes need actual rendered-screen verification in addition to the mock when the runtime is available.
 - Do not move to PR preparation while required tests fail.
+- For tables or long forms, check a realistically large result set, scroll headers, reachable actions, pagination boundaries, and keyboard operation where applicable. For DB renames, verify data/identity/constraints and migration reversibility in isolation, not only fresh schema creation.
 
 ## 4. PR preparation
 
 - Complete the PR template, including `Closes #<parent issue number>`.
 - Present a concise summary of code, docs, mocks, tests, and remaining limitations.
+- Follow the workflow's local acceptance preparation: start/check the approved local environment, record URL/time/commit, and generate UAT steps and expected results in the PR. Preserve human checks on updates and explicitly mark affected cases for reacceptance.
 - Honor existing authorization for commit, push, and PR creation; ask only if absent. Inspect intended files and secrets before publishing. Set `PR承認待ち` only after the verified PR exists and required checks pass.
 - On PR feedback, record the change, reopen test work when evidence is stale, and rerun affected verification. Material design changes return to human design approval.
 
@@ -45,5 +48,6 @@
 - The user reviews and merges the PR.
 - Verify that the parent Issue is closed and set Project Status to `完了` when applicable.
 - Write a concise completion summary and improvement candidates in the session-log Sub-issue, then close it.
-- Create a separate process-improvement Issue only when the user approves it.
+- Automatically review and apply small evidence-backed Skills/Docs improvements under the workflow's continuous-improvement boundary. Separate broader proposals for approval; do not require a new Issue for the authorized small improvements.
+- Use a new improvement branch after merge; retain commit/push/PR authorization boundaries and never merge the improvement yourself. Report pending publication separately from the completed feature.
 - Record the delivered behavior, design tradeoff, verification links, human decisions, and a concise Web-learning takeaway. Leave branch/commit and next-step information for resumption whenever work pauses.
