@@ -6,7 +6,7 @@ PR #5への追加をユーザーが依頼。対象はローカル開発DBの状�
 
 - URL：`/tools/sql`。患者ホストの「DB確認（SQL）を開く」から別タブで開く。
 - 左に分類別テーブル一覧、右にSQL入力欄・実行ボタン・ページ送り付き結果表、右下に「閉じる」。閉じるは同じタブで患者画面へ戻る。SQL例・冗長な説明は表示しない。
-- 初期SQL：`SELECT * FROM patients ORDER BY id DESC;`。初期表示時には自動実行しない。
+- 初期SQL：`SELECT * FROM mst_patients ORDER BY id DESC;`。初期表示時には自動実行しない。
 - 実行中は入力・実行ボタンを無効化。結果は列名＋行配列で表示し、NULLと空文字を区別する。0件でも列名を表示する。
 - 200行ごとの前へ／次へで全結果を閲覧する。総件数は計算せず、次の1行の有無で次へを制御する。SQL変更中はページ送りを無効にし、実行すると1ページ目に戻る。
 - 文字列セルは2,000バイトまで（省略表示）、BLOBはサイズを表示。エラー時はSQLを保持し、以前の結果を消す。
@@ -21,7 +21,7 @@ PR #5への追加をユーザーが依頼。対象はローカル開発DBの状�
 
 元SQLを加工せずページごとに再実行し、前ページ分を読み飛ばす。ORDER BYで一意に並べることを推奨する。閲覧中にDBが変わるとページ間に重複・抜けが起こり得る。深いページは読み飛ばし分の負荷があるため、大量データ用途は対象外。
 
-`GET /api/db-schema` は tables（name/category）、`GET /api/db-schema?table=patients` は table/columns（name/type/nullable/primary_key）を返す。存在しないテーブルは404。development/test限定、読み取り専用接続を使用し、テーブル名はバインドする。任意のPRAGMAや接続先指定は受け付けない。
+`GET /api/db-schema` は tables（name/category）、`GET /api/db-schema?table=mst_patients` は table/columns（name/type/nullable/primary_key）を返す。存在しないテーブルは404。development/test限定、読み取り専用接続を使用し、テーブル名はバインドする。任意のPRAGMAや接続先指定は受け付けない。
 
 - `frontend/src/features/development/components/SqlConsole.vue`：入力と結果表示。
 - `Api::SqlQueriesController`：development/test限定のHTTP受付。
@@ -30,7 +30,7 @@ PR #5への追加をユーザーが依頼。対象はローカル開発DBの状�
 
 SELECT/非再帰WITH/集計等に対応。SQLite authorizerでREAD・SELECT・FUNCTIONのみ許可し、拡張/ファイル操作関数は拒否。更新、DDL、ATTACH、PRAGMA、複数SQL文、再帰CTEは対象外。接続先パスはクライアントから受け付けない。SQLは最大10,000文字。リクエストログではSQLをフィルタする。
 
-スキーマ変更・migration追加なし。patients等のReadのみ。既存アプリ同様ローカル・架空データ限定で、公開運用は対象外。ブラウザの15秒タイムアウトはSQLiteクエリの中断を保証しない。大量集計用のツールではない。
+SQLツール自体はスキーマ変更を行わず、mst_patients等のReadのみ。患者テーブルの接頭辞変更は別の改名migrationで適用する。既存アプリ同様ローカル・架空データ限定で、公開運用は対象外。ブラウザの15秒タイムアウトはSQLiteクエリの中断を保証しない。大量集計用のツールではない。
 
 ## 検証
 

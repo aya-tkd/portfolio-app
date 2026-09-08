@@ -90,6 +90,6 @@ Railsテストは専用の`backend/storage/test.sqlite3`を使用します。ブ
 
 [フォルダ構成と業務モデルの境界](docs/architecture/repository-structure.md)でツリーを確認できます。`frontend/`が画面、`backend/`がRails、`e2e/`が両者を通すテストです。
 
-Web初学者向けの[ファイルと処理の読み方](docs/learning/patient-form-walkthrough.md)から読むのがおすすめです。[画面設計](docs/design/patient/patient-form.md)、[テーブル設計](docs/design/data-model/patients.md)、[コメントの共通ルール](docs/development/code-readability.md)も参照できます。
+Web初学者向けの[ファイルと処理の読み方](docs/learning/patient-form-walkthrough.md)から読むのがおすすめです。[画面設計](docs/design/patient/patient-form.md)、[テーブル設計](docs/design/data-model/mst_patients.md)、[コメントの共通ルール](docs/development/code-readability.md)も参照できます。
 
 詳細は[プロジェクト要件](docs/project/product-requirements.md)と[ドキュメント一覧](docs/INDEX.md)を参照してください。

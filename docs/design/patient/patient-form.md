@@ -35,7 +35,7 @@ Vue → api.js → Railsルート → Controller → Patient → SQLite → JSON
 
 ## CRUD・責務・設定
 
-[patients](../data-model/patients.md)にCreate/Read/Update。Deleteなし。
+[mst_patients](../data-model/mst_patients.md)にCreate/Read/Update。Deleteなし。Patientモデルと/api/patientsの名前は変更せず、モデルで物理テーブル名を指定する。
 
 - `App.vue`：アプリ全体の入口。
 - `features/patients/components/PatientWorkspace.vue`：患者機能の呼び出し、URL、保存結果の通知。

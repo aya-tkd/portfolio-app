@@ -3,7 +3,7 @@
 // 編集途中のSQLでページ送りを行わず、実行ボタンで新しい検索を開始する。
 import { computed, onMounted, ref } from 'vue'
 import { request, ApiError } from '../../../shared/api/http.js'
-const sql = ref('SELECT * FROM patients ORDER BY id DESC;')
+const sql = ref('SELECT * FROM mst_patients ORDER BY id DESC;')
 const executedSql = ref(''), busy = ref(false), result = ref(null), error = ref('')
 const tables = ref([]), schemaError = ref(''), schema = ref(null), schemaBusy = ref(false), dialog = ref(null)
 const categories = [['master', 'マスタ'], ['transaction', 'トランザクション'], ['log', 'ログ'], ['system', 'システム'], ['unclassified', '未分類']]

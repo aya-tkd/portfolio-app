@@ -11,7 +11,7 @@
 | 3 | [api.js](../../frontend/src/features/patients/api.js) | HTTP通信の窓口。HttpClientを使う処理に近い |
 | 4 | [routes.rb](../../backend/config/routes.rb) | URLとHTTPメソッドをControllerの処理へ振り分ける表 |
 | 5 | [patients_controller.rb](../../backend/app/controllers/api/patients_controller.rb) | 入力を受け、Modelを呼び、HTTP応答を返す。ASP.NET CoreのControllerに近い |
-| 6 | [patient.rb](../../backend/app/models/patient.rb) | 入力検証とpatientsテーブルへの保存。ActiveRecordはEF Coreと同じくDBアクセスを助けるが、クラス自体に保存操作を持つ |
+| 6 | [patient.rb](../../backend/app/models/patient.rb) | 入力検証とmst_patientsテーブルへの保存。self.table_nameでクラス名と物理名を対応付ける。ActiveRecordはEF Coreと同じくDBアクセスを助けるが、クラス自体に保存操作を持つ |
 
 Rubyのコードはサーバー側、VueのJavaScriptはブラウザ側で動きます。同じPCで起動していても別の実行環境です。VueからRubyのメソッドを直接呼ぶのではなく、HTTPでデータを送ります。
 

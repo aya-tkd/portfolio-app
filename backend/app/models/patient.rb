@@ -1,7 +1,10 @@
-# Controllerから患者属性を受け取り、検証してpatientsテーブルへ保存する。
+# Controllerから患者属性を受け取り、検証してmst_patientsテーブルへ保存する。
 # 患者基本情報のモデルであり、予約・受付の業務ルールまで共有する宣言ではない。
 # Vueの入力チェックを信用せず、API経由でも制約を守るための最終検証担当。
 class Patient < ApplicationRecord
+  # 業務クラス名はPatientのまま、物理テーブルの分類接頭辞だけを明示する。
+  self.table_name = "mst_patients"
+
   NAME_FIELDS = %i[last_name first_name last_name_kana first_name_kana].freeze
   attr_readonly :id, :patient_number
   validates(*NAME_FIELDS, presence: { message: "入力してください。" }, length: { maximum: 100, message: "100文字以内で入力してください。" })

@@ -5,8 +5,8 @@ class SqlQueriesTest < ActionDispatch::IntegrationTest
   test "schema API lists tables and rejects unknown names" do
     get "/api/db-schema"
     assert_response :ok
-    assert_includes response.parsed_body["tables"], { "name" => "patients", "category" => "master" }
-    get "/api/db-schema", params: { table: "patients" }
+    assert_includes response.parsed_body["tables"], { "name" => "mst_patients", "category" => "master" }
+    get "/api/db-schema", params: { table: "mst_patients" }
     assert_response :ok
     assert response.parsed_body["columns"].any? { |column| column["name"] == "id" }
     get "/api/db-schema", params: { table: "missing" }
@@ -22,7 +22,7 @@ class SqlQueriesTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_equal ["number", "blank"], response.parsed_body["columns"]
     assert_equal [[1, nil]], response.parsed_body["rows"]
-    post "/api/sql-query", params: { sql: "DELETE FROM patients" }, headers: { "X-CSRF-Token" => token }, as: :json
+    post "/api/sql-query", params: { sql: "DELETE FROM mst_patients" }, headers: { "X-CSRF-Token" => token }, as: :json
     assert_response :unprocessable_content
   end
 end

@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_000100) do
-  create_table "patients", force: :cascade do |t|
+ActiveRecord::Schema[8.1].define(version: 2026_09_08_000100) do
+  create_table "mst_patients", force: :cascade do |t|
     t.date "birth_date"
     t.datetime "created_at", null: false
     t.string "first_name", limit: 100, null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_000100) do
     t.string "patient_number", null: false
     t.string "sex", default: "", null: false
     t.datetime "updated_at", null: false
-    t.index ["patient_number"], name: "index_patients_on_patient_number", unique: true
+    t.index ["patient_number"], name: "index_mst_patients_on_patient_number", unique: true
     t.check_constraint "sex IN ('', 'male', 'female', 'other')", name: "patients_sex_values"
   end
 end
