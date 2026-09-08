@@ -23,6 +23,15 @@ config/master.key
 config/credentials/*.key
 
 # Ruby / Rails
+/backend/.bundle/
+/backend/vendor/bundle/
+/backend/coverage/
+/backend/log/
+/backend/storage/
+/backend/public/assets/
+/backend/config/database.yml
+/backend/config/credentials.yml.enc
+/backend/config/credentials/
 /.bundle/
 /vendor/bundle/
 /coverage/
@@ -94,4 +103,3 @@ $RECYCLE.BIN/
 *~
 *.swp
 *.swo
-

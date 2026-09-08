@@ -10,11 +10,14 @@
 | Project | [purpose.md](project/purpose.md) | ポートフォリオの目的と評価対象 |
 | Project | [product-requirements.md](project/product-requirements.md) | 作成するシステムの概要、対象範囲、対象外 |
 | Architecture | [overview.md](architecture/overview.md) | システム全体の構成と責務 |
+| Architecture | [repository-structure.md](architecture/repository-structure.md) | FE/BEのツリーと業務モデルの所有境界 |
 | Development | [process.md](development/process.md) | Issue、Human Gate、実装、テスト、レビューの流れ |
 | Development | [issue-workflow.md](development/issue-workflow.md) | 親Issue、Sub-issue、Project Status、Human Gateの詳細 |
 | Development | [definition-of-done.md](development/definition-of-done.md) | 作業完了条件 |
+| Development | [code-readability.md](development/code-readability.md) | コードコメント・読みやすさ・実装後の手ほどき |
 | Design | [INDEX.md](design/INDEX.md) | 画面・操作設計、テーブル設計、HTMLモックの索引 |
 | Learning | [user-technical-profile.md](learning/user-technical-profile.md) | 技術理解度と説明方針 |
+| Learning | [patient-form-walkthrough.md](learning/patient-form-walkthrough.md) | 患者フォームのファイル構成とHTTP・DBの流れ |
 | AI | [working-agreement.md](ai/working-agreement.md) | ユーザーとAI Agentの協働方針 |
 | AI | [skill-catalog.md](ai/skill-catalog.md) | 継続利用するCodex Skillと権限境界 |
 | Security | [development-guidelines.md](security/development-guidelines.md) | 公開リポジトリとCIの安全基準 |
