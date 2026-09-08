@@ -53,7 +53,10 @@ async function execute(page = 1) {
       <form @submit.prevent="execute()">
         <label for="sql-input">SQL</label>
         <textarea id="sql-input" v-model="sql" spellcheck="false" maxlength="10000" :disabled="busy" />
-        <div class="sql-actions"><button class="btn btn-secondary" type="submit" :disabled="busy || !sql.trim()">{{ busy ? '実行中…' : '実行' }}</button></div>
+        <div class="sql-actions">
+          <button class="btn btn-secondary" type="submit" :disabled="busy || !sql.trim()">{{ busy ? '実行中…' : '実行' }}</button>
+          <a class="btn btn-secondary" href="/">閉じる</a>
+        </div>
       </form>
       <p v-if="error" class="form-message" role="alert">{{ error }}</p>
       <section v-if="result" aria-label="実行結果">
@@ -68,7 +71,6 @@ async function execute(page = 1) {
         </div>
       </section>
     </div>
-    <footer class="sql-footer"><a class="btn btn-secondary" href="/">閉じる</a></footer>
   </main>
   <dialog ref="dialog" aria-labelledby="schema-title">
     <header class="dialog-head"><h2 id="schema-title">{{ schema?.table }} — スキーマ</h2></header>
@@ -90,7 +92,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .empty { color: #6c757d; padding-left: 5px; }
 label { display: block; font-weight: 600; margin-bottom: 6px; }
 textarea { display: block; width: 100%; min-height: 130px; padding: 10px; border: 1px solid #adb5bd; font: 14px/1.5 Consolas, monospace; resize: vertical; }
-.sql-actions { margin: 8px 0; }
+.sql-actions { margin: 8px 0; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .result-toolbar, nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .result-toolbar { justify-content: space-between; margin-bottom: 8px; }
 .sql-result { overflow: auto; max-height: 55vh; background: white; border: 1px solid #adb5bd; padding: 0; }
@@ -101,7 +103,6 @@ th { background: #e9ecef; white-space: nowrap; }
 th, td { padding: 4px 8px; border-right: 1px solid #ced4da; border-bottom: 1px solid #ced4da; }
 td { white-space: pre-wrap; min-width: 70px; max-width: 400px; overflow-wrap: anywhere; }
 .sql-null { color: #6c757d; font-style: italic; }
-.sql-footer { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
 .dialog-foot { justify-content: flex-end; }
 @media (max-width: 650px) { .sql-console { grid-template-columns: minmax(0, 1fr); } aside { max-height: 210px; overflow: auto; } }
 </style>
