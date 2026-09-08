@@ -16,6 +16,7 @@
 | 業務領域 | 設計Doc | HTMLモック | 状態 |
 |---|---|---|---|
 | 患者マスタ（登録・編集） | [患者登録・編集](patient/patient-form.md) | [HTML](patient/mocks/patient-form.html) | 設計承認済み・実装中（Issue #1） |
+| 開発支援（DB確認） | [SQL確認画面](development/sql-console.md) | —（追加依頼により実画面で確認） | PR #5追加 |
 | 予約 | 未作成 | 未作成 | 未着手 |
 | 外来受付 | 未作成 | 未作成 | 未着手 |
 | 診察待ち・呼び出し | 未作成 | 未作成 | 未着手 |

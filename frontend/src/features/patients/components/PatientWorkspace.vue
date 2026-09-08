@@ -32,6 +32,7 @@ onMounted(() => {
   <header class="app-head"><strong>外来業務</strong><span>患者管理</span></header>
   <main class="host">
     <h1>患者登録・編集</h1>
+    <p><a href="/tools/sql" target="_blank" rel="noopener">DB確認（SQL）を開く</a></p>
     <p class="text-secondary">ローカル学習用・架空データ限定。患者一覧は未実装です。</p>
     <div class="host-toolbar">
       <button id="new" class="btn btn-secondary" @click="open(null, $event)">新規</button>

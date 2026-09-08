@@ -15,7 +15,7 @@ module OutpatientPortfolio
     config.active_record.schema_format = :ruby
     config.hosts = ["localhost", "127.0.0.1"]
     config.hosts << "www.example.com" if Rails.env.test?
-    config.filter_parameters += %i[patient last_name first_name last_name_kana first_name_kana birth_date]
+    config.filter_parameters += %i[patient last_name first_name last_name_kana first_name_kana birth_date sql]
     config.session_store :cookie_store, key: "_outpatient_portfolio", same_site: :strict, httponly: true
     config.action_controller.forgery_protection_origin_check = true
     # Keep the non-secret SQLite configuration tracked under a distinct name.

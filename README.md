@@ -82,6 +82,10 @@ npx playwright test
 
 Railsテストは専用の`backend/storage/test.sqlite3`を使用します。ブラウザテストは起動中の開発DBへ明示的な架空患者を作成します。実在データを入れないでください。スクリーンショット・失敗証跡は`tmp/`に保存します。`npm run build`は配信用ファイルの生成確認であり、外部公開やRailsからの本番配信は実装していません。
 
+## DBの内容を画面で確認
+
+ローカル起動後、[DB確認（SQL）](http://127.0.0.1:5173/tools/sql)を開いて「実行」を押すと患者テーブルを表示します。SQLは編集可能です。初期版は読み取り専用・1文ずつ・最大200行で、UPDATE/DELETEなどには対応しません。患者画面からも別タブで開けます。
+
 ## コードを読む入口
 
 [フォルダ構成と業務モデルの境界](docs/architecture/repository-structure.md)でツリーを確認できます。`frontend/`が画面、`backend/`がRails、`e2e/`が両者を通すテストです。
