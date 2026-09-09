@@ -1,6 +1,6 @@
 ---
 name: portfolio-issue-delivery
-description: Lead a PortFolio-App Issue through design, implementation, tests, local acceptance preparation, and post-merge feedback. Use for Issue delivery or completion follow-ups when the target Issue is identifiable; preserve human approval gates.
+description: Lead a PortFolio-App Issue through design, implementation, tests, local acceptance, in-phase feedback, and post-merge cleanup. Use for Issue delivery or completion follow-ups when the target Issue is identifiable; preserve human approval gates.
 ---
 
 # Portfolio Issue Delivery
@@ -45,6 +45,8 @@ Make the portfolio evidence traceable: user problem, observable behavior, design
 
 ## Completion
 
-Before requesting PR creation, complete the Definition of Done, record the automated test evidence in the test Sub-issue, and ensure the session log contains material decisions and changes. After the user merges the PR, record the completion summary and improvement candidates, then close the session log Sub-issue.
+Before completing each phase (requirements, design, implementation, tests, PR feedback), apply and validate evidence-backed small improvements in the same Issue branch and PR under the workflow's continuous-improvement boundary. Do not defer routine feedback changes until after merge.
 
-On a merge/completion follow-up, automatically perform the bounded Skills/Docs feedback loop in the issue workflow. Do not wait for a separate improvement request, invent changes, broaden permissions, or reuse the merged branch. Report the feedback evidence, changes, validation, and publication status.
+After PR creation succeeds, record its URL, phase outcomes, feedback and test evidence in the session-log Sub-issue and close that log before reporting PR readiness. Append later PR feedback and merge confirmation to the same closed log; this is not parent Issue completion or human acceptance.
+
+On a merge/completion follow-up, follow the workflow's cleanup checks: verify merge and parent Close, record any required resolution evidence, return to updated main, and delete only the verified merged remote/local task branches. Preserve uncommitted/unpushed work. Do not create a new improvement branch or tracked changes during normal cleanup; record newly discovered ideas for a later authorized task.

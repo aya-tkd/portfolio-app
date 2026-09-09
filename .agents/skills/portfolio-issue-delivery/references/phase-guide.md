@@ -1,5 +1,7 @@
 # Issue Delivery Phase Guide
 
+Before each phase handoff, including every PR feedback round, run the workflow's feedback loop: identify evidence, apply scoped improvements in the same Issue/PR, validate and record. Preserve human approval gates; do not generate post-merge improvement changes.
+
 ## 1. Prepare design
 
 - Read the parent Issue, existing docs, and current repository state.
@@ -42,12 +44,13 @@
 - Follow the workflow's local acceptance preparation: start/check the approved local environment, record URL/time/commit, and generate UAT steps and expected results in the PR. Preserve human checks on updates and explicitly mark affected cases for reacceptance.
 - Honor existing authorization for commit, push, and PR creation; ask only if absent. Inspect intended files and secrets before publishing. Set `PR承認待ち` only after the verified PR exists and required checks pass.
 - On PR feedback, record the change, reopen test work when evidence is stale, and rerun affected verification. Material design changes return to human design approval.
+- Once the PR exists, finalize the session log with its URL, results and feedback disposition, close it and verify Closed before reporting PR readiness. Append later PR feedback to that same closed log without reopening it only for recordkeeping.
 
-## 5. Completion and improvement
+## 5. Completion and cleanup
 
 - The user reviews and merges the PR.
 - Verify that the parent Issue is closed and set Project Status to `完了` when applicable.
-- Write a concise completion summary and improvement candidates in the session-log Sub-issue, then close it.
-- Automatically review and apply small evidence-backed Skills/Docs improvements under the workflow's continuous-improvement boundary. Separate broader proposals for approval; do not require a new Issue for the authorized small improvements.
-- Use a new improvement branch after merge; retain commit/push/PR authorization boundaries and never merge the improvement yourself. Report pending publication separately from the completed feature.
+- Append merge/resolution evidence to the closed session log. Close an accidentally remaining open target log after recording the outcome.
+- Follow the workflow's checked remote/local branch deletion and return to synchronized main. Report blockers without discarding work or weakening protection.
+- Do not create tracked feedback changes or a new improvement branch after merge; routine feedback belongs before phase completion. Record newly discovered proposals for a later authorized task.
 - Record the delivered behavior, design tradeoff, verification links, human decisions, and a concise Web-learning takeaway. Leave branch/commit and next-step information for resumption whenever work pauses.

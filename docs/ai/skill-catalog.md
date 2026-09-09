@@ -20,13 +20,13 @@
 - PR作成は依頼・既存の承認範囲で行い、Approve・Mergeはユーザーが行う
 - 専用ブランチ、承認対象版、テスト証跡、再開情報を管理する
 - 実装に沿ったWeb概念の説明と、ポートフォリオとしての成果・判断根拠を残す
-- AIがローカル受入環境・URL・UAT手順を準備し、merge後は根拠のある小さなSkills・Docs改善を自動で行う
+- AIがローカル受入環境・URL・UAT手順を準備し、各工程完了前の小改善を同じPRへ含める。PR作成成功時にログをCloseし、merge後は対象ブランチ削除とmain復帰を行う
 
 ## 共通ルール
 
 - GitHubのIssue・コメント・PRに実在患者情報、認証情報、Token、秘密情報を記載しない
 - GitHub ActionsからAIを呼び出さない
-- 完了時の小改善は[継続的改善](../development/issue-workflow.md#継続的改善)の範囲で毎回の再依頼なしに反映する。権限・Human Gateの変更、大きな改善、改善Issueの起票は別途承認する
+- 各工程完了前の小改善は[継続的改善](../development/issue-workflow.md#継続的改善)の範囲で毎回の再依頼なしに反映する。権限・Human Gateの変更、大きな改善、改善Issueの起票は別途承認する
 - このリポジトリ用Skillを追加・変更する場合は、`.agents/skills/`を更新してGitに含める
 
 実行権限・承認・Statusの正本は[Issue中心の開発フロー](../development/issue-workflow.md)、学習支援の正本は[協働方針](working-agreement.md)とする。Skillはこれらを実行する入口であり、異なる承認ルールを重複定義しない。
