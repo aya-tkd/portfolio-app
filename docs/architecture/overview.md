@@ -52,6 +52,8 @@ Ruby 4.0.6環境で依存関係を検証した。JSON 3とRailsの解析処理�
 
 実装時の参照：[Rails Security Guide](https://guides.rubyonrails.org/security.html)、[Vite server options](https://vite.dev/config/server-options)、[Vue form bindings](https://vuejs.org/guide/essentials/forms.html)。
 
+Issue #8ではjsonの既知の脆弱性2件への対応として、Gemfileの許可範囲を2.19.9以上・3.0未満に制限する。実際の解決版はbackend/Gemfile.lockを正本とする。JSON 3とRailsの互換性制約を維持し、UI/API/DBは変更しない。検証・承認は[親Issue #8](https://github.com/aya-tkd/portfolio-app/issues/8)と[設計v1 #9](https://github.com/aya-tkd/portfolio-app/issues/9)に記録する。
+
 ## 将来の記載内容
 
 - 実行環境と主要コンポーネント
