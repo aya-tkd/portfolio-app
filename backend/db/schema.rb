@@ -10,7 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_08_000100) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_10_000100) do
+  create_table "mst_departments", force: :cascade do |t|
+    t.string "abbreviation", limit: 20
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.integer "display_order", null: false
+    t.string "kana_name", limit: 100
+    t.string "name", limit: 100, null: false
+    t.datetime "updated_at", null: false
+    t.check_constraint "abbreviation IS NULL OR length(abbreviation) <= 20", name: "mst_departments_abbreviation_length"
+    t.check_constraint "active IN (0, 1)", name: "mst_departments_active_values"
+    t.check_constraint "display_order >= 1", name: "mst_departments_display_order_positive"
+    t.check_constraint "kana_name IS NULL OR length(kana_name) <= 100", name: "mst_departments_kana_name_length"
+    t.check_constraint "length(name) <= 100", name: "mst_departments_name_length"
+  end
+
   create_table "mst_patients", force: :cascade do |t|
     t.date "birth_date"
     t.datetime "created_at", null: false

@@ -14,6 +14,11 @@ frontend/
         PatientWorkspace.vue      患者機能の呼び出し元
         PatientForm.vue           患者登録・編集フォーム
       api.js                      患者固有のAPI契約
+    features/administration/departments/
+      components/
+        DepartmentWorkspace.vue   診療科機能の呼び出し元
+        DepartmentForm.vue        診療科登録・編集フォーム
+      api.js                      診療科固有のAPI契約
     shared/
       api/http.js                 業務非依存のHTTP通信
       styles/style.css            共通の業務UIスタイル
@@ -21,8 +26,8 @@ frontend/
   index.html                      ブラウザが読むHTMLの入口
 backend/
   app/
-    controllers/api/              HTTP受付・応答（現在は患者API）
-    models/                       現在は患者基本情報の永続化・検証
+    controllers/api/              HTTP受付・応答（患者・診療科API）
+    models/                       患者・診療科の永続化・検証
   config/                         Rails設定・ルート
   db/                             migration・schema
   test/                           Railsのモデル・APIテスト

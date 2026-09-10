@@ -1,5 +1,6 @@
 # DBは業務分類を持たないため、テーブルの所有者が追加時に分類を指定する。
 # 未指定テーブルも未分類に表示し、見落としや推測による誤分類を防ぐ。
 mst_patients: master
+mst_departments: master
 schema_migrations: system
 ar_internal_metadata: system
