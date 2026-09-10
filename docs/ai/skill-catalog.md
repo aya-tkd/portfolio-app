@@ -4,15 +4,16 @@
 
 ## portfolio-issue-grooming
 
-会話で受け取った要求を、レビュー可能な親Issueのドラフトへ整理するSkillです。
+会話で受け取った要求を、レビュー可能な親Issueのドラフトへ整理する**Issue管理専用**Skillです。
 
 - 目的・受入条件・対象外・人間判断事項・Sub-issue案を整理する
 - ユーザーが明示的に作成を依頼した場合だけ、GitHub Issueと3つのSub-issueを作成する
-- 実装、PR作成、Mergeは行わない
+- 作成後は親Issueを`未着手`に保ち、ブランチ作成・設計モック・設計着手・実装・PR作成・Mergeは行わない
+- 開発を始めるには、別途「Issue #Nを進めて」など、対象Issueを指定した依頼が必要
 
 ## portfolio-issue-delivery
 
-指定された親Issueを、設計・実装・自動テスト・PR準備まで伴走するLead Skillです。
+明示的に開始を依頼された親Issueを、設計・実装・自動テスト・PR準備まで伴走するLead Skillです。Issueが存在するだけでは開始しません。
 
 - PdM、ドメイン、開発者、テストの観点でレビューする
 - 設計Sub-issueをユーザーがCloseするまで実装しない
