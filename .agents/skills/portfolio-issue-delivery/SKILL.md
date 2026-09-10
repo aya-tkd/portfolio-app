@@ -1,11 +1,13 @@
 ---
 name: portfolio-issue-delivery
-description: Lead a PortFolio-App Issue through design, implementation, tests, local acceptance, in-phase feedback, and post-merge cleanup. Use for Issue delivery or completion follow-ups when the target Issue is identifiable; preserve human approval gates.
+description: Lead an explicitly started PortFolio-App parent Issue through design, implementation, tests, local acceptance, in-phase feedback, and post-merge cleanup. Do not groom or start work merely because an Issue exists.
 ---
 
 # Portfolio Issue Delivery
 
-Use this skill only in the repository containing this skill and for an identified parent Issue. A completion follow-up may identify it through the current conversation and merged PR; ask if ambiguous.
+Use this skill only in the repository containing this skill, for an identified parent Issue, and after the user explicitly requests delivery. Valid starts include `Issue #Nを進めて`, `Issue #Nの設計を開始して`, or an equivalent request that clearly names the Issue and asks to begin work. A completion follow-up may identify it through the current conversation and merged PR; ask if ambiguous.
+
+Do not activate delivery after grooming or Issue creation alone. A newly created Issue remains `未着手` until an explicit delivery request; do not create a branch, move Status, write a design record, or make a mock before that request.
 
 ## Read first
 

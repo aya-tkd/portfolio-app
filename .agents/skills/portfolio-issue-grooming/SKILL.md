@@ -1,11 +1,17 @@
 ---
 name: portfolio-issue-grooming
-description: Convert conversational requirements for this PortFolio-App repository into a reviewable feature Issue draft, including acceptance criteria, scope boundaries, and proposed Sub-issues. Use when the user wants to groom or create a development Issue.
+description: Create or refine reviewable PortFolio-App feature Issues, including acceptance criteria, scope boundaries, and Sub-issues. Stop after Issue management; do not begin design or development.
 ---
 
 # Portfolio Issue Grooming
 
 Use this skill only in the repository containing this skill.
+
+## Boundary
+
+This is the **Issue-management** skill. Its completion point is a reviewed draft or a created parent Issue with its required Sub-issues, native links, and Project Status `未着手`.
+
+Never create an Issue branch, change the parent to `設計レビュー`, create a design mock, write design/implementation/test records, or invoke Issue delivery merely because an Issue was created. Those actions require a separate, explicit request such as `Issue #14を進めて` or `Issue #14の設計を開始して`. A request may include both creation and an explicit delivery request, but do not infer the latter.
 
 ## Read first
 
@@ -29,6 +35,7 @@ Use [the parent Issue format](references/parent-issue.md). Propose three Sub-iss
    Include required environment setup in the first feature's scope. Read `docs/architecture/overview.md` for confirmed versus candidate technologies, and `docs/ai/working-agreement.md` for learning and portfolio outcomes. Propose one or two Web concepts tied to this feature, without making a quiz an acceptance condition.
 5. Create or update GitHub Issues only when the user explicitly requests that write operation. Use the authenticated `gh` CLI when available; never request, display, or store a token.
 6. Before handing off requirements, review feedback from the discussion and apply the workflow's scoped feedback loop. If there is no Issue branch yet, retain proposed document/Skill improvements in the draft for collection before implementation; do not create a separate post-close improvement loop.
+7. Stop after reporting the Issue URLs, native parent-child links, Project Status, and the separate command that would start delivery.
 
 ## GitHub write boundary
 
