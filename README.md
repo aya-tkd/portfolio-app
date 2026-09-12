@@ -8,7 +8,7 @@
 
 - 業務フローと状態遷移のモデル化
 - Web画面とデータフローの設計
-- Rails、Vue、JavaScriptを候補としたWeb開発
+- Rails、Vue、JavaScriptを使ったWeb開発
 - SQLiteを使ったデータ管理
 - テスト、CI/CD、Issueベース開発
 - AI Agentと人間の協働による開発
@@ -47,7 +47,18 @@
 
 ## 現在の状態
 
-Issue #1で患者登録・編集を実装しています。Vueの共通ダイアログからRails APIを呼び、SQLiteへ保存します。患者一覧・予約以降の導線は未実装です。ローカル・架空データ限定、ログインなし。本番利用・外部公開には対応していません。
+このREADMEは、閲覧しているブランチの実装範囲を示します。PRブランチの内容はレビュー対象であり、受入・mergeの状態は[GitHub Project](https://github.com/users/aya-tkd/projects/2)と各PRを参照してください。
+
+| 機能 | このブランチでできること | 画面 | 関連Issue |
+|---|---|---|---|
+| 患者マスタ | 新規登録・編集・SQLite保存 | `/` | [#1](https://github.com/aya-tkd/portfolio-app/issues/1) |
+| 診療科マスタ | 新規登録・編集・SQLite保存 | `/masters/departments` | [#14](https://github.com/aya-tkd/portfolio-app/issues/14) |
+| 職種マスタ | 新規登録・編集・SQLite保存 | `/masters/occupations` | [#15](https://github.com/aya-tkd/portfolio-app/issues/15) |
+| DB確認 | 読み取り専用SQL・ページ送り・スキーマ表示 | `/tools/sql` | [#1](https://github.com/aya-tkd/portfolio-app/issues/1) |
+
+VueのダイアログからRails APIを呼び、SQLiteへ保存します。各マスタの一覧・検索、ユーザーマスタ、予約以降の導線は未実装です。ローカル・架空データ限定、ログインなし。本番利用・外部公開には対応していません。
+
+現在地の更新規約は[開発フロー](docs/development/issue-workflow.md#readmeと現在地の更新)、学習の進捗は[技術理解プロファイル](docs/learning/user-technical-profile.md)を参照してください。
 
 ## ローカル起動（PowerShell）
 

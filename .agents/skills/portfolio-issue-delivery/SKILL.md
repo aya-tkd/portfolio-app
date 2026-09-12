@@ -41,9 +41,9 @@ After design approval, preserve the reviewed mock under `docs/design/<area>/mock
 
 ## Learning and portfolio
 
-Read `docs/ai/working-agreement.md` and `docs/learning/user-technical-profile.md`. Tie one or two Web concepts to the actual change, explain the request-to-DB-to-screen path with concrete files, and offer an optional prediction or review question. The user delegates implementation; do not require manual coding or exams. Do not infer mastery from an OK or a completed task.
+Read `docs/ai/working-agreement.md`, `docs/learning/user-technical-profile.md`, and `docs/learning/progress-rules.md`. Tie one or two Web concepts to the actual change and explain the request-to-DB-to-screen path with concrete files. Evaluate natural questions, paraphrases and review decisions; do not introduce assessment quizzes or require manual coding. Before PR creation and before completing each PR feedback round, update the Issue-specific learning log and review the concept-level profile using the rubric. Record a reason when levels remain unchanged. Do not infer mastery from an OK or a completed task.
 
-Make the portfolio evidence traceable: user problem, observable behavior, design decision, meaningful test evidence, AI work, and human judgment. Keep README implementation status and local setup accurate when changed. Record only concise technical learning evidence, never private chat context.
+Make the portfolio evidence traceable: user problem, observable behavior, design decision, meaningful test evidence, AI work, and human judgment. Before PR creation and each PR feedback handoff, reconcile README capabilities, URLs, setup and design indexes with the current branch following the workflow's README rule. Record updates or the reason no change was needed. Record only concise technical learning evidence, never private chat context.
 
 ## Completion
 

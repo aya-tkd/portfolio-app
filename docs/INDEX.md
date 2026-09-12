@@ -17,6 +17,7 @@
 | Development | [code-readability.md](development/code-readability.md) | コードコメント・読みやすさ・実装後の手ほどき |
 | Design | [INDEX.md](design/INDEX.md) | 画面・操作設計、テーブル設計、HTMLモックの索引 |
 | Learning | [user-technical-profile.md](learning/user-technical-profile.md) | 技術理解度と説明方針 |
+| Learning | [progress-rules.md](learning/progress-rules.md) | 観点別の評価段階・Issue別ログ・PR前の更新トリガー |
 | Learning | [patient-form-walkthrough.md](learning/patient-form-walkthrough.md) | 患者フォームのファイル構成とHTTP・DBの流れ |
 | AI | [working-agreement.md](ai/working-agreement.md) | ユーザーとAI Agentの協働方針 |
 | AI | [skill-catalog.md](ai/skill-catalog.md) | 継続利用するCodex Skillと権限境界 |
