@@ -2,6 +2,7 @@ import { test, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { loadPatient, savePatient } from '../src/features/patients/api.js'
 import { loadDepartment, saveDepartment } from '../src/features/administration/departments/api.js'
+import { loadOccupation, saveOccupation } from '../src/features/administration/occupations/api.js'
 import { ApiError } from '../src/shared/api/http.js'
 const realFetch = globalThis.fetch
 afterEach(() => { globalThis.fetch = realFetch })
@@ -39,4 +40,12 @@ test('department API obtains CSRF and uses the resource-specific URL', async () 
   assert.equal(calls[1][1].headers['X-CSRF-Token'], 'test-only')
   globalThis.fetch = async () => ({ ok: true, json: async () => ({ id: 1 }) })
   assert.deepEqual(await loadDepartment(1), { id: 1 })
+})
+test('occupation API uses its own resource URL', async () => {
+  const calls = []
+  globalThis.fetch = async (url, options) => { calls.push([url, options]); return { ok: true, json: async () => calls.length === 1 ? { token: 'test-only' } : { id: 1, name: '医師' } } }
+  assert.deepEqual(await saveOccupation(null, { name: '医師' }), { id: 1, name: '医師' })
+  assert.equal(calls[1][0], '/api/occupations')
+  globalThis.fetch = async () => ({ ok: true, json: async () => ({ id: 1 }) })
+  assert.deepEqual(await loadOccupation(1), { id: 1 })
 })

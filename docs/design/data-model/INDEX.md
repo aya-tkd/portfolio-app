@@ -8,6 +8,7 @@
 |---|---|---|---|
 | mst_patients | [mst_patients.md](mst_patients.md) | 架空患者の基本情報・内部IDと表示No | Issue #1実装 |
 | mst_departments | [mst_departments.md](mst_departments.md) | 診療科の名称・表示順・利用状態 | Issue #14実装中 |
+| mst_occupations | [mst_occupations.md](mst_occupations.md) | 職種名・表示順・利用状態 | Issue #15実装中 |
 
 ## テーブル命名ルール
 
