@@ -23,6 +23,7 @@ dialog::backdrop { background: #29323b66; }
 .section-heading { font-size: 13px; background: #e9ecef; border-left: 3px solid #6c757d; padding: 4px 8px; margin: 0 0 12px; font-weight: 600; }
 .fields { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; row-gap: 10px; }
 .field { display: grid; grid-template-columns: 84px minmax(0,1fr); gap: 8px; align-items: start; }
+.field-wide { grid-column: 1 / -1; }
 .field label { padding-top: 7px; white-space: nowrap; }
 .required, .field-error { color: #b02a37; }
 .required { margin-left: 3px; }
@@ -35,4 +36,4 @@ dialog::backdrop { background: #29323b66; }
 .dialog-foot > span { font-size: 12px; color: #495057; }
 .discard { border: 1px solid #c3a875; background: #fff8e8; padding: 12px; margin-top: 16px; }
 .discard .buttons { justify-content: flex-end; }
-@media (max-width: 560px) { .fields { grid-template-columns: 1fr; } .field { grid-template-columns: 80px minmax(0,1fr); } .dialog-foot { align-items: flex-end; } }
+@media (max-width: 560px) { .fields { grid-template-columns: 1fr; } .field, .field-wide { grid-column: auto; grid-template-columns: 80px minmax(0,1fr); } .dialog-foot { align-items: flex-end; } }

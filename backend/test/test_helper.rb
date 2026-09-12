@@ -7,4 +7,8 @@ class ActiveSupport::TestCase
   def patient_attributes
     { last_name: "デモ患者", first_name: "一郎", last_name_kana: "デモカンジャ", first_name_kana: "イチロウ", birth_date: nil, sex: "" }
   end
+
+  def department_attributes
+    { name: "内科", kana_name: "ナイカ", abbreviation: "内", display_order: 10, active: true }
+  end
 end
