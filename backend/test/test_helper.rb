@@ -11,4 +11,8 @@ class ActiveSupport::TestCase
   def department_attributes
     { name: "内科", kana_name: "ナイカ", abbreviation: "内", display_order: 10, active: true }
   end
+
+  def occupation_attributes
+    { name: "医師", display_order: 10, active: true }
+  end
 end

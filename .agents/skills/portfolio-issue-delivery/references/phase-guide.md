@@ -39,6 +39,7 @@ Before each phase handoff, including every PR feedback round, run the workflow's
 
 ## 4. PR preparation
 
+- Before creating the PR and before finishing every PR feedback round, reconcile README and design indexes with branch capabilities and review learning evidence using `docs/learning/progress-rules.md`. Update the Issue learning log and affected profile entries, or record why the level is unchanged. These checks happen before merge, not during cleanup.
 - Complete the PR template, including `Closes #<parent issue number>`.
 - Present a concise summary of code, docs, mocks, tests, and remaining limitations.
 - Follow the workflow's local acceptance preparation: start/check the approved local environment, record URL/time/commit, and generate UAT steps and expected results in the PR. Preserve human checks on updates and explicitly mark affected cases for reacceptance.
