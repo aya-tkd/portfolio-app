@@ -43,6 +43,7 @@ Before each phase handoff, including every PR feedback round, run the workflow's
 - Complete the PR template, including `Closes #<parent issue number>`.
 - Present a concise summary of code, docs, mocks, tests, and remaining limitations.
 - Follow the workflow's local acceptance preparation: start/check the approved local environment, record URL/time/commit, and generate UAT steps and expected results in the PR. Preserve human checks on updates and explicitly mark affected cases for reacceptance.
+- Do not ask the user to perform acceptance before the PR exists. Local preparation is AI work; the user accepts, approves, and merges from the verified PR.
 - Honor existing authorization for commit, push, and PR creation; ask only if absent. Inspect intended files and secrets before publishing. Set `PR承認待ち` only after the verified PR exists and required checks pass.
 - On PR feedback, record the change, reopen test work when evidence is stale, and rerun affected verification. Material design changes return to human design approval.
 - Once the PR exists, finalize the session log with its URL, results and feedback disposition, close it and verify Closed before reporting PR readiness. Append later PR feedback to that same closed log without reopening it only for recordkeeping.
