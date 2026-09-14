@@ -16,6 +16,7 @@
 | 業務領域 | 設計Doc | HTMLモック | 状態 |
 |---|---|---|---|
 | 患者マスタ（登録・編集） | [患者登録・編集](patient/patient-form.md) | [HTML](patient/mocks/patient-form.html) | 実装・受入済み（Issue #1／PR #5 merge済み） |
+| 患者検索・編集起動 | [患者検索](patient/patient-search.md) | [HTML](patient/mocks/patient-search.html) | 実装中（Issue #33） |
 | 診療科マスタ（登録・編集） | [診療科登録・編集](administration/department-form.md) | [HTML](administration/mocks/department-form.html) | このブランチに実装あり（Issue #14） |
 | 職種マスタ（登録・編集） | [職種登録・編集](administration/occupation-form.md) | [HTML](administration/mocks/occupation-form.html) | このブランチに実装あり（Issue #15） |
 | 開発支援（DB確認） | [SQL確認画面](development/sql-console.md) | —（追加依頼により実画面で確認） | 実装・受入済み（PR #5 merge済み） |

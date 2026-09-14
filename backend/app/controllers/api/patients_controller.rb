@@ -8,6 +8,13 @@ module Api
       render json: { token: form_authenticity_token }
     end
 
+    # 患者検索画面の読取専用API。URLクエリの条件をModelへ渡し、画面に必要な列だけをJSONで返す。
+    # GET /api/patients?patient_number=<完全一致>&name=<部分一致> をroutes.rbがここへ振り分ける。
+    def index
+      patients = Patient.search(patient_number: search_params[:patient_number], name: search_params[:name])
+      render json: patients.as_json(only: FIELDS)
+    end
+
     def show
       render json: Patient.find(params[:id]).as_json(only: FIELDS)
     end
@@ -27,6 +34,11 @@ module Api
     def patient_params
       # ブラウザから改変して送られても、内部ID・表示Noは更新対象に含めない。
       params.expect(patient: [*Patient::NAME_FIELDS, :birth_date, :sex])
+    end
+
+    def search_params
+      # 検索条件は許可した二項目だけを受け取り、SQL文字列をControllerで組み立てない。
+      params.permit(:patient_number, :name)
     end
 
     def persist(patient, status)

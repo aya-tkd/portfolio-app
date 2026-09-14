@@ -1,6 +1,6 @@
 import { test, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
-import { loadPatient, savePatient } from '../src/features/patients/api.js'
+import { loadPatient, savePatient, searchPatients } from '../src/features/patients/api.js'
 import { loadDepartment, saveDepartment } from '../src/features/administration/departments/api.js'
 import { loadOccupation, saveOccupation } from '../src/features/administration/occupations/api.js'
 import { ApiError } from '../src/shared/api/http.js'
@@ -27,6 +27,16 @@ test('network failure is not retried', async () => {
   globalThis.fetch = async () => { calls++; throw new TypeError('network') }
   await assert.rejects(savePatient(1, {}))
   assert.equal(calls, 1)
+})
+test('patient search sends supplied conditions as a read-only query URL', async () => {
+  const calls = []
+  globalThis.fetch = async (url, options) => {
+    calls.push([url, options])
+    return { ok: true, json: async () => [] }
+  }
+  assert.deepEqual(await searchPatients({ patientNumber: 'P-100', name: '山田 太郎' }), [])
+  assert.equal(calls[0][0], '/api/patients?patient_number=P-100&name=%E5%B1%B1%E7%94%B0+%E5%A4%AA%E9%83%8E')
+  assert.equal(calls[0][1].method, undefined)
 })
 test('department API obtains CSRF and uses the resource-specific URL', async () => {
   const calls = []

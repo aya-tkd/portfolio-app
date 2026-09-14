@@ -3,11 +3,33 @@ body { margin: 0; background: #f1f3f5; font: 14px/1.5 "Yu Gothic UI", Meiryo, sy
 .app-head { height: 44px; padding: 10px 20px; display: flex; gap: 24px; background: #e2e6ea; border-bottom: 1px solid #adb5bd; }
 .app-head strong { font-size: 16px; }
 .host { margin: 24px; max-width: 920px; }
+.workspace { margin: 24px; max-width: 1100px; }
 .host h1 { font-size: 18px; }
+.workspace h1 { margin: 0 0 16px; font-size: 18px; }
 .host-toolbar, .buttons { display: flex; align-items: center; gap: 8px; }
 .host-toolbar { flex-wrap: wrap; }
 .host-toolbar input { width: 140px; }
 .host-notice { margin-top: 16px; padding: 8px 12px; background: white; border-left: 3px solid #26713c; }
+.search-panel, .result-panel { background: white; border: 1px solid #adb5bd; }
+.search-panel { padding: 12px 16px; }
+.search-panel h2, .result-panel h2 { margin: 0; font-size: 14px; }
+.search-panel h2 { margin-bottom: 12px; }
+.search-fields { display: grid; grid-template-columns: 84px minmax(180px, 320px) 84px minmax(180px, 320px); gap: 8px; align-items: center; }
+.search-fields label { text-align: right; }
+.search-actions { display: flex; justify-content: flex-end; margin-top: 12px; padding-top: 10px; border-top: 1px solid #dee2e6; }
+.result-panel { margin-top: 16px; }
+.result-panel h2 { padding: 9px 12px; background: #e9ecef; border-bottom: 1px solid #adb5bd; }
+.result-panel h2:focus { outline-offset: -3px; }
+.result-table-wrap { overflow: auto; max-height: calc(100dvh - 390px); min-height: 160px; }
+.result-table-wrap table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+.result-table-wrap th, .result-table-wrap td { padding: 7px 10px; border-bottom: 1px solid #dee2e6; text-align: left; }
+.result-table-wrap th { position: sticky; top: 0; z-index: 1; background: #f8f9fa; border-bottom-color: #adb5bd; }
+.result-table-wrap tr { cursor: pointer; }
+.result-table-wrap tr:hover { background: #f1f5f9; }
+.result-table-wrap tr.selected { background: #dbeafe; }
+.search-message { margin: 0; padding: 14px; }
+.search-message.is-empty { color: #495057; }
+.screen-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid #adb5bd; }
 .btn { min-width: 80px; min-height: 34px; padding: 5px 16px; font-size: 14px; border-radius: 3px; }
 .btn-secondary { --bs-btn-color: #212529; --bs-btn-bg: #e9ecef; --bs-btn-border-color: #9aa3ac; --bs-btn-hover-bg: #dce0e4; --bs-btn-hover-color: #212529; --bs-btn-disabled-bg: #e9ecef; --bs-btn-disabled-color: #495057; }
 .btn-primary { --bs-btn-bg: #0b5ed7; --bs-btn-border-color: #0b5ed7; }
@@ -37,3 +59,4 @@ dialog::backdrop { background: #29323b66; }
 .discard { border: 1px solid #c3a875; background: #fff8e8; padding: 12px; margin-top: 16px; }
 .discard .buttons { justify-content: flex-end; }
 @media (max-width: 560px) { .fields { grid-template-columns: 1fr; } .field, .field-wide { grid-column: auto; grid-template-columns: 80px minmax(0,1fr); } .dialog-foot { align-items: flex-end; } }
+@media (max-width: 760px) { .workspace { margin: 16px; } .search-fields { grid-template-columns: 84px minmax(0,1fr); } .search-fields label { text-align: left; } .result-table-wrap { max-height: calc(100dvh - 390px); } }

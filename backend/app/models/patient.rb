@@ -15,7 +15,31 @@ class Patient < ApplicationRecord
   before_create :set_temporary_number
   after_create :assign_patient_number
 
+  # 患者番号の完全一致、または氏名・カナ氏名を連結した部分一致で患者を絞り込む読取責務。
+  # 呼び出し元はPatientsController#index。入力値は空白を除いて照合し、値はプレースホルダでDBへ渡すためSQL注入を許さない。
+  def self.search(patient_number:, name:)
+    scope = order(:id)
+    number = patient_number.to_s.strip
+    scope = scope.where(patient_number: number) if number.present?
+
+    normalized_name = normalize_search_name(name)
+    return scope if normalized_name.blank?
+
+    pattern = "%#{sanitize_sql_like(normalized_name)}%"
+    scope.where(
+      "REPLACE(REPLACE(last_name || first_name, ' ', ''), '　', '') LIKE ? " \
+      "OR REPLACE(REPLACE(last_name_kana || first_name_kana, ' ', ''), '　', '') LIKE ?",
+      pattern,
+      pattern
+    )
+  end
+
   private
+
+  def self.normalize_search_name(value)
+    value.to_s.delete(" 　")
+  end
+  private_class_method :normalize_search_name
 
   def valid_birth_date
     # 型変換後は不正な日付もnilになり得るため、「未入力」と区別できる元の値を検証する。

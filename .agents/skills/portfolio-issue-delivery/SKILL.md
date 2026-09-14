@@ -25,6 +25,7 @@ Keep the parent Issue as the unit of delivery. Its required Sub-issues are desig
 
 - Verify the user's approval-purpose Close against the current design revision and mock. A closed, cancelled, or superseded Issue alone is not approval. Material changes require reopening and renewed design approval as defined in the workflow.
 - The user performs PR acceptance and merge. Do not merge a PR.
+- Before the PR, prepare and verify the local environment and UAT checklist; this is not a human acceptance gate. Create the verified PR first, then hand the checklist and URL to the user for acceptance, approval, and merge.
 - Ask for direction before changes affecting authentication, authorization, secrets, publication, repository settings, external services, or costs.
 
 ## GitHub write boundary

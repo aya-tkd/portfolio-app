@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>患者検索モック</title>
+  <style>
+    * { box-sizing: border-box; } body { margin: 0; color: #212529; background: #f1f3f5; font: 14px/1.5 "Yu Gothic UI", Meiryo, sans-serif; }
+    header { height: 44px; padding: 10px 20px; background: #e2e6ea; border-bottom: 1px solid #adb5bd; } header strong { margin-right: 24px; font-size: 16px; }
+    main { max-width: 1100px; margin: 24px; } h1 { font-size: 18px; } h2 { margin: 0; font-size: 14px; }
+    .panel { background: #fff; border: 1px solid #adb5bd; } .conditions { padding: 12px 16px; } .fields { display: grid; grid-template-columns: 84px 280px 84px 280px; gap: 8px; align-items: center; margin-top: 12px; }
+    label { text-align: right; } input { height: 35px; border: 1px solid #adb5bd; padding: 5px 8px; } .actions { margin-top: 12px; padding-top: 10px; border-top: 1px solid #dee2e6; text-align: right; }
+    button { min-width: 80px; min-height: 34px; padding: 5px 16px; color: #212529; background: #e9ecef; border: 1px solid #9aa3ac; border-radius: 3px; font-size: 14px; } button:disabled { color: #6c757d; }
+    .result { margin-top: 16px; } .result h2 { padding: 9px 12px; background: #e9ecef; border-bottom: 1px solid #adb5bd; } table { width: 100%; border-collapse: collapse; } th, td { padding: 7px 10px; border-bottom: 1px solid #dee2e6; text-align: left; } th { background: #f8f9fa; } tr.selected { background: #dbeafe; }
+    footer { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 12px; border-top: 1px solid #adb5bd; } footer div { display: flex; gap: 8px; }
+  </style>
+</head>
+<body>
+  <header><strong>外来業務</strong>患者管理</header>
+  <main>
+    <h1>患者検索</h1>
+    <section class="panel conditions"><h2>検索条件</h2><div class="fields"><label>患者番号</label><input><label>氏名・カナ</label><input value="山田 太郎"></div><div class="actions"><button>検索</button></div></section>
+    <section class="panel result"><h2>検索結果</h2><table><thead><tr><th>選択</th><th>患者番号</th><th>氏名</th><th>カナ氏名</th><th>生年月日</th><th>性別</th></tr></thead><tbody><tr class="selected"><td>●</td><td>10001</td><td>山田 太郎</td><td>ヤマダ タロウ</td><td>1985-04-12</td><td>男性</td></tr><tr><td>○</td><td>10002</td><td>山田 花子</td><td>ヤマダ ハナコ</td><td>―</td><td>女性</td></tr></tbody></table></section>
+    <footer><div><button>新規</button><button>編集</button></div><button>閉じる</button></footer>
+  </main>
+</body>
+</html>

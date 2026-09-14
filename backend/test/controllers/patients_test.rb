@@ -44,6 +44,39 @@ class PatientsTest < ActionDispatch::IntegrationTest
     assert_equal "EXT-001", response.parsed_body.fetch("patient_number")
   end
 
+  test "AC-01 through AC-03 search matches number exactly and name or kana partially" do
+    yamada = Patient.create!(patient_attributes.merge(last_name: "山田", first_name: "太郎", last_name_kana: "ヤマダ", first_name_kana: "タロウ"))
+    tanaka = Patient.create!(patient_attributes.merge(last_name: "田中", first_name: "花子", last_name_kana: "タナカ", first_name_kana: "ハナコ"))
+    Patient.where(id: yamada.id).update_all(patient_number: "P-100")
+    Patient.where(id: tanaka.id).update_all(patient_number: "P-200")
+
+    get "/api/patients", params: { patient_number: "P-100" }
+    assert_response :ok
+    assert_equal [yamada.id], response.parsed_body.pluck("id")
+
+    get "/api/patients", params: { name: "山田 太郎" }
+    assert_response :ok
+    assert_equal [yamada.id], response.parsed_body.pluck("id")
+
+    get "/api/patients", params: { name: "ヤマダ　タロウ" }
+    assert_response :ok
+    assert_equal [yamada.id], response.parsed_body.pluck("id")
+
+    get "/api/patients", params: { patient_number: "P-200", name: "山田" }
+    assert_response :ok
+    assert_empty response.parsed_body
+  end
+
+  test "AC-01 search without conditions returns all patients in id order" do
+    first = Patient.create!(patient_attributes.merge(last_name: "検索", first_name: "一郎"))
+    second = Patient.create!(patient_attributes.merge(last_name: "検索", first_name: "二郎"))
+
+    get "/api/patients"
+    assert_response :ok
+    ids = response.parsed_body.pluck("id")
+    assert_operator ids.index(first.id), :<, ids.index(second.id)
+  end
+
   test "AC-03 rejects CSRF and foreign origins" do
     assert_no_difference "Patient.count" do
       post "/api/patients", params: { patient: patient_attributes }, as: :json

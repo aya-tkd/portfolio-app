@@ -4,7 +4,7 @@
 - [migration](../../../backend/db/migrate/20260907000100_create_patients.rb)
 - [名称変更migration](../../../backend/db/migrate/20260908000100_rename_patients_to_mst_patients.rb)：PRレビュー中にユーザーが接頭辞方式を承認。既存データを保持してpatientsから改名する。
 - RubyモデルはPatient、APIは/api/patientsのまま。self.table_nameで物理名を対応付ける。
-- 利用画面：[患者登録・編集](../patient/patient-form.md)（Create/Read/Update、Deleteなし）
+- 利用画面：[患者登録・編集](../patient/patient-form.md)（Create/Read/Update、Deleteなし）、[患者検索](../patient/patient-search.md)（Read）
 
 ## 目的・カラム
 
