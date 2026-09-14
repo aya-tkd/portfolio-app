@@ -3,7 +3,7 @@ Rails.application.routes.draw do
     get "csrf", to: "patients#csrf"
     post "sql-query", to: "sql_queries#create" if Rails.env.development? || Rails.env.test?
     get "db-schema", to: "sql_schemas#show" if Rails.env.development? || Rails.env.test?
-    resources :patients, only: %i[show create update], constraints: { id: /[1-9][0-9]*/ }
+    resources :patients, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
     resources :departments, only: %i[show create update], constraints: { id: /[1-9][0-9]*/ }
     resources :occupations, only: %i[show create update], constraints: { id: /[1-9][0-9]*/ }
   end

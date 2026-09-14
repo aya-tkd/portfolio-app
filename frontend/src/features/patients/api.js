@@ -2,6 +2,15 @@
 import { request } from '../../shared/api/http.js'
 
 export const loadPatient = id => request(`/api/patients/${id}`)
+// 患者検索画面から、条件をURLクエリとしてGET APIへ渡す窓口。
+// 呼び出し元はPatientSearchWorkspace、戻り値は検索条件に合う患者の配列であり、画面表示専用の取得なのでCSRFトークンは不要。
+export function searchPatients({ patientNumber = '', name = '' } = {}) {
+  const query = new URLSearchParams()
+  if (patientNumber.trim()) query.set('patient_number', patientNumber.trim())
+  if (name.trim()) query.set('name', name)
+  const suffix = query.toString()
+  return request(`/api/patients${suffix ? `?${suffix}` : ''}`)
+}
 export async function savePatient(id, patient) {
   // 保存前にRails発行のCSRFトークンを取得し、Cookieと共に送信して正当な操作か検証させる。
   const { token } = await request('/api/csrf')

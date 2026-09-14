@@ -12,6 +12,7 @@ frontend/
     features/patients/
       components/
         PatientWorkspace.vue      患者機能の呼び出し元
+        PatientSearchWorkspace.vue 患者検索・一覧選択・登録編集起動
         PatientForm.vue           患者登録・編集フォーム
       api.js                      患者固有のAPI契約
     features/administration/departments/

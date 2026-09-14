@@ -52,6 +52,7 @@
 | 機能 | このブランチでできること | 画面 | 関連Issue |
 |---|---|---|---|
 | 患者マスタ | 新規登録・編集・SQLite保存 | `/` | [#1](https://github.com/aya-tkd/portfolio-app/issues/1) |
+| 患者検索 | 患者番号の完全一致、氏名・カナ氏名の部分一致、選択患者の編集起動 | `/patients` | [#33](https://github.com/aya-tkd/portfolio-app/issues/33) |
 | 診療科マスタ | 新規登録・編集・SQLite保存 | `/masters/departments` | [#14](https://github.com/aya-tkd/portfolio-app/issues/14) |
 | 職種マスタ | 新規登録・編集・SQLite保存 | `/masters/occupations` | [#15](https://github.com/aya-tkd/portfolio-app/issues/15) |
 | DB確認 | 読み取り専用SQL・ページ送り・スキーマ表示 | `/tools/sql` | [#1](https://github.com/aya-tkd/portfolio-app/issues/1) |
