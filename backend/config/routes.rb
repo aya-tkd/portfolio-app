@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   namespace :api do
+    resources :outpatients, only: %i[index update], constraints: { id: /[1-9][0-9]*/ }
     get "csrf", to: "patients#csrf"
     post "sql-query", to: "sql_queries#create" if Rails.env.development? || Rails.env.test?
     get "db-schema", to: "sql_schemas#show" if Rails.env.development? || Rails.env.test?

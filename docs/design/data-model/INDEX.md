@@ -6,6 +6,9 @@
 
 | テーブル | 設計Doc | 目的 | 状態 |
 |---|---|---|---|
+| trn_appointments | [trn_appointments.md](trn_appointments.md) | 診察・設備予約と受付への紐付け | Issue #38 |
+| trn_receptions | [trn_receptions.md](trn_receptions.md) | 受付・診察進捗 | Issue #38 |
+| trn_equipment_executions | [trn_equipment_executions.md](trn_equipment_executions.md) | 設備ごとの実施・完了 | Issue #38 |
 | mst_patients | [mst_patients.md](mst_patients.md) | 架空患者の基本情報・内部IDと表示No | Issue #1実装 |
 | mst_departments | [mst_departments.md](mst_departments.md) | 診療科の名称・表示順・利用状態 | このブランチに実装あり（Issue #14） |
 | mst_occupations | [mst_occupations.md](mst_occupations.md) | 職種名・表示順・利用状態 | このブランチに実装あり（Issue #15） |

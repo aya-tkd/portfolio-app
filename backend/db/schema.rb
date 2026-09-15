@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_12_000100) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_15_000100) do
   create_table "mst_departments", force: :cascade do |t|
     t.string "abbreviation", limit: 20
     t.boolean "active", default: true, null: false
@@ -50,4 +50,74 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_12_000100) do
     t.index ["patient_number"], name: "index_mst_patients_on_patient_number", unique: true
     t.check_constraint "sex IN ('', 'male', 'female', 'other')", name: "patients_sex_values"
   end
+
+  create_table "trn_appointments", force: :cascade do |t|
+    t.string "appointment_kind", null: false
+    t.datetime "created_at", null: false
+    t.integer "department_id", null: false
+    t.string "doctor_name"
+    t.string "equipment_name"
+    t.integer "parent_appointment_id"
+    t.integer "patient_id", null: false
+    t.integer "reception_id"
+    t.datetime "scheduled_at", null: false
+    t.string "status", default: "reserved", null: false
+    t.datetime "updated_at", null: false
+    t.index ["department_id"], name: "index_trn_appointments_on_department_id"
+    t.index ["parent_appointment_id"], name: "index_trn_appointments_on_parent_appointment_id"
+    t.index ["patient_id"], name: "index_trn_appointments_on_patient_id"
+    t.index ["reception_id"], name: "index_trn_appointments_on_reception_id"
+    t.index ["reception_id"], name: "one_root_per_reception", unique: true, where: "parent_appointment_id IS NULL AND reception_id IS NOT NULL"
+    t.index ["scheduled_at"], name: "index_trn_appointments_on_scheduled_at"
+    t.check_constraint "appointment_kind IN ('consultation','equipment')", name: "appointment_kind"
+    t.check_constraint "status IN ('reserved','cancelled')", name: "appointment_status"
+  end
+
+  create_table "trn_equipment_executions", force: :cascade do |t|
+    t.integer "appointment_id"
+    t.datetime "cancelled_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "department_id", null: false
+    t.string "equipment_name", null: false
+    t.integer "reception_id", null: false
+    t.datetime "scheduled_at"
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_trn_equipment_executions_on_appointment_id", unique: true
+    t.index ["department_id"], name: "index_trn_equipment_executions_on_department_id"
+    t.index ["reception_id"], name: "index_trn_equipment_executions_on_reception_id"
+  end
+
+  create_table "trn_receptions", force: :cascade do |t|
+    t.string "business_kind", default: "consultation", null: false
+    t.datetime "called_at"
+    t.string "consultation_status", default: "received", null: false
+    t.datetime "created_at", null: false
+    t.integer "department_id", null: false
+    t.string "doctor_name"
+    t.datetime "finished_at"
+    t.integer "lock_version", default: 0, null: false
+    t.datetime "paid_at"
+    t.integer "patient_id", null: false
+    t.datetime "received_at", null: false
+    t.string "reception_number", null: false
+    t.datetime "started_at"
+    t.datetime "updated_at", null: false
+    t.index ["department_id"], name: "index_trn_receptions_on_department_id"
+    t.index ["patient_id"], name: "index_trn_receptions_on_patient_id"
+    t.index ["received_at"], name: "index_trn_receptions_on_received_at"
+    t.index ["reception_number"], name: "index_trn_receptions_on_reception_number", unique: true
+    t.check_constraint "business_kind IN ('consultation','equipment')", name: "reception_kind"
+    t.check_constraint "consultation_status IN ('received','called','consulting','consulted')", name: "reception_status"
+  end
+
+  add_foreign_key "trn_appointments", "mst_departments", column: "department_id"
+  add_foreign_key "trn_appointments", "mst_patients", column: "patient_id"
+  add_foreign_key "trn_appointments", "trn_appointments", column: "parent_appointment_id"
+  add_foreign_key "trn_appointments", "trn_receptions", column: "reception_id"
+  add_foreign_key "trn_equipment_executions", "mst_departments", column: "department_id"
+  add_foreign_key "trn_equipment_executions", "trn_appointments", column: "appointment_id"
+  add_foreign_key "trn_equipment_executions", "trn_receptions", column: "reception_id"
+  add_foreign_key "trn_receptions", "mst_departments", column: "department_id"
+  add_foreign_key "trn_receptions", "mst_patients", column: "patient_id"
 end

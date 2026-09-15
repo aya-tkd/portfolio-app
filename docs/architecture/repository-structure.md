@@ -54,6 +54,8 @@ FEは機能→責務で整理する。予約・受付が増えた時点で`featu
 
 ## Modelを無条件に共通化しない
 
+Issue #38では`frontend/src/features/outpatients/`に一覧画面とAPI、`backend/app/queries/outpatient/`に読取、`presenters/outpatient/`に一覧DTO変換、`services/outpatient/`に進捗更新を追加した。`models/appointment.rb`・`reception.rb`・`equipment_execution.rb`は各業務レコードを扱う。詳細な呼出順は[外来一覧設計](../design/outpatient/outpatient-list.md)を参照。
+
 「同じ実在の患者を扱う」ことと「同じモデル・ルールを共有する」ことは別。DDDでは、意味とルールが一貫する境界（Bounded Context）ごとに同じ対象の異なるモデルを持ち得る。ただし、画面・機能・フォルダが一つ増えるたびに必ず別Contextになるわけではない。
 
 現在の`backend/app/models/patient.rb`は、患者登録・編集が所有する**患者基本情報の永続化モデル**。全領域の患者概念を保証したShared Modelではない。Rails標準のmodels直下に置くことは共通ドメインモデルと宣言することでもない。
