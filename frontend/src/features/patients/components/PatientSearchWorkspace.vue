@@ -68,6 +68,10 @@ function closeWorkspace() {
   window.location.assign('/')
 }
 
+function openReception() {
+  if (selectedId.value) window.location.assign(`/receptions/new?patient_id=${selectedId.value}`)
+}
+
 onMounted(() => search())
 </script>
 
@@ -113,7 +117,10 @@ onMounted(() => search())
         <button type="button" class="btn btn-secondary" @click="open(null, $event)">新規</button>
         <button type="button" class="btn btn-secondary" :disabled="!hasSelection" @click="open(selectedId, $event)">編集</button>
       </div>
-      <button type="button" class="btn btn-secondary" @click="closeWorkspace">閉じる</button>
+      <div class="buttons">
+        <button type="button" class="btn btn-primary" :disabled="!hasSelection" @click="openReception">受付</button>
+        <button type="button" class="btn btn-secondary" @click="closeWorkspace">閉じる</button>
+      </div>
     </footer>
   </main>
   <PatientForm v-if="active" :patient-id="editingId" @close="closeForm" />
