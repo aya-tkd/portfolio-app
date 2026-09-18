@@ -105,7 +105,7 @@ onMounted(search)
       </main>
     </div>
   </div>
-  <PatientSearchWorkspace v-if="activeWorkflow === 'patient-search'" modal @selected="openReception" @cancelled="closeWorkflow" />
+  <PatientSearchWorkspace v-if="activeWorkflow === 'patient-search'" modal mode="reception" @selected="openReception" @cancelled="closeWorkflow" />
   <ReceptionWorkspace v-if="activeWorkflow === 'reception'" modal :patient-id="selectedPatientId" @completed="completeReception" @cancelled="closeWorkflow" />
 </template>
 

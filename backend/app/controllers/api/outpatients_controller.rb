@@ -15,7 +15,10 @@ module Api
     def index
       render json: { rows: Outpatient::ListQuery.call(date: params[:date] || Date.current.to_s,
         department_id: params[:department_id], statuses: params.key?(:statuses) ? params[:statuses] : Outpatient::ListQuery::STATUSES),
-        departments: Department.order(:display_order, :id).as_json(only: %i[id name]), today: Date.current.to_s }
+        # 過去の開発用データに同名の診療科があっても、画面の検索条件には同じ名称を一度だけ表示する。
+        # ID は最初に並ぶ候補を返し、一覧の絞り込み条件としてそのまま利用する。
+        departments: Department.order(:display_order, :id).to_a.uniq(&:name).map { |department| { id: department.id, name: department.name } },
+        today: Date.current.to_s }
     end
 
     def update

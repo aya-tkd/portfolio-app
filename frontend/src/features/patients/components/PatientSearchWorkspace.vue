@@ -6,7 +6,11 @@ import { ApiError } from '../../../shared/api/http.js'
 import { searchPatients } from '../api.js'
 import PatientForm from './PatientForm.vue'
 
-const props = defineProps({ modal: { type: Boolean, default: false } })
+const props = defineProps({
+  modal: { type: Boolean, default: false },
+  // 呼び出し元により画面下部の操作を変える。患者マスタからの利用時に受付導線を固定しない。
+  mode: { type: String, default: 'management' },
+})
 const emit = defineEmits(['selected', 'cancelled'])
 
 const patientNumber = ref('')
@@ -74,7 +78,7 @@ function closeWorkspace() {
 
 function openReception() {
   if (!selectedId.value) return
-  if (props.modal) emit('selected', patients.value.find(patient => patient.id === selectedId.value))
+  if (props.mode === 'reception') emit('selected', patients.value.find(patient => patient.id === selectedId.value))
   else window.location.assign(`/receptions/new?patient_id=${selectedId.value}`)
 }
 
@@ -120,12 +124,13 @@ onMounted(() => search())
     </section>
 
     <footer class="screen-foot">
-      <div class="buttons">
+      <div v-if="mode !== 'reception'" class="buttons">
         <button type="button" class="btn btn-secondary" @click="open(null, $event)">新規</button>
         <button type="button" class="btn btn-secondary" :disabled="!hasSelection" @click="open(selectedId, $event)">編集</button>
       </div>
+      <div v-else></div>
       <div class="buttons">
-        <button type="button" class="btn btn-primary" :disabled="!hasSelection" @click="openReception">受付</button>
+        <button v-if="mode === 'reception'" type="button" class="btn btn-primary" :disabled="!hasSelection" @click="openReception">受付</button>
         <button type="button" class="btn btn-secondary" @click="closeWorkspace">閉じる</button>
       </div>
     </footer>
