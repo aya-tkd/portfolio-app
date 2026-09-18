@@ -12,7 +12,11 @@ module Api
     # GET /api/patients?patient_number=<完全一致>&name=<部分一致> をroutes.rbがここへ振り分ける。
     def index
       patients = Patient.search(patient_number: search_params[:patient_number], name: search_params[:name])
-      render json: patients.as_json(only: FIELDS)
+      today = Time.zone.today
+      start_at = Time.zone.local(today.year, today.month, today.day)
+      reservation_patient_ids = Appointment.where(patient_id: patients.select(:id), status: "reserved", reception_id: nil,
+        scheduled_at: start_at...start_at + 1.day).distinct.pluck(:patient_id)
+      render json: patients.map { |patient| patient.as_json(only: FIELDS).merge(has_today_reservation: reservation_patient_ids.include?(patient.id)) }
     end
 
     def show

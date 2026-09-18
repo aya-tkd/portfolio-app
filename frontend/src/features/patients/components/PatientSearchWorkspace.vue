@@ -102,7 +102,7 @@ onMounted(() => search())
             <tr v-for="patient in patients" :key="patient.id" :class="{ selected: selectedId === patient.id }" @click="select(patient)">
               <td><input :id="`patient-${patient.id}`" v-model="selectedId" type="radio" name="selected-patient" :value="patient.id" :aria-label="`患者番号 ${patient.patient_number} を選択`"></td>
               <td>{{ patient.patient_number }}</td>
-              <td>{{ patient.last_name }} {{ patient.first_name }}</td>
+              <td>{{ patient.last_name }} {{ patient.first_name }} <small v-if="patient.has_today_reservation" class="reservation-flag">本日予約あり</small></td>
               <td>{{ patient.last_name_kana }} {{ patient.first_name_kana }}</td>
               <td>{{ patient.birth_date || '―' }}</td>
               <td>{{ { male: '男性', female: '女性', other: 'その他' }[patient.sex] || '―' }}</td>

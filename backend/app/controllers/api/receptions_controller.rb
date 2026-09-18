@@ -14,7 +14,7 @@ module Api
       render json: {
         patient: patient.as_json(only: PatientsController::FIELDS),
         appointments: Reception::CandidatesQuery.call(patient: patient),
-        departments: Department.where(active: true).order(:display_order, :id).as_json(only: %i[id name])
+        departments: active_departments.as_json(only: %i[id name])
       }
     end
 
@@ -29,6 +29,12 @@ module Api
 
     def response_item(record)
       { id: record.id, reception_number: record.reception_number, department_name: record.department.name }
+    end
+
+    def active_departments
+      # 既存のローカル試験データに同名診療科があっても、受付候補は診療科名ごとに一つだけ表示する。
+      # 新規の重複はDepartmentの一意性検証で防ぎ、過去データの整理は別Issueで扱う。
+      Department.where(active: true).order(:display_order, :id).to_a.uniq(&:name)
     end
   end
 end

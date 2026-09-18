@@ -6,8 +6,8 @@ module Outpatient
       marker = "外来デモ#{batch}"
       return if Patient.exists?(last_name: marker)
       Reception.transaction do
-        department = Department.create!(name: "外来デモ内科", display_order: 100, active: true)
-        other = Department.create!(name: "外来デモ整形外科", display_order: 110, active: true)
+        department = Department.find_or_create_by!(name: "外来デモ内科") { |item| item.display_order = 100; item.active = true }
+        other = Department.find_or_create_by!(name: "外来デモ整形外科") { |item| item.display_order = 110; item.active = true }
         names = %w[一郎 二郎 三郎 四郎 五郎 六郎 七郎 八郎]
         patients = names.map { |name| Patient.create!(last_name: marker, first_name: name, last_name_kana: "デモ", first_name_kana: "タロウ", sex: "") }
         base = Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 9)
