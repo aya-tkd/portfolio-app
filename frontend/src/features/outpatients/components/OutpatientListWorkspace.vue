@@ -61,6 +61,7 @@ onMounted(search)
     <header class="outpatient-head"><strong>医療機関業務システム</strong><h1>外来一覧</h1></header>
     <div class="outpatient-layout">
       <nav class="outpatient-nav" aria-label="業務メニュー">
+        <a href="/patients" class="outpatient-reception-link"><span aria-hidden="true">受付</span>患者検索へ</a>
         <span class="nav-group">外来業務</span>
         <a href="/outpatients" aria-current="page"><span aria-hidden="true">▤</span>外来一覧</a>
         <button v-for="item in [{ name: '予約', icon: '▦' }, { name: '受付', icon: '☑' }, { name: '会計', icon: '▣' }]" :key="item.name" disabled><span aria-hidden="true">{{ item.icon }}</span>{{ item.name }}<small>準備中</small></button>
