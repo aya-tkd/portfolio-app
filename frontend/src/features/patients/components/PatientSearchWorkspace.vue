@@ -86,8 +86,6 @@ onMounted(() => search())
 </script>
 
 <template>
-  <div :class="{ 'workflow-overlay': modal }">
-  <header class="app-head"><strong>外来業務</strong><span>患者検索</span></header>
   <main class="workspace patient-search">
     <h1>患者検索</h1>
 
@@ -136,5 +134,8 @@ onMounted(() => search())
     </footer>
   </main>
   <PatientForm v-if="active" :patient-id="editingId" @close="closeForm" />
-  </div>
 </template>
+
+<style scoped>
+.patient-search{box-sizing:border-box;display:flex;flex:1;flex-direction:column;min-height:0;margin:0;max-width:none;padding:16px}.patient-search .result-panel{display:flex;flex:1;flex-direction:column;min-height:0}.patient-search .result-table-wrap{flex:1;max-height:none}.patient-search .screen-foot{flex:0 0 auto;background:#f1f3f5}
+</style>
