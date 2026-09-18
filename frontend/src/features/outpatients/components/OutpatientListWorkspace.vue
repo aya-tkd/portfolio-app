@@ -3,12 +3,20 @@
 // 会計待ちの判定・次の操作はサーバーのDTOを使用し、FEへ業務ルールを複製しない。
 import { nextTick, onMounted, ref } from 'vue'
 import { advanceOutpatient, loadOutpatients } from '../api.js'
+import PatientSearchWorkspace from '../../patients/components/PatientSearchWorkspace.vue'
+import ReceptionWorkspace from '../../receptions/components/ReceptionWorkspace.vue'
 
 const labels = { reserved: '予約', received: '受付済', called: '呼出済', consulting: '診察中', equipment_wait: '設備待ち', execution_wait: '実施待ち', billing_wait: '会計待ち', paid: '会計済' }
 const actions = { call: '呼出', start: '診察開始', finish: '診察終了', complete: '実施' }
 const date = ref(''), departmentId = ref(''), statuses = ref(Object.keys(labels))
 const rows = ref([]), departments = ref([]), expanded = ref(new Set())
 const busy = ref(false), message = ref(''), failed = ref(false), stale = ref(false), summary = ref(null), applied = ref('')
+const activeWorkflow = ref(null), selectedPatientId = ref(null)
+
+function openPatientSearch() { activeWorkflow.value = 'patient-search' }
+function openReception(patient) { selectedPatientId.value = patient.id; activeWorkflow.value = 'reception' }
+function closeWorkflow() { activeWorkflow.value = null; selectedPatientId.value = null }
+async function completeReception() { closeWorkflow(); await search() }
 const time = value => value ? new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value)) : '—'
 const equipmentStatus = item => ({ reserved: '予約', waiting: '実施待ち', completed: '実施済' })[item.status]
 
@@ -61,7 +69,7 @@ onMounted(search)
     <header class="outpatient-head"><strong>医療機関業務システム</strong><h1>外来一覧</h1></header>
     <div class="outpatient-layout">
       <nav class="outpatient-nav" aria-label="業務メニュー">
-        <a href="/patients" class="outpatient-reception-link"><span aria-hidden="true">受付</span>患者検索へ</a>
+        <button type="button" class="outpatient-reception-link" @click="openPatientSearch"><span aria-hidden="true">受付</span>患者検索へ</button>
         <span class="nav-group">外来業務</span>
         <a href="/outpatients" aria-current="page"><span aria-hidden="true">▤</span>外来一覧</a>
         <button v-for="item in [{ name: '予約', icon: '▦' }, { name: '受付', icon: '☑' }, { name: '会計', icon: '▣' }]" :key="item.name" disabled><span aria-hidden="true">{{ item.icon }}</span>{{ item.name }}<small>準備中</small></button>
@@ -97,6 +105,8 @@ onMounted(search)
       </main>
     </div>
   </div>
+  <PatientSearchWorkspace v-if="activeWorkflow === 'patient-search'" modal @selected="openReception" @cancelled="closeWorkflow" />
+  <ReceptionWorkspace v-if="activeWorkflow === 'reception'" modal :patient-id="selectedPatientId" @completed="completeReception" @cancelled="closeWorkflow" />
 </template>
 
 <style scoped>

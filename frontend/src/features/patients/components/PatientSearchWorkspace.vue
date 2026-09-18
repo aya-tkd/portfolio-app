@@ -6,6 +6,9 @@ import { ApiError } from '../../../shared/api/http.js'
 import { searchPatients } from '../api.js'
 import PatientForm from './PatientForm.vue'
 
+const props = defineProps({ modal: { type: Boolean, default: false } })
+const emit = defineEmits(['selected', 'cancelled'])
+
 const patientNumber = ref('')
 const name = ref('')
 const patients = ref([])
@@ -65,18 +68,22 @@ async function closeForm(saved) {
 
 function closeWorkspace() {
   // この画面は患者業務の入口から開かれる想定のため、閉じると既存の患者管理入口へ戻す。
-  window.location.assign('/')
+  if (props.modal) emit('cancelled')
+  else window.location.assign('/')
 }
 
 function openReception() {
-  if (selectedId.value) window.location.assign(`/receptions/new?patient_id=${selectedId.value}`)
+  if (!selectedId.value) return
+  if (props.modal) emit('selected', patients.value.find(patient => patient.id === selectedId.value))
+  else window.location.assign(`/receptions/new?patient_id=${selectedId.value}`)
 }
 
 onMounted(() => search())
 </script>
 
 <template>
-  <header class="app-head"><strong>外来業務</strong><span>患者管理</span></header>
+  <div :class="{ 'workflow-overlay': modal }">
+  <header class="app-head"><strong>外来業務</strong><span>患者検索</span></header>
   <main class="workspace patient-search">
     <h1>患者検索</h1>
 
@@ -124,4 +131,5 @@ onMounted(() => search())
     </footer>
   </main>
   <PatientForm v-if="active" :patient-id="editingId" @close="closeForm" />
+  </div>
 </template>

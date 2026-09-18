@@ -22,5 +22,5 @@ const receptionWorkspace = location.pathname === '/receptions/new'
   <OccupationWorkspace v-else-if="occupationMaster" />
   <ReceptionWorkspace v-else-if="receptionWorkspace" />
   <PatientSearchWorkspace v-else-if="patientSearch" />
-  <PatientWorkspace v-else />
+  <PatientWorkspace v-else-if="!outpatientList" />
 </template>
