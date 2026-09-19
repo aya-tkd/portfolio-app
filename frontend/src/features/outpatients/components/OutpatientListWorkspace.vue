@@ -108,10 +108,10 @@ onMounted(search)
     </div>
   </div>
   <OutpatientWorkflowDialog v-if="activeWorkflow === 'patient-search'" mode="受付">
-    <PatientSearchWorkspace mode="reception" @selected="openReception" @cancelled="closeWorkflow" />
+    <PatientSearchWorkspace modal mode="reception" @selected="openReception" @cancelled="closeWorkflow" />
   </OutpatientWorkflowDialog>
   <OutpatientWorkflowDialog v-if="activeWorkflow === 'reception'" mode="受付">
-    <ReceptionWorkspace :patient-id="selectedPatientId" @completed="completeReception" @cancelled="closeWorkflow" />
+    <ReceptionWorkspace modal :patient-id="selectedPatientId" @completed="completeReception" @cancelled="closeWorkflow" />
   </OutpatientWorkflowDialog>
 </template>
 
