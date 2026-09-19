@@ -6,6 +6,7 @@ import { advanceOutpatient, loadOutpatients } from '../api.js'
 import PatientSearchWorkspace from '../../patients/components/PatientSearchWorkspace.vue'
 import ReceptionWorkspace from '../../receptions/components/ReceptionWorkspace.vue'
 import OutpatientWorkflowDialog from './OutpatientWorkflowDialog.vue'
+import MasterSettingsWorkspace from '../../administration/components/MasterSettingsWorkspace.vue'
 
 const labels = { reserved: '予約', received: '受付済', called: '呼出済', consulting: '診察中', equipment_wait: '設備待ち', execution_wait: '実施待ち', billing_wait: '会計待ち', paid: '会計済' }
 const actions = { call: '呼出', start: '診察開始', finish: '診察終了', complete: '実施' }
@@ -15,6 +16,7 @@ const busy = ref(false), message = ref(''), failed = ref(false), stale = ref(fal
 const activeWorkflow = ref(null), selectedPatientId = ref(null)
 
 function openPatientSearch() { activeWorkflow.value = 'patient-search' }
+function openMasterSettings() { activeWorkflow.value = 'master-settings' }
 function openReception(patient) { selectedPatientId.value = patient.id; activeWorkflow.value = 'reception' }
 function closeWorkflow() { activeWorkflow.value = null; selectedPatientId.value = null }
 async function completeReception() { closeWorkflow(); await search() }
@@ -75,7 +77,7 @@ onMounted(search)
         <button disabled><span aria-hidden="true">▦</span>予約<small>準備中</small></button>
         <button type="button" class="outpatient-nav-action" @click="openPatientSearch"><span aria-hidden="true">☑</span>受付</button>
         <button disabled><span aria-hidden="true">▣</span>会計<small>準備中</small></button>
-        <div class="outpatient-admin"><span class="nav-group">管理</span><button disabled><span aria-hidden="true">⚙</span>マスタ設定<small>準備中</small></button></div>
+        <div class="outpatient-admin"><span class="nav-group">管理</span><button type="button" class="outpatient-nav-action" @click="openMasterSettings"><span aria-hidden="true">⚙</span>マスタ設定</button></div>
       </nav>
       <main class="outpatient-main">
         <form class="outpatient-conditions" @submit.prevent="search">
@@ -112,6 +114,9 @@ onMounted(search)
   </OutpatientWorkflowDialog>
   <OutpatientWorkflowDialog v-if="activeWorkflow === 'reception'" mode="受付">
     <ReceptionWorkspace modal :patient-id="selectedPatientId" @completed="completeReception" @cancelled="closeWorkflow" />
+  </OutpatientWorkflowDialog>
+  <OutpatientWorkflowDialog v-if="activeWorkflow === 'master-settings'" mode="マスタ設定">
+    <MasterSettingsWorkspace @cancelled="closeWorkflow" />
   </OutpatientWorkflowDialog>
 </template>
 

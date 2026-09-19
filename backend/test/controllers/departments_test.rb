@@ -44,4 +44,17 @@ class DepartmentsTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert_equal "診療科が見つかりません。", response.parsed_body.fetch("message")
   end
+
+  test "AC-03 lists all records, filters names partially, and filters active exactly" do
+    active = Department.create!(department_attributes)
+    inactive = Department.create!(department_attributes.merge(name: "整形外科", kana_name: "セイケイゲカ", display_order: 20, active: false))
+
+    get "/api/departments"
+    assert_response :ok
+    assert_equal [active.id, inactive.id], response.parsed_body.map { |row| row.fetch("id") }
+
+    get "/api/departments", params: { keyword: "セイケイ", active: "false" }
+    assert_response :ok
+    assert_equal [inactive.id], response.parsed_body.map { |row| row.fetch("id") }
+  end
 end

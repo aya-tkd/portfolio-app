@@ -5,7 +5,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'v
 import { ApiError } from '../../../../shared/api/http.js'
 import { loadDepartment, saveDepartment } from '../api.js'
 
-const props = defineProps({ departmentId: { type: [String, Number], default: null } })
+const props = defineProps({ departmentId: { type: [String, Number], default: null }, embedded: { type: Boolean, default: false } })
 const emit = defineEmits(['close'])
 const dialog = ref()
 const form = ref()
@@ -47,6 +47,7 @@ async function resumeEdit() {
 }
 
 function trapTab(event) {
+  if (props.embedded) return
   if (event.key !== 'Tab') return
   const items = [...dialog.value.querySelectorAll('input, select, button')]
     .filter(element => !element.disabled && element.getClientRects().length)
@@ -88,7 +89,7 @@ async function save() {
 onMounted(async () => {
   // VueがHTML要素を配置した後にダイアログを開き、編集時のみRails APIから既存値を取得する。
   original.value = JSON.stringify(values)
-  dialog.value.showModal()
+  if (!props.embedded) dialog.value.showModal()
   window.addEventListener('beforeunload', beforeUnload)
   if (props.departmentId) {
     busy.value = true
@@ -113,7 +114,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
 </script>
 
 <template>
-  <dialog ref="dialog" aria-labelledby="department-dialog-title" @cancel.prevent="close" @keydown="trapTab">
+  <component :is="embedded ? 'section' : 'dialog'" ref="dialog" :class="{ 'master-form': embedded }" aria-labelledby="department-dialog-title" @cancel.prevent="close" @keydown="trapTab">
     <header class="dialog-head">
       <h2 id="department-dialog-title">{{ departmentId ? '診療科編集' : '診療科登録' }}</h2>
       <span class="mode">{{ departmentId ? '編集' : '新規' }}</span>
@@ -150,5 +151,5 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
       </div>
       <footer class="dialog-foot"><span>＊ 必須項目</span><div class="buttons"><button type="submit" class="btn btn-primary" :disabled="busy || discard || loadFailed || uncertain">登録</button><button id="department-close" type="button" class="btn btn-secondary" :disabled="busy" @click="close">閉じる</button></div></footer>
     </form>
-  </dialog>
+  </component>
 </template>
