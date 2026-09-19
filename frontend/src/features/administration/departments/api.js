@@ -3,6 +3,13 @@ import { request } from '../../../shared/api/http.js'
 
 export const loadDepartment = id => request(`/api/departments/${id}`)
 
+export function searchDepartments({ keyword = '', active = '' } = {}) {
+  const query = new URLSearchParams()
+  if (keyword.trim()) query.set('keyword', keyword.trim())
+  if (active !== '') query.set('active', active)
+  return request(`/api/departments${query.size ? `?${query}` : ''}`)
+}
+
 export async function saveDepartment(id, department) {
   // Rails発行のCSRFトークンをCookieと共に送り、別サイトからの保存要求を拒否できるようにする。
   const { token } = await request('/api/csrf')

@@ -25,4 +25,17 @@ class OccupationsTest < ActionDispatch::IntegrationTest
     get "/api/occupations/999999999"
     assert_response :not_found
   end
+
+  test "AC-03 lists all records and supports partial-name and active filters" do
+    active = Occupation.create!(occupation_attributes)
+    inactive = Occupation.create!(occupation_attributes.merge(name: "看護師", display_order: 20, active: false))
+
+    get "/api/occupations"
+    assert_response :ok
+    assert_equal [active.id, inactive.id], response.parsed_body.map { |row| row.fetch("id") }
+
+    get "/api/occupations", params: { keyword: "看護", active: "false" }
+    assert_response :ok
+    assert_equal [inactive.id], response.parsed_body.map { |row| row.fetch("id") }
+  end
 end
