@@ -17,6 +17,8 @@ class OutpatientsTest < ActionDispatch::IntegrationTest
     Appointment.create!(patient: @patient, department: @department, scheduled_at: Time.current, appointment_kind: "equipment", equipment_name: "MRI")
     get "/api/outpatients", params: { date: Date.current.to_s }
     assert_response :success
+    department_names = response.parsed_body.fetch("departments").pluck("name")
+    assert_equal department_names.uniq, department_names
     rows = response.parsed_body.fetch("rows")
     assert_equal 3, rows.length
     assert_equal 2, rows.count { |row| row["reception_id"] }

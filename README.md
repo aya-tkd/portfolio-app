@@ -54,6 +54,7 @@
 | 外来一覧 | 日付・科・複数進捗検索、設備子行の開閉、呼出・診察開始/終了・設備実施、会計待ち判定 | `/outpatients` | [#38](https://github.com/aya-tkd/portfolio-app/issues/38) |
 | 患者マスタ | 新規登録・編集・SQLite保存 | `/` | [#1](https://github.com/aya-tkd/portfolio-app/issues/1) |
 | 患者検索 | 患者番号の完全一致、氏名・カナ氏名の部分一致、選択患者の編集起動 | `/patients` | [#33](https://github.com/aya-tkd/portfolio-app/issues/33) |
+| 外来受付 | 患者検索からの予約採用・予約なし受付、診察に付随する設備予約の引継ぎ、受付No.発番 | `/receptions/new?patient_id=<患者ID>` | [#43](https://github.com/aya-tkd/portfolio-app/issues/43) |
 | 診療科マスタ | 新規登録・編集・SQLite保存 | `/masters/departments` | [#14](https://github.com/aya-tkd/portfolio-app/issues/14) |
 | 職種マスタ | 新規登録・編集・SQLite保存 | `/masters/occupations` | [#15](https://github.com/aya-tkd/portfolio-app/issues/15) |
 | DB確認 | 読み取り専用SQL・ページ送り・スキーマ表示 | `/tools/sql` | [#1](https://github.com/aya-tkd/portfolio-app/issues/1) |

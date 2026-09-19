@@ -6,11 +6,13 @@ import DepartmentWorkspace from './features/administration/departments/component
 import OccupationWorkspace from './features/administration/occupations/components/OccupationWorkspace.vue'
 import SqlConsole from './features/development/components/SqlConsole.vue'
 import OutpatientListWorkspace from './features/outpatients/components/OutpatientListWorkspace.vue'
+import ReceptionWorkspace from './features/receptions/components/ReceptionWorkspace.vue'
 const outpatientList = location.pathname === '/outpatients'
 const sqlConsole = location.pathname === '/tools/sql'
 const departmentMaster = location.pathname === '/masters/departments'
 const occupationMaster = location.pathname === '/masters/occupations'
 const patientSearch = location.pathname === '/patients'
+const receptionWorkspace = location.pathname === '/receptions/new'
 </script>
 
 <template>
@@ -18,6 +20,7 @@ const patientSearch = location.pathname === '/patients'
   <SqlConsole v-else-if="sqlConsole" />
   <DepartmentWorkspace v-else-if="departmentMaster" />
   <OccupationWorkspace v-else-if="occupationMaster" />
+  <ReceptionWorkspace v-else-if="receptionWorkspace" />
   <PatientSearchWorkspace v-else-if="patientSearch" />
-  <PatientWorkspace v-else />
+  <PatientWorkspace v-else-if="!outpatientList" />
 </template>

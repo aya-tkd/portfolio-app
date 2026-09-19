@@ -3,12 +3,21 @@
 // 会計待ちの判定・次の操作はサーバーのDTOを使用し、FEへ業務ルールを複製しない。
 import { nextTick, onMounted, ref } from 'vue'
 import { advanceOutpatient, loadOutpatients } from '../api.js'
+import PatientSearchWorkspace from '../../patients/components/PatientSearchWorkspace.vue'
+import ReceptionWorkspace from '../../receptions/components/ReceptionWorkspace.vue'
+import OutpatientWorkflowDialog from './OutpatientWorkflowDialog.vue'
 
 const labels = { reserved: '予約', received: '受付済', called: '呼出済', consulting: '診察中', equipment_wait: '設備待ち', execution_wait: '実施待ち', billing_wait: '会計待ち', paid: '会計済' }
 const actions = { call: '呼出', start: '診察開始', finish: '診察終了', complete: '実施' }
 const date = ref(''), departmentId = ref(''), statuses = ref(Object.keys(labels))
 const rows = ref([]), departments = ref([]), expanded = ref(new Set())
 const busy = ref(false), message = ref(''), failed = ref(false), stale = ref(false), summary = ref(null), applied = ref('')
+const activeWorkflow = ref(null), selectedPatientId = ref(null)
+
+function openPatientSearch() { activeWorkflow.value = 'patient-search' }
+function openReception(patient) { selectedPatientId.value = patient.id; activeWorkflow.value = 'reception' }
+function closeWorkflow() { activeWorkflow.value = null; selectedPatientId.value = null }
+async function completeReception() { closeWorkflow(); await search() }
 const time = value => value ? new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value)) : '—'
 const equipmentStatus = item => ({ reserved: '予約', waiting: '実施待ち', completed: '実施済' })[item.status]
 
@@ -63,7 +72,9 @@ onMounted(search)
       <nav class="outpatient-nav" aria-label="業務メニュー">
         <span class="nav-group">外来業務</span>
         <a href="/outpatients" aria-current="page"><span aria-hidden="true">▤</span>外来一覧</a>
-        <button v-for="item in [{ name: '予約', icon: '▦' }, { name: '受付', icon: '☑' }, { name: '会計', icon: '▣' }]" :key="item.name" disabled><span aria-hidden="true">{{ item.icon }}</span>{{ item.name }}<small>準備中</small></button>
+        <button disabled><span aria-hidden="true">▦</span>予約<small>準備中</small></button>
+        <button type="button" class="outpatient-nav-action" @click="openPatientSearch"><span aria-hidden="true">☑</span>受付</button>
+        <button disabled><span aria-hidden="true">▣</span>会計<small>準備中</small></button>
         <div class="outpatient-admin"><span class="nav-group">管理</span><button disabled><span aria-hidden="true">⚙</span>マスタ設定<small>準備中</small></button></div>
       </nav>
       <main class="outpatient-main">
@@ -96,9 +107,16 @@ onMounted(search)
       </main>
     </div>
   </div>
+  <OutpatientWorkflowDialog v-if="activeWorkflow === 'patient-search'" mode="受付">
+    <PatientSearchWorkspace modal mode="reception" @selected="openReception" @cancelled="closeWorkflow" />
+  </OutpatientWorkflowDialog>
+  <OutpatientWorkflowDialog v-if="activeWorkflow === 'reception'" mode="受付">
+    <ReceptionWorkspace modal :patient-id="selectedPatientId" @completed="completeReception" @cancelled="closeWorkflow" />
+  </OutpatientWorkflowDialog>
 </template>
 
 <style scoped>
 .outpatient-field{display:flex;align-items:center;gap:8px}
 .outpatient-app{height:100dvh;display:flex;flex-direction:column}.outpatient-head{height:54px;flex-shrink:0;display:flex;gap:24px;align-items:center;background:#e2e6ea;border-bottom:1px solid #adb5bd;padding:0 18px}.outpatient-head strong{font-size:15px}.outpatient-head h1{font-size:18px;margin:0;padding-left:24px;border-left:1px solid #adb5bd}.outpatient-layout{display:grid;grid-template-columns:180px minmax(0,1fr);flex:1;min-height:0}.outpatient-nav{background:#f8f9fa;border-right:1px solid #adb5bd;padding:16px 10px;display:flex;flex-direction:column;gap:6px}.nav-group{font-size:11px;color:#59636e;padding:0 8px}.outpatient-nav a,.outpatient-nav button{display:flex;align-items:center;gap:8px;min-height:42px;padding:8px;border:1px solid transparent;border-radius:3px;text-decoration:none;background:transparent;color:#495057;white-space:nowrap;text-align:left}.outpatient-nav a{background:#e2e8ef;border-color:#bcc7d2;box-shadow:inset 3px 0 #45647f;font-weight:600}.outpatient-nav button:disabled{cursor:not-allowed}.outpatient-nav small{font-size:9px;margin-left:auto}.outpatient-nav button span,.outpatient-nav a span{font-size:19px}.outpatient-admin{margin-top:auto;border-top:1px solid #ced4da;padding-top:16px}.outpatient-admin button{width:100%}.outpatient-main{min-width:0;min-height:0;padding:16px;display:flex;flex-direction:column;gap:12px}.outpatient-conditions{background:white;border:1px solid #adb5bd;padding:12px 14px}.outpatient-conditions fieldset{padding:0;margin:0;border:0}.outpatient-filters{display:flex;align-items:center;flex-wrap:wrap;gap:12px 22px}.outpatient-filters label{display:flex;align-items:center;gap:8px}.outpatient-filters input,.outpatient-filters select{height:34px;border:1px solid #adb5bd;padding:4px 8px;background:white}.outpatient-filters select{min-width:130px}.outpatient-filters button{margin-left:auto}.outpatient-progress{border-top:1px solid #dee2e6;margin-top:12px;padding-top:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.outpatient-progress label{display:flex;gap:6px;align-items:center;padding:4px 8px;border:1px solid #ced4da;border-radius:2px;background:#f8f9fa}.outpatient-progress input{accent-color:#45647f}.outpatient-results{flex:1;min-height:0;display:flex;flex-direction:column;border:1px solid #adb5bd;background:white}.outpatient-results-head{display:flex;justify-content:space-between;align-items:center;background:#e9ecef;padding:8px 12px;border-bottom:1px solid #adb5bd}.outpatient-results-head h2{font-size:14px;margin:0}.outpatient-results-head span{font-size:12px}.outpatient-scroll{overflow:auto;flex:1;min-height:150px}.outpatient-scroll table{border-spacing:0;width:100%;min-width:1140px;font-size:13px}.outpatient-scroll th,.outpatient-scroll td{padding:8px 9px;text-align:left;border-bottom:1px solid #dce1e5;white-space:nowrap;font-variant-numeric:tabular-nums}.outpatient-scroll th{position:sticky;top:0;background:#f4f6f8;z-index:2}.outpatient-action{position:sticky;right:0;background:white;z-index:1;box-shadow:-1px 0 #dce1e5}.outpatient-scroll th:last-child{right:0;z-index:3}.outpatient-child td{background:#f3f6f9}.equipment-name{padding-left:26px!important;border-left:3px solid #bcc7d2}.equipment-summary{display:block;color:#59636e;font-size:11px}.outpatient-toggle{border:0;background:transparent;color:#334e68;padding:3px 5px}.patient-name{font-weight:600}.outpatient-status{display:inline-block;min-width:66px;padding:2px 7px;background:#f3f4f5;border:1px solid #bdc5cd;border-radius:2px;font-size:12px}.consulting{background:#faf5e7;color:#665014}.billing_wait{background:#eff5f0;color:#39553e}.outpatient-foot{display:flex;justify-content:space-between;gap:12px;padding:8px 12px;border-top:1px solid #adb5bd;font-size:12px}.outpatient-message{margin:0;padding:8px 12px;border-left:3px solid #26713c;background:white}.outpatient-message.error{border-color:#b02a37;color:#b02a37}.btn{font-size:13px;min-width:88px}.outpatient-app :focus-visible{outline:2px solid #0b5ed7;outline-offset:2px}@media(max-width:800px){.outpatient-layout{grid-template-columns:164px minmax(0,1fr)}.outpatient-main{padding:10px}.outpatient-head{gap:12px}.outpatient-head h1{padding-left:12px}}
+.outpatient-nav-action{width:100%;border-color:#7895ac!important;background:#edf4f9!important;color:#244864!important;font-weight:600}
 </style>

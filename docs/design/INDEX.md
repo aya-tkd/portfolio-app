@@ -22,7 +22,7 @@
 | 職種マスタ（登録・編集） | [職種登録・編集](administration/occupation-form.md) | [HTML](administration/mocks/occupation-form.html) | このブランチに実装あり（Issue #15） |
 | 開発支援（DB確認） | [SQL確認画面](development/sql-console.md) | —（追加依頼により実画面で確認） | 実装・受入済み（PR #5 merge済み） |
 | 予約 | 未作成 | 未作成 | 未着手 |
-| 外来受付 | 未作成 | 未作成 | 未着手 |
+| 外来受付 | [外来受付](outpatient/reception.md) | [HTML](outpatient/mocks/reception.html) | このブランチに実装中（Issue #43） |
 | 診察待ち・呼び出し | 未作成 | 未作成 | 未着手 |
 | 会計待ち・会計完了 | 未作成 | 未作成 | 未着手 |
 

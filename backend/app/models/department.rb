@@ -7,7 +7,7 @@ class Department < ApplicationRecord
 
   attr_readonly :id
 
-  validates :name, presence: { message: "入力してください。" }, length: { maximum: 100, message: "100文字以内で入力してください。" }
+  validates :name, presence: { message: "入力してください。" }, uniqueness: { message: "同じ診療科名は登録できません。" }, length: { maximum: 100, message: "100文字以内で入力してください。" }
   validates :kana_name, length: { maximum: 100, message: "100文字以内で入力してください。" }, allow_blank: true
   validates :abbreviation, length: { maximum: 20, message: "20文字以内で入力してください。" }, allow_blank: true
   validates :display_order, numericality: { only_integer: true, greater_than_or_equal_to: 1, message: "1以上の整数を入力してください。" }

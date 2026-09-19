@@ -1,5 +1,8 @@
 :root { color: #212529; background: #f1f3f5; font-synthesis: none; }
 body { margin: 0; background: #f1f3f5; font: 14px/1.5 "Yu Gothic UI", Meiryo, system-ui, sans-serif; }
+.workflow-overlay { position: fixed; inset: 0; z-index: 20; overflow: auto; background: #29323b80; padding: 5vh max(16px, calc((100vw - 1160px) / 2)); }
+.workflow-overlay > .app-head, .workflow-overlay > .workspace { max-width: 1100px; margin-right: auto; margin-left: auto; background: #f1f3f5; }
+.workflow-overlay > .app-head { box-sizing: border-box; padding-top: 10px; }
 .app-head { height: 44px; padding: 10px 20px; display: flex; gap: 24px; background: #e2e6ea; border-bottom: 1px solid #adb5bd; }
 .app-head strong { font-size: 16px; }
 .host { margin: 24px; max-width: 920px; }
@@ -27,6 +30,7 @@ body { margin: 0; background: #f1f3f5; font: 14px/1.5 "Yu Gothic UI", Meiryo, sy
 .result-table-wrap tr { cursor: pointer; }
 .result-table-wrap tr:hover { background: #f1f5f9; }
 .result-table-wrap tr.selected { background: #dbeafe; }
+.reservation-flag { display: inline-block; margin-left: 6px; padding: 1px 5px; border: 1px solid #7895ac; border-radius: 9px; background: #edf4f9; color: #244864; font-size: 11px; }
 .search-message { margin: 0; padding: 14px; }
 .search-message.is-empty { color: #495057; }
 .screen-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid #adb5bd; }
