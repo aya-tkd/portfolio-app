@@ -3,6 +3,13 @@ import { request } from '../../../shared/api/http.js'
 
 export const loadOccupation = id => request(`/api/occupations/${id}`)
 
+export function searchOccupations({ keyword = '', active = '' } = {}) {
+  const query = new URLSearchParams()
+  if (keyword.trim()) query.set('keyword', keyword.trim())
+  if (active !== '') query.set('active', active)
+  return request(`/api/occupations${query.size ? `?${query}` : ''}`)
+}
+
 export async function saveOccupation(id, occupation) {
   const { token } = await request('/api/csrf')
   return request(id ? `/api/occupations/${id}` : '/api/occupations', {

@@ -40,6 +40,10 @@ body { margin: 0; background: #f1f3f5; font: 14px/1.5 "Yu Gothic UI", Meiryo, sy
 button:focus-visible, .form-control:focus, .form-select:focus { outline: 2px solid #0b5ed7; outline-offset: 2px; box-shadow: none; }
 dialog { padding: 0; width: 760px; max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); border: 1px solid #7b858f; border-radius: 3px; box-shadow: 0 6px 20px #0003; color: #212529; }
 dialog::backdrop { background: #29323b66; }
+.master-form { min-height: 0; flex: 1; display: flex; flex-direction: column; overflow: auto; border: 1px solid #adb5bd; background: #fff; }
+.master-form form { min-height: 0; flex: 1; display: flex; flex-direction: column; }
+.master-form .dialog-body { overflow: auto; flex: 1; }
+.master-form .dialog-foot { flex: 0 0 auto; }
 .dialog-head { padding: 10px 16px; background: #e9ecef; border-bottom: 1px solid #adb5bd; display: flex; justify-content: space-between; align-items: center; }
 .dialog-head h2 { margin: 0; font-size: 17px; }
 .mode { font-size: 12px; border: 1px solid #8a949e; padding: 1px 8px; background: white; }

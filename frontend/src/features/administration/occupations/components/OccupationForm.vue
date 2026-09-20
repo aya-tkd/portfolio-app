@@ -5,7 +5,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'v
 import { ApiError } from '../../../../shared/api/http.js'
 import { loadOccupation, saveOccupation } from '../api.js'
 
-const props = defineProps({ occupationId: { type: [String, Number], default: null } })
+const props = defineProps({ occupationId: { type: [String, Number], default: null }, embedded: { type: Boolean, default: false } })
 const emit = defineEmits(['close'])
 const dialog = ref(), form = ref(), resume = ref(), busy = ref(false), loadFailed = ref(false), uncertain = ref(false), discard = ref(false)
 const number = ref('自動採番（保存時）'), message = ref(''), errors = ref({}), original = ref('')
@@ -15,7 +15,7 @@ function focusFirst() { form.value?.querySelector('#occupation-name')?.focus() }
 function beforeUnload(event) { if (dirty.value || busy.value) { event.preventDefault(); event.returnValue = '' } }
 async function close() { if (busy.value) return; if (dirty.value) { discard.value = true; await nextTick(); resume.value?.focus() } else emit('close') }
 async function resumeEdit() { discard.value = false; await nextTick(); focusFirst() }
-function trapTab(event) { if (event.key !== 'Tab') return; const items = [...dialog.value.querySelectorAll('input,select,button')].filter(element => !element.disabled && element.getClientRects().length); const first = items[0], last = items.at(-1); if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() } }
+function trapTab(event) { if (props.embedded || event.key !== 'Tab') return; const items = [...dialog.value.querySelectorAll('input,select,button')].filter(element => !element.disabled && element.getClientRects().length); const first = items[0], last = items.at(-1); if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() } }
 async function save() {
   if (busy.value || discard.value || loadFailed.value || uncertain.value) return
   errors.value = {}; message.value = ''; busy.value = true
@@ -24,7 +24,7 @@ async function save() {
   finally { busy.value = false; await nextTick(); form.value?.querySelector('[aria-invalid="true"]')?.focus() }
 }
 onMounted(async () => {
-  original.value = JSON.stringify(values); dialog.value.showModal(); window.addEventListener('beforeunload', beforeUnload)
+  original.value = JSON.stringify(values); if (!props.embedded) dialog.value.showModal(); window.addEventListener('beforeunload', beforeUnload)
   if (props.occupationId) { busy.value = true; try { const occupation = await loadOccupation(props.occupationId); for (const key of Object.keys(values)) values[key] = occupation[key]; number.value = occupation.id; original.value = JSON.stringify(values) } catch (error) { loadFailed.value = true; message.value = error instanceof ApiError ? error.message : '読み込みに失敗しました。閉じてから再度開いてください。' } finally { busy.value = false } }
   await nextTick(); if (loadFailed.value) dialog.value.querySelector('#occupation-close').focus(); else focusFirst()
 })
@@ -32,7 +32,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
 </script>
 
 <template>
-  <dialog ref="dialog" aria-labelledby="occupation-dialog-title" @cancel.prevent="close" @keydown="trapTab">
+  <component :is="embedded ? 'section' : 'dialog'" ref="dialog" :class="{ 'master-form': embedded }" aria-labelledby="occupation-dialog-title" @cancel.prevent="close" @keydown="trapTab">
     <header class="dialog-head"><h2 id="occupation-dialog-title">{{ occupationId ? '職種編集' : '職種登録' }}</h2><span class="mode">{{ occupationId ? '編集' : '新規' }}</span></header>
     <form ref="form" novalidate @submit.prevent="save" @keydown="event => { if (event.key === 'Enter' && event.target.tagName === 'INPUT') event.preventDefault() }">
       <div class="dialog-body"><div class="identity">職種ID <strong id="occupation-id">{{ number }}</strong><span>基本情報</span></div><p v-if="message" class="form-message" role="alert">{{ message }}</p><p v-if="busy" role="status">処理中です…</p><p class="section-heading">職種情報</p>
@@ -41,5 +41,5 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
       </div>
       <footer class="dialog-foot"><span>＊ 必須項目</span><div class="buttons"><button type="submit" class="btn btn-primary" :disabled="busy || discard || loadFailed || uncertain">登録</button><button id="occupation-close" type="button" class="btn btn-secondary" :disabled="busy" @click="close">閉じる</button></div></footer>
     </form>
-  </dialog>
+  </component>
 </template>

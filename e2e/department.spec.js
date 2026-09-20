@@ -8,21 +8,24 @@ async function fillDepartment(page, name = '内科') {
 }
 
 test('AC-01/03/04 register, receive id, edit and reload department', async ({ page }) => {
+  // 開発DBを使うブラウザテストでも名称の重複で保存が止まらないよう、実行ごとに架空の一意名を使う。
+  const name = `内科-${Date.now()}`
+  const updatedName = `総合内科-${Date.now()}`
   await page.goto('/masters/departments')
   await page.getByRole('button', { name: '新規', exact: true }).click()
-  await fillDepartment(page)
+  await fillDepartment(page, name)
   await page.getByRole('button', { name: '登録', exact: true }).click()
   await expect(page.getByRole('dialog')).not.toBeVisible()
   await expect(page.locator('.host-notice')).toContainText('診療科ID')
-  await expect(page.locator('.host-notice')).toContainText('内科')
+  await expect(page.locator('.host-notice')).toContainText(name)
   await page.getByRole('button', { name: '編集', exact: true }).click()
-  await expect(page.locator('#department-name')).toHaveValue('内科')
+  await expect(page.locator('#department-name')).toHaveValue(name)
   await expect(page.locator('#department-id')).not.toHaveText('自動採番（保存時）')
-  await page.locator('#department-name').fill('総合内科')
+  await page.locator('#department-name').fill(updatedName)
   await page.getByRole('button', { name: '登録', exact: true }).click()
   await expect(page.locator('.host-notice')).toContainText('更新しました')
   await page.getByRole('button', { name: '編集', exact: true }).click()
-  await expect(page.locator('#department-name')).toHaveValue('総合内科')
+  await expect(page.locator('#department-name')).toHaveValue(updatedName)
 })
 
 test('AC-02/05 validation, footer order, focus trap and discard', async ({ page }) => {

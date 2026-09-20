@@ -8,7 +8,7 @@ Rails.application.routes.draw do
       get :reception_candidates, on: :member, controller: "receptions"
     end
     resources :receptions, only: :create
-    resources :departments, only: %i[show create update], constraints: { id: /[1-9][0-9]*/ }
-    resources :occupations, only: %i[show create update], constraints: { id: /[1-9][0-9]*/ }
+    resources :departments, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
+    resources :occupations, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
   end
 end

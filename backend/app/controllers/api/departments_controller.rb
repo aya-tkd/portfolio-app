@@ -8,6 +8,19 @@ module Api
       render json: { message: "診療科が見つかりません。" }, status: :not_found
     end
 
+    # マスタ設定の一覧領域から呼ばれる検索API。文字列は部分一致、利用状態は任意の絞り込みにする。
+    # GET /api/departments?keyword=<名称・カナ名>&active=true|false
+    def index
+      departments = Department.order(:display_order, :id)
+      keyword = params[:keyword].to_s.strip
+      if keyword.present?
+        pattern = "%#{ActiveRecord::Base.sanitize_sql_like(keyword)}%"
+        departments = departments.where("name LIKE ? OR kana_name LIKE ?", pattern, pattern)
+      end
+      departments = departments.where(active: ActiveModel::Type::Boolean.new.cast(params[:active])) if params.key?(:active)
+      render json: departments.as_json(only: FIELDS)
+    end
+
     def show
       render json: Department.find(params[:id]).as_json(only: FIELDS)
     end

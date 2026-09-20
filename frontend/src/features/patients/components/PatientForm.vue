@@ -6,7 +6,7 @@ import { ref, reactive, computed, onMounted, onBeforeUnmount, nextTick } from 'v
 import { ApiError } from '../../../shared/api/http.js'
 import { loadPatient, savePatient } from '../api.js'
 
-const props = defineProps({ patientId: { type: [String, Number], default: null } })
+const props = defineProps({ patientId: { type: [String, Number], default: null }, embedded: { type: Boolean, default: false } })
 const emit = defineEmits(['close'])
 const dialog = ref(), form = ref(), discard = ref(false), resume = ref()
 const busy = ref(false), loadFailed = ref(false), uncertain = ref(false)
@@ -27,6 +27,7 @@ async function close() {
 }
 async function resumeEdit() { discard.value = false; await nextTick(); focusFirst() }
 function trapTab(event) {
+  if (props.embedded) return
   if (event.key !== 'Tab') return
   const items = [...dialog.value.querySelectorAll('input,select,button')].filter(el => !el.disabled && el.getClientRects().length)
   const first = items[0], last = items.at(-1)
@@ -57,7 +58,7 @@ async function save() {
 onMounted(async () => {
   // VueがHTML要素を作った後に呼ぶ。dialogを開き、編集時だけ保存済みデータを取得する。
   original.value = JSON.stringify(values)
-  dialog.value.showModal()
+  if (!props.embedded) dialog.value.showModal()
   window.addEventListener('beforeunload', beforeUnload)
   if (props.patientId) {
     busy.value = true
@@ -79,7 +80,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
 </script>
 
 <template>
-  <dialog ref="dialog" aria-labelledby="dialog-title" @cancel.prevent="close" @keydown="trapTab">
+  <component :is="embedded ? 'section' : 'dialog'" ref="dialog" :class="{ 'master-form': embedded }" aria-labelledby="dialog-title" @cancel.prevent="close" @keydown="trapTab">
     <header class="dialog-head"><h2 id="dialog-title">{{ patientId ? '患者編集' : '患者登録' }}</h2><span class="mode">{{ patientId ? '編集' : '新規' }}</span></header>
     <form ref="form" novalidate @submit.prevent="save" @keydown="e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') e.preventDefault() }">
       <div class="dialog-body">
@@ -100,5 +101,5 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
       </div>
       <footer class="dialog-foot"><span>＊ 必須項目</span><div class="buttons"><button type="submit" class="btn btn-primary" :disabled="busy || discard || loadFailed || uncertain">登録</button><button id="close" type="button" class="btn btn-secondary" :disabled="busy" @click="close">閉じる</button></div></footer>
     </form>
-  </dialog>
+  </component>
 </template>

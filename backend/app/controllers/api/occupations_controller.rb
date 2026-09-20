@@ -7,6 +7,16 @@ module Api
       render json: { message: "職種が見つかりません。" }, status: :not_found
     end
 
+    # マスタ設定の一覧領域から呼ばれる検索API。職種名は部分一致、利用状態は任意の絞り込みにする。
+    # GET /api/occupations?keyword=<職種名>&active=true|false
+    def index
+      occupations = Occupation.order(:display_order, :id)
+      keyword = params[:keyword].to_s.strip
+      occupations = occupations.where("name LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(keyword)}%") if keyword.present?
+      occupations = occupations.where(active: ActiveModel::Type::Boolean.new.cast(params[:active])) if params.key?(:active)
+      render json: occupations.as_json(only: FIELDS)
+    end
+
     def show
       render json: Occupation.find(params[:id]).as_json(only: FIELDS)
     end
