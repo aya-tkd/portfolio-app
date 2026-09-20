@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_15_000100) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_20_000100) do
   create_table "mst_departments", force: :cascade do |t|
     t.string "abbreviation", limit: 20
     t.boolean "active", default: true, null: false
@@ -49,6 +49,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_000100) do
     t.datetime "updated_at", null: false
     t.index ["patient_number"], name: "index_mst_patients_on_patient_number", unique: true
     t.check_constraint "sex IN ('', 'male', 'female', 'other')", name: "patients_sex_values"
+  end
+
+  create_table "mst_users", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.integer "department_id"
+    t.string "first_name", limit: 100, null: false
+    t.string "first_name_kana", limit: 100, null: false
+    t.string "last_name", limit: 100, null: false
+    t.string "last_name_kana", limit: 100, null: false
+    t.integer "occupation_id"
+    t.datetime "updated_at", null: false
+    t.index ["department_id"], name: "index_mst_users_on_department_id"
+    t.index ["occupation_id"], name: "index_mst_users_on_occupation_id"
+    t.check_constraint "active IN (0, 1)", name: "mst_users_active_values"
   end
 
   create_table "trn_appointments", force: :cascade do |t|
@@ -111,6 +126,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_000100) do
     t.check_constraint "consultation_status IN ('received','called','consulting','consulted')", name: "reception_status"
   end
 
+  add_foreign_key "mst_users", "mst_departments", column: "department_id"
+  add_foreign_key "mst_users", "mst_occupations", column: "occupation_id"
   add_foreign_key "trn_appointments", "mst_departments", column: "department_id"
   add_foreign_key "trn_appointments", "mst_patients", column: "patient_id"
   add_foreign_key "trn_appointments", "trn_appointments", column: "parent_appointment_id"

@@ -10,7 +10,7 @@ test('AC-01, AC-02, AC-04, AC-05, AC-06, AC-07 and AC-08 master settings workflo
   await page.getByRole('button', { name: '診療科マスタ' }).click()
   await expect(page.getByRole('heading', { name: '診療科マスタ' })).toBeVisible()
   await expect(page.getByRole('button', { name: '編集' })).toBeDisabled()
-  await expect(page.getByRole('button', { name: /ユーザーマスタ/ })).toBeDisabled()
+  await expect(page.getByRole('button', { name: /ユーザーマスタ/ })).toBeEnabled()
 
   await page.getByRole('button', { name: '新規' }).click()
   await expect(page.getByRole('heading', { name: '診療科登録' })).toBeVisible()

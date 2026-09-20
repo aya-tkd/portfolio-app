@@ -10,5 +10,6 @@ Rails.application.routes.draw do
     resources :receptions, only: :create
     resources :departments, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
     resources :occupations, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
+    resources :users, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
   end
 end
