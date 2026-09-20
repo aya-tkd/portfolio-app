@@ -17,6 +17,7 @@
 |---|---|---|---|
 | 外来一覧・進捗更新 | [外来一覧](outpatient/outpatient-list.md) | [HTML](outpatient/mocks/outpatient-list.html) | このブランチに実装あり（Issue #38） |
 | マスタ設定（検索・一覧・登録編集導線） | [マスタ設定ワークスペース](administration/master-settings.md) | [HTML](administration/mocks/master-settings.html) | このブランチに実装あり（Issue #48） |
+| ユーザーマスタ | [ユーザーマスタ](administration/user-master.md) | [HTML](administration/mocks/user-master.html) | このブランチに実装あり（Issue #16） |
 | 患者マスタ（登録・編集） | [患者登録・編集](patient/patient-form.md) | [HTML](patient/mocks/patient-form.html) | 実装・受入済み（Issue #1／PR #5 merge済み） |
 | 患者検索・編集起動 | [患者検索](patient/patient-search.md) | [HTML](patient/mocks/patient-search.html) | 実装・受入済み（Issue #33／PR #37） |
 | 診療科マスタ（登録・編集） | [診療科登録・編集](administration/department-form.md) | [HTML](administration/mocks/department-form.html) | このブランチに実装あり（Issue #14） |

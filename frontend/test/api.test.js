@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { loadPatient, savePatient, searchPatients } from '../src/features/patients/api.js'
 import { loadDepartment, saveDepartment, searchDepartments } from '../src/features/administration/departments/api.js'
 import { loadOccupation, saveOccupation, searchOccupations } from '../src/features/administration/occupations/api.js'
+import { loadUser, saveUser, searchUsers } from '../src/features/administration/users/api.js'
 import { ApiError } from '../src/shared/api/http.js'
 const realFetch = globalThis.fetch
 afterEach(() => { globalThis.fetch = realFetch })
@@ -67,4 +68,15 @@ test('master list APIs issue read-only search URLs only for supplied conditions'
   assert.equal(calls[0][0], '/api/departments?keyword=%E5%86%85%E7%A7%91&active=true')
   assert.equal(calls[0][1].method, undefined)
   assert.equal(calls[1][0], '/api/occupations')
+})
+test('user API searches by all supplied conditions and saves through its resource URL', async () => {
+  const calls = []
+  globalThis.fetch = async (url, options) => { calls.push([url, options]); return { ok: true, json: async () => calls.length === 2 ? { token: 'test-only' } : { id: 9 } } }
+  await searchUsers({ userId: '9', name: '山田 太郎', departmentId: '1', occupationId: '2' })
+  assert.equal(calls[0][0], '/api/users?user_id=9&name=%E5%B1%B1%E7%94%B0+%E5%A4%AA%E9%83%8E&department_id=1&occupation_id=2')
+  assert.deepEqual(await saveUser(null, { first_name: '太郎' }), { id: 9 })
+  assert.equal(calls[2][0], '/api/users')
+  assert.equal(calls[2][1].headers['X-CSRF-Token'], 'test-only')
+  globalThis.fetch = async () => ({ ok: true, json: async () => ({ id: 9 }) })
+  assert.deepEqual(await loadUser(9), { id: 9 })
 })

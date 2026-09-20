@@ -12,6 +12,7 @@
 | mst_patients | [mst_patients.md](mst_patients.md) | 架空患者の基本情報・内部IDと表示No | Issue #1実装 |
 | mst_departments | [mst_departments.md](mst_departments.md) | 診療科の名称・表示順・利用状態 | このブランチに実装あり（Issue #14） |
 | mst_occupations | [mst_occupations.md](mst_occupations.md) | 職種名・表示順・利用状態 | このブランチに実装あり（Issue #15） |
+| mst_users | [mst_users.md](mst_users.md) | 氏名・カナ氏名・診療科・職種・利用状態 | このブランチに実装あり（Issue #16） |
 
 ## テーブル命名ルール
 
