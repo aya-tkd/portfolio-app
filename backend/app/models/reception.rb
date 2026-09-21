@@ -4,6 +4,7 @@ class Reception < ApplicationRecord
   self.table_name = "trn_receptions"
   belongs_to :patient
   belongs_to :department
+  belongs_to :doctor_user, class_name: "User", optional: true
   has_many :appointments, dependent: :restrict_with_exception
   has_many :equipment_executions, dependent: :restrict_with_exception
   validates :received_at, presence: true

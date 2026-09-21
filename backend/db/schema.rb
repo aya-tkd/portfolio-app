@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_20_000100) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_21_000100) do
   create_table "mst_departments", force: :cascade do |t|
     t.string "abbreviation", limit: 20
     t.boolean "active", default: true, null: false
@@ -31,10 +31,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000100) do
     t.datetime "created_at", null: false
     t.integer "display_order", null: false
     t.string "name", limit: 100, null: false
+    t.string "occupation_code", default: "other", null: false
     t.datetime "updated_at", null: false
     t.check_constraint "active IN (0, 1)", name: "mst_occupations_active_values"
     t.check_constraint "display_order >= 1", name: "mst_occupations_display_order_positive"
     t.check_constraint "length(name) <= 100", name: "mst_occupations_name_length"
+    t.check_constraint "occupation_code IN ('physician', 'other')", name: "mst_occupations_occupation_code_values"
   end
 
   create_table "mst_patients", force: :cascade do |t|
@@ -71,6 +73,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000100) do
     t.datetime "created_at", null: false
     t.integer "department_id", null: false
     t.string "doctor_name"
+    t.integer "doctor_user_id"
     t.string "equipment_name"
     t.integer "parent_appointment_id"
     t.integer "patient_id", null: false
@@ -79,6 +82,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000100) do
     t.string "status", default: "reserved", null: false
     t.datetime "updated_at", null: false
     t.index ["department_id"], name: "index_trn_appointments_on_department_id"
+    t.index ["doctor_user_id"], name: "index_trn_appointments_on_doctor_user_id"
     t.index ["parent_appointment_id"], name: "index_trn_appointments_on_parent_appointment_id"
     t.index ["patient_id"], name: "index_trn_appointments_on_patient_id"
     t.index ["reception_id"], name: "index_trn_appointments_on_reception_id"
@@ -110,6 +114,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000100) do
     t.datetime "created_at", null: false
     t.integer "department_id", null: false
     t.string "doctor_name"
+    t.integer "doctor_user_id"
     t.datetime "finished_at"
     t.integer "lock_version", default: 0, null: false
     t.datetime "paid_at"
@@ -119,6 +124,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000100) do
     t.datetime "started_at"
     t.datetime "updated_at", null: false
     t.index ["department_id"], name: "index_trn_receptions_on_department_id"
+    t.index ["doctor_user_id"], name: "index_trn_receptions_on_doctor_user_id"
     t.index ["patient_id"], name: "index_trn_receptions_on_patient_id"
     t.index ["received_at"], name: "index_trn_receptions_on_received_at"
     t.index ["reception_number"], name: "index_trn_receptions_on_reception_number", unique: true
@@ -130,6 +136,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000100) do
   add_foreign_key "mst_users", "mst_occupations", column: "occupation_id"
   add_foreign_key "trn_appointments", "mst_departments", column: "department_id"
   add_foreign_key "trn_appointments", "mst_patients", column: "patient_id"
+  add_foreign_key "trn_appointments", "mst_users", column: "doctor_user_id"
   add_foreign_key "trn_appointments", "trn_appointments", column: "parent_appointment_id"
   add_foreign_key "trn_appointments", "trn_receptions", column: "reception_id"
   add_foreign_key "trn_equipment_executions", "mst_departments", column: "department_id"
@@ -137,4 +144,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000100) do
   add_foreign_key "trn_equipment_executions", "trn_receptions", column: "reception_id"
   add_foreign_key "trn_receptions", "mst_departments", column: "department_id"
   add_foreign_key "trn_receptions", "mst_patients", column: "patient_id"
+  add_foreign_key "trn_receptions", "mst_users", column: "doctor_user_id"
 end

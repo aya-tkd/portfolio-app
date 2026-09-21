@@ -59,13 +59,13 @@
 | マスタ設定 | 外来一覧から患者・診療科・職種・ユーザーを検索し、選択した登録・編集フォームへ遷移 | `/outpatients` の「マスタ設定」 | [#48](https://github.com/aya-tkd/portfolio-app/issues/48) |
 | 患者マスタ | 新規登録・編集・SQLite保存 | `/` | [#1](https://github.com/aya-tkd/portfolio-app/issues/1) |
 | 患者検索 | 患者番号の完全一致、氏名・カナ氏名の部分一致、選択患者の編集起動 | `/patients` | [#33](https://github.com/aya-tkd/portfolio-app/issues/33) |
-| 外来受付 | 患者検索からの予約採用・予約なし受付、診察に付随する設備予約の引継ぎ、受付No.発番 | `/receptions/new?patient_id=<患者ID>` | [#43](https://github.com/aya-tkd/portfolio-app/issues/43) |
+| 外来受付 | 患者検索からの予約採用・予約なし受付、有効な医師ユーザーの選択、診察に付随する設備予約の引継ぎ、受付No.発番 | `/receptions/new?patient_id=<患者ID>` | [#43](https://github.com/aya-tkd/portfolio-app/issues/43) / [#56](https://github.com/aya-tkd/portfolio-app/issues/56) |
 | 診療科マスタ | 新規登録・編集・SQLite保存 | `/masters/departments` | [#14](https://github.com/aya-tkd/portfolio-app/issues/14) |
-| 職種マスタ | 新規登録・編集・SQLite保存 | `/masters/occupations` | [#15](https://github.com/aya-tkd/portfolio-app/issues/15) |
+| 職種マスタ | 新規登録・編集・SQLite保存、受付担当医区分の設定 | `/masters/occupations` | [#15](https://github.com/aya-tkd/portfolio-app/issues/15) / [#56](https://github.com/aya-tkd/portfolio-app/issues/56) |
 | ユーザーマスタ | ID・氏名／カナ・診療科・職種で検索、共通様式のフォームで登録・編集・SQLite保存 | `/outpatients` の「マスタ設定」 | [#16](https://github.com/aya-tkd/portfolio-app/issues/16) |
 | DB確認 | 読み取り専用SQL・ページ送り・スキーマ表示 | `/tools/sql` | [#1](https://github.com/aya-tkd/portfolio-app/issues/1) |
 
-VueからRails APIを呼び、SQLiteへ保存します。外来一覧は予約・受付を読み取り、診察と設備の進捗を更新できます。外来一覧のマスタ設定では患者・診療科・職種・ユーザーを検索して登録・編集できます。予約・受付の新規登録、会計処理、専用設備実施一覧は未実装です。ローカル・架空データ限定で、認証・認可、ログイン、本番利用、外部公開には対応していません。
+VueからRails APIを呼び、SQLiteへ保存します。外来一覧は予約・受付を読み取り、診察と設備の進捗を更新できます。外来一覧のマスタ設定では患者・診療科・職種・ユーザーを検索して登録・編集できます。予約登録、会計処理、専用設備実施一覧は未実装です。ローカル・架空データ限定で、認証・認可、ログイン、本番利用、外部公開には対応していません。
 
 現在地の更新規約は[開発フロー](docs/development/issue-workflow.md#readmeと現在地の更新)、学習の進捗は[技術理解プロファイル](docs/learning/user-technical-profile.md)を参照してください。
 

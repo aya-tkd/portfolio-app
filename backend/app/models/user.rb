@@ -6,6 +6,8 @@ class User < ApplicationRecord
   attr_readonly :id
   belongs_to :department, optional: true
   belongs_to :occupation, optional: true
+  has_many :doctor_appointments, class_name: "Appointment", foreign_key: :doctor_user_id, dependent: :restrict_with_exception
+  has_many :doctor_receptions, class_name: "Reception", foreign_key: :doctor_user_id, dependent: :restrict_with_exception
 
   NAME_FIELDS = %i[last_name first_name last_name_kana first_name_kana].freeze
   validates(*NAME_FIELDS, presence: { message: "入力してください。" }, length: { maximum: 100, message: "100文字以内で入力してください。" })
@@ -24,6 +26,16 @@ class User < ApplicationRecord
     users = users.where(department_id:) if department_id.present?
     users = users.where(occupation_id:) if occupation_id.present?
     users
+  end
+
+  # 受付候補と保存時検証で共通利用する、有効な医師ユーザーの絞り込み。
+  # Userが認証アカウントではないため、操作権限はここで扱わない。
+  def self.active_physicians
+    joins(:occupation).where(mst_users: { active: true }, mst_occupations: { active: true, occupation_code: "physician" }).order(:last_name, :first_name, :id)
+  end
+
+  def display_name
+    "#{last_name} #{first_name}"
   end
 
   private

@@ -14,12 +14,13 @@ module Api
       render json: {
         patient: patient.as_json(only: PatientsController::FIELDS),
         appointments: Reception::CandidatesQuery.call(patient: patient),
-        departments: active_departments.as_json(only: %i[id name])
+        departments: active_departments.as_json(only: %i[id name]),
+        doctor_users: User.active_physicians.map { |user| { id: user.id, name: user.display_name } }
       }
     end
 
     def create
-      input = params.require(:reception).permit(:patient_id, targets: %i[type appointment_id department_id doctor_name])
+      input = params.require(:reception).permit(:patient_id, targets: %i[type appointment_id department_id doctor_user_id])
       patient = Patient.find(input.fetch(:patient_id))
       receptions = Reception::Register.call(patient: patient, targets: input.fetch(:targets))
       render json: { receptions: receptions.map { |record| response_item(record) } }, status: :created

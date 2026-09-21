@@ -25,13 +25,14 @@
 |---|---|---|---|
 | Vueと画面処理・APIの分担 | L2 | 確認あり：画面処理をVue、通信をapi.jsへ分けると自分の言葉で整理（#14） | フォーム値→送信データ→通知を実コードで説明する |
 | HTTPメソッド | L1 | POST/PATCH/GET/DELETEの説明を受けた。PATCHを新規と捉えた誤解の訂正後は未確認（#14） | 次の機能でURL・メソッド・操作の対応を読む |
+| API契約・FE/BEの責務 | L2 | 確認あり：API契約をFE/BE間の受け渡し条件として捉え、画面設計DocにInput・Output・エラーを置く運用を選択（#56、チャットでの判断） | 実コード一件の入力→Controller→応答を一続きに説明する |
 | Vite→Railsルート→Controller | L2 | 暫定：Viteの受け渡しとroutes.rbのController選択を捉えて具体的な対応を質問（#14） | 一つのAPIについてメソッド・URL・actionをつなぐ |
 | Active Recordの永続化 | L1 | 継承とsave/find/newの説明を受けた。自身の説明による定着は未確認（#14） | Controllerからsaveまでの呼び出しを読む |
 | Model・Service・DTOの責務 | L2 | 暫定：複数テーブル処理の分担を言い換え、結合した予約データのモデル化を質問（#14） | 「1テーブルならModel」という限定を外し、ルールと表示用途を区別する |
 | Ruby構文・JavaScript言語機能 | L1 | 触れた経験・説明あり。単独の言語理解は未観測 | 実際の修正で使う構文だけ説明する |
 | Bootstrap・Tailwindの選択 | L1 | 違いの説明を受けた。自分で選択理由を説明する場面は未観測（#14） | UI要件に対して選ぶ理由を会話で扱う |
 
-更新根拠：[Issue #14の遡及評価](issues/issue-14.md)、[Issue #15の学習ログ](issues/issue-15.md)、[Issue #48の学習ログ](issues/issue-48.md)。既存のC#/.NET・SQL・業務知識は引き続き説明の足場にする。上の段階はWebの対象概念だけの評価である。
+更新根拠：[Issue #14の遡及評価](issues/issue-14.md)、[Issue #15の学習ログ](issues/issue-15.md)、[Issue #48の学習ログ](issues/issue-48.md)、[Issue #56の学習ログ](issues/issue-56.md)。既存のC#/.NET・SQL・業務知識は引き続き説明の足場にする。上の段階はWebの対象概念だけの評価である。
 
 ## 更新方針
 

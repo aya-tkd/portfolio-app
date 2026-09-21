@@ -60,6 +60,7 @@ dialog::backdrop { background: #29323b66; }
 .form-control, .form-select { height: 35px; min-width: 0; border: 1px solid #adb5bd; border-radius: 2px; padding: 5px 8px; font-size: 14px; }
 .field-error { margin: 3px 0 0; font-size: 12px; }
 .field-error:empty { display: none; }
+.field-help { margin: 3px 0 0; color: #495057; font-size: 12px; }
 [aria-invalid=true] { border-color: #b02a37; }
 .form-message { padding: 7px 10px; background: #fceff0; border-left: 3px solid #b02a37; }
 .dialog-foot { border-top: 1px solid #adb5bd; background: #f8f9fa; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }

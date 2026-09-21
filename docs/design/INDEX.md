@@ -21,10 +21,10 @@
 | 患者マスタ（登録・編集） | [患者登録・編集](patient/patient-form.md) | [HTML](patient/mocks/patient-form.html) | 実装・受入済み（Issue #1／PR #5 merge済み） |
 | 患者検索・編集起動 | [患者検索](patient/patient-search.md) | [HTML](patient/mocks/patient-search.html) | 実装・受入済み（Issue #33／PR #37） |
 | 診療科マスタ（登録・編集） | [診療科登録・編集](administration/department-form.md) | [HTML](administration/mocks/department-form.html) | このブランチに実装あり（Issue #14） |
-| 職種マスタ（登録・編集） | [職種登録・編集](administration/occupation-form.md) | [HTML](administration/mocks/occupation-form.html) | このブランチに実装あり（Issue #15） |
+| 職種マスタ（登録・編集） | [職種登録・編集](administration/occupation-form.md) | [HTML](administration/mocks/occupation-form.html) | Issue #56で受付担当医区分を追加中（基礎実装：Issue #15） |
 | 開発支援（DB確認） | [SQL確認画面](development/sql-console.md) | —（追加依頼により実画面で確認） | 実装・受入済み（PR #5 merge済み） |
 | 予約 | 未作成 | 未作成 | 未着手 |
-| 外来受付 | [外来受付](outpatient/reception.md) | [HTML](outpatient/mocks/reception.html) | このブランチに実装中（Issue #43） |
+| 外来受付 | [外来受付](outpatient/reception.md) | [HTML](outpatient/mocks/reception.html) | Issue #56で担当医ユーザー選択を追加中（基礎実装：Issue #43） |
 | 診察待ち・呼び出し | 未作成 | 未作成 | 未着手 |
 | 会計待ち・会計完了 | 未作成 | 未作成 | 未着手 |
 
