@@ -281,7 +281,7 @@ onMounted(load);
                           :key="doctor.id"
                           :value="String(doctor.id)"
                         >
-                          {{ doctor.name }}（ユーザーID {{ doctor.id }}）
+                          {{ doctor.name }}
                         </option>
                       </select>
                       <small
@@ -331,23 +331,25 @@ onMounted(load);
             </table>
           </div>
         </section>
-        <section class="reception-panel" aria-labelledby="unreserved-reception">
-          <div class="reception-panel__head">
-            <h1 id="unreserved-reception">予約なし受付</h1>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              @click="addUnreserved"
-            >
-              行を追加
-            </button>
-          </div>
-          <p class="panel-note">
-            診療科と担当医を指定して、当日受付を追加します。
-          </p>
-          <div class="unreserved-list">
-            <p v-if="!unreserved.length" class="empty">
-              予約なし受付は追加されていません。
+          <section class="reception-panel" aria-labelledby="unreserved-reception">
+            <div class="reception-panel__head">
+              <h1 id="unreserved-reception">予約なし受付</h1>
+            </div>
+            <p class="panel-note">
+              診療科と担当医を指定して、当日受付を追加します。
+            </p>
+            <div class="unreserved-list">
+              <div class="unreserved-list__actions">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  @click="addUnreserved"
+                >
+                  行を追加
+                </button>
+              </div>
+              <p v-if="!unreserved.length" class="empty">
+                予約なし受付は追加されていません。
             </p>
             <div v-else class="unreserved-grid-header" aria-hidden="true">
               <span>診療科<span class="required">＊</span></span>
@@ -390,7 +392,7 @@ onMounted(load);
                     :key="doctor.id"
                     :value="String(doctor.id)"
                   >
-                    {{ doctor.name }}（ユーザーID {{ doctor.id }}）
+                    {{ doctor.name }}
                   </option>
                 </select>
                 <button
@@ -505,7 +507,7 @@ onMounted(load);
   display: grid;
   flex: 1;
   min-height: 0;
-  grid-template-columns: minmax(0, 1.65fr) minmax(360px, 0.9fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(420px, 1fr);
   gap: 14px;
   overflow: auto;
 }
@@ -636,6 +638,10 @@ onMounted(load);
   flex-direction: column;
   gap: 8px;
   padding: 0 12px 12px;
+}
+.unreserved-list__actions {
+  display: flex;
+  justify-content: flex-end;
 }
 .unreserved-grid-header {
   display: grid;
