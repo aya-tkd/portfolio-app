@@ -4,7 +4,7 @@
 class Reception::CandidatesQuery
   def self.call(patient:, date: Date.current)
     start_at = Time.zone.local(date.year, date.month, date.day)
-    appointments = Appointment.includes(:department, :child_appointments)
+    appointments = Appointment.includes(:department, :doctor_user, :child_appointments)
       .where(patient: patient, scheduled_at: start_at...start_at + 1.day, status: "reserved", reception_id: nil, parent_appointment_id: nil)
       .order(:scheduled_at, :id)
 
@@ -16,6 +16,7 @@ class Reception::CandidatesQuery
         scheduled_at: appointment.scheduled_at.iso8601,
         department_id: appointment.department_id,
         department_name: appointment.department.name,
+        doctor_user_id: appointment.doctor_user_id,
         doctor_name: appointment.doctor_name,
         equipment_name: appointment.equipment_name,
         attached_equipment: children.map { |item| { id: item.id, name: item.equipment_name, scheduled_at: item.scheduled_at.iso8601 } }

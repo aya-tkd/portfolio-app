@@ -1,7 +1,7 @@
 module Api
   # 職種APIのHTTP窓口。許可した入力だけをOccupationへ渡し、結果または項目別エラーをJSONで返す。
   class OccupationsController < ApplicationController
-    FIELDS = %i[id name display_order active].freeze
+    FIELDS = %i[id name display_order active occupation_code].freeze
 
     rescue_from ActiveRecord::RecordNotFound do
       render json: { message: "職種が見つかりません。" }, status: :not_found
@@ -35,7 +35,7 @@ module Api
 
     def occupation_params
       # 自動採番IDはブラウザから更新できない。
-      params.expect(occupation: %i[name display_order active])
+      params.expect(occupation: %i[name display_order active occupation_code])
     end
 
     def persist(occupation, status)

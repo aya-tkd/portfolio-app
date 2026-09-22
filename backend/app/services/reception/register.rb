@@ -24,12 +24,12 @@ class Reception::Register
   def self.register_appointment!(patient, target)
     appointment = Appointment.lock.includes(:child_appointments).find(target.fetch(:appointment_id))
     validate_appointment!(appointment, patient)
-    doctor_name = (appointment.doctor_name.presence || target[:doctor_name].to_s.strip)
-    raise InvalidTarget, "医師を選択してください。" if appointment.appointment_kind == "consultation" && doctor_name.blank?
+    doctor = appointment.appointment_kind == "consultation" ? active_physician!(target[:doctor_user_id], department: appointment.department) : nil
 
     reception = Reception.create!(patient: patient, department: appointment.department, business_kind: appointment.appointment_kind,
-      doctor_name: appointment.appointment_kind == "consultation" ? doctor_name : nil, received_at: Time.current)
-    appointment.update_columns(reception_id: reception.id, doctor_name: doctor_name.presence || appointment.doctor_name, updated_at: Time.current)
+      doctor_user: doctor, doctor_name: doctor&.display_name, received_at: Time.current)
+    appointment.update_columns(reception_id: reception.id, doctor_user_id: doctor&.id,
+      doctor_name: doctor&.display_name || appointment.doctor_name, updated_at: Time.current)
     attach_children!(appointment, reception) if appointment.appointment_kind == "consultation"
     create_execution!(appointment, reception) if appointment.appointment_kind == "equipment"
     reception
@@ -38,12 +38,21 @@ class Reception::Register
 
   def self.register_unreserved!(patient, target)
     department = Department.find(target.fetch(:department_id))
-    doctor_name = target[:doctor_name].to_s.strip
-    raise InvalidTarget, "予約なし受付では診療科と医師が必須です。" if doctor_name.blank?
+    doctor = active_physician!(target[:doctor_user_id], department: department)
 
-    Reception.create!(patient: patient, department: department, business_kind: "consultation", doctor_name: doctor_name, received_at: Time.current)
+    Reception.create!(patient: patient, department: department, business_kind: "consultation", doctor_user: doctor,
+      doctor_name: doctor.display_name, received_at: Time.current)
   end
   private_class_method :register_unreserved!
+
+  # ブラウザが送ったIDを信頼せず、同一トランザクション内で有効な医師ユーザーか確認する。
+  # 画面のselectを経由しないPOSTでも、別診療科の医師を担当医として保存させない。
+  def self.active_physician!(doctor_user_id, department:)
+    raise InvalidTarget, "有効な医師ユーザーを選択してください。" if doctor_user_id.blank?
+
+    User.active_physicians_for(department).lock.find_by(id: doctor_user_id) || raise(InvalidTarget, "選択した診療科で有効な医師ユーザーを選択してください。")
+  end
+  private_class_method :active_physician!
 
   def self.validate_appointment!(appointment, patient)
     raise InvalidTarget, "選択した予約はこの患者のものではありません。" unless appointment.patient_id == patient.id

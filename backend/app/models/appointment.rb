@@ -5,6 +5,7 @@ class Appointment < ApplicationRecord
   belongs_to :patient
   belongs_to :department
   belongs_to :reception, optional: true
+  belongs_to :doctor_user, class_name: "User", optional: true
   belongs_to :parent_appointment, class_name: "Appointment", optional: true
   has_many :child_appointments, class_name: "Appointment", foreign_key: :parent_appointment_id, dependent: :restrict_with_exception
   has_one :equipment_execution, dependent: :restrict_with_exception

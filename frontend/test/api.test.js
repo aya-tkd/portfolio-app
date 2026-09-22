@@ -4,6 +4,7 @@ import { loadPatient, savePatient, searchPatients } from '../src/features/patien
 import { loadDepartment, saveDepartment, searchDepartments } from '../src/features/administration/departments/api.js'
 import { loadOccupation, saveOccupation, searchOccupations } from '../src/features/administration/occupations/api.js'
 import { loadUser, saveUser, searchUsers } from '../src/features/administration/users/api.js'
+import { loadReceptionCandidates, registerReceptions } from '../src/features/receptions/api.js'
 import { ApiError } from '../src/shared/api/http.js'
 const realFetch = globalThis.fetch
 afterEach(() => { globalThis.fetch = realFetch })
@@ -79,4 +80,21 @@ test('user API searches by all supplied conditions and saves through its resourc
   assert.equal(calls[2][1].headers['X-CSRF-Token'], 'test-only')
   globalThis.fetch = async () => ({ ok: true, json: async () => ({ id: 9 }) })
   assert.deepEqual(await loadUser(9), { id: 9 })
+})
+
+test('reception API obtains candidates and posts selected doctor user IDs', async () => {
+  const calls = []
+  globalThis.fetch = async (url, options) => {
+    calls.push([url, options])
+    if (calls.length === 1) return { ok: true, json: async () => ({ doctor_users: [{ id: 12, name: '医師 太郎', department_id: 3 }] }) }
+    if (calls.length === 2) return { ok: true, json: async () => ({ token: 'test-only' }) }
+    return { ok: true, json: async () => ({ receptions: [{ id: 1 }] }) }
+  }
+
+  assert.deepEqual(await loadReceptionCandidates(7), { doctor_users: [{ id: 12, name: '医師 太郎', department_id: 3 }] })
+  assert.deepEqual(await registerReceptions({ patient_id: 7, targets: [{ type: 'unreserved', department_id: 3, doctor_user_id: 12 }] }), { receptions: [{ id: 1 }] })
+  assert.equal(calls[0][0], '/api/patients/7/reception_candidates')
+  assert.equal(calls[2][0], '/api/receptions')
+  assert.equal(calls[2][1].headers['X-CSRF-Token'], 'test-only')
+  assert.deepEqual(JSON.parse(calls[2][1].body), { reception: { patient_id: 7, targets: [{ type: 'unreserved', department_id: 3, doctor_user_id: 12 }] } })
 })
