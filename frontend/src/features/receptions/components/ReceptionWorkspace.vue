@@ -218,7 +218,6 @@ onMounted(load);
                 <col class="appointment-col--kind" />
                 <col class="appointment-col--department" />
                 <col class="appointment-col--doctor" />
-                <col />
               </colgroup>
               <thead>
                 <tr>
@@ -227,12 +226,12 @@ onMounted(load);
                   <th>種別</th>
                   <th>診療科 / 設備</th>
                   <th>担当医</th>
-                  <th>付随予約・補足</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in appointments" :key="item.id">
-                  <td>
+                <template v-for="item in appointments" :key="item.id">
+                  <tr>
+                    <td>
                     <input
                       v-model="selectedIds"
                       type="checkbox"
@@ -297,32 +296,42 @@ onMounted(load);
                           item.doctor_name
                         }}（選び直してください）
                       </small>
-                      <small
-                        v-if="
-                          selectedIds.includes(item.id) &&
-                          !hasEligibleDoctor(item.department_id)
-                        "
-                        class="doctor-hint doctor-hint--error"
-                        >この診療科に選択可能な担当医がいません。ユーザーマスタの担当診療科を確認してください。
-                      </small>
                     </label>
                     <span v-else>－</span>
                   </td>
-                  <td>
-                    {{
-                      item.attached_equipment.length
-                        ? item.attached_equipment
-                            .map(
-                              (child) =>
-                                `${child.name} ${new Date(child.scheduled_at).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}`,
-                            )
-                            .join(" / ")
-                        : item.kind === "equipment"
-                          ? "設備のみの予約"
-                          : "－"
-                    }}
-                  </td>
-                </tr>
+                  </tr>
+                  <tr class="appointment-detail">
+                    <td></td>
+                    <td colspan="4">
+                      <span class="appointment-detail__label">付随予約・補足</span>
+                      <span>
+                        {{
+                          item.attached_equipment.length
+                            ? item.attached_equipment
+                                .map(
+                                  (child) =>
+                                    `${child.name} ${new Date(child.scheduled_at).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}`,
+                                )
+                                .join(" / ")
+                            : item.kind === "equipment"
+                              ? "設備のみの予約"
+                              : "－"
+                        }}
+                      </span>
+                      <p
+                        v-if="
+                          selectedIds.includes(item.id) &&
+                          item.kind === 'consultation' &&
+                          !hasEligibleDoctor(item.department_id)
+                        "
+                        class="doctor-hint doctor-hint--error appointment-detail__error"
+                        role="alert"
+                      >
+                        この診療科に選択可能な担当医がいません。ユーザーマスタの担当診療科を確認してください。
+                      </p>
+                    </td>
+                  </tr>
+                </template>
               </tbody>
             </table>
           </div>
@@ -348,56 +357,61 @@ onMounted(load);
             <div
               v-for="item in unreserved"
               :key="item.key"
-              class="unreserved-row"
+              class="unreserved-entry"
             >
-              <label
-                >診療科<span class="required" aria-label="必須">＊</span
-                ><select
-                  v-model="item.department_id"
-                  class="form-select"
-                  @change="resetIneligibleDoctor(item)"
-                >
-                  <option value="">選択してください</option>
-                  <option
-                    v-for="department in departments"
-                    :key="department.id"
-                    :value="department.id"
+              <div class="unreserved-row">
+                <label
+                  ><span class="unreserved-field__label"
+                    >診療科<span class="required" aria-label="必須">＊</span></span
+                  ><select
+                    v-model="item.department_id"
+                    class="form-select"
+                    @change="resetIneligibleDoctor(item)"
                   >
-                    {{ department.name }}
-                  </option>
-                </select></label
-              ><label
-                >担当医<span class="required" aria-label="必須">＊</span
-                ><select
-                  v-model="item.doctor_user_id"
-                  class="form-select"
-                  :disabled="
-                    !item.department_id ||
-                    !hasEligibleDoctor(item.department_id)
-                  "
-                >
-                  <option value="">選択してください</option>
-                  <option
-                    v-for="doctor in doctorsForDepartment(item.department_id)"
-                    :key="doctor.id"
-                    :value="String(doctor.id)"
+                    <option value="">選択してください</option>
+                    <option
+                      v-for="department in departments"
+                      :key="department.id"
+                      :value="department.id"
+                    >
+                      {{ department.name }}
+                    </option>
+                  </select></label
+                ><label
+                  ><span class="unreserved-field__label"
+                    >担当医<span class="required" aria-label="必須">＊</span></span
+                  ><select
+                    v-model="item.doctor_user_id"
+                    class="form-select"
+                    :disabled="
+                      !item.department_id ||
+                      !hasEligibleDoctor(item.department_id)
+                    "
                   >
-                    {{ doctor.name }}（ユーザーID {{ doctor.id }}）
-                  </option></select
-                ><small
-                  v-if="
-                    item.department_id && !hasEligibleDoctor(item.department_id)
-                  "
-                  class="doctor-hint doctor-hint--error"
-                  >この診療科に選択可能な担当医がいません。ユーザーマスタの担当診療科を確認してください。
-                </small> </label
-              ><button
-                type="button"
-                class="btn btn-secondary unreserved-row__remove"
-                @click="removeUnreserved(item.key)"
+                    <option value="">選択してください</option>
+                    <option
+                      v-for="doctor in doctorsForDepartment(item.department_id)"
+                      :key="doctor.id"
+                      :value="String(doctor.id)"
+                    >
+                      {{ doctor.name }}（ユーザーID {{ doctor.id }}）
+                    </option>
+                  </select> </label
+                ><button
+                  type="button"
+                  class="btn btn-secondary unreserved-row__remove"
+                  @click="removeUnreserved(item.key)"
+                >
+                  削除
+                </button>
+              </div>
+              <p
+                v-if="item.department_id && !hasEligibleDoctor(item.department_id)"
+                class="doctor-hint doctor-hint--error unreserved-entry__error"
+                role="alert"
               >
-                削除
-              </button>
+                この診療科に選択可能な担当医がいません。ユーザーマスタの担当診療科を確認してください。
+              </p>
             </div>
           </div>
         </section>
@@ -494,7 +508,7 @@ onMounted(load);
   display: grid;
   flex: 1;
   min-height: 0;
-  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.9fr);
+  grid-template-columns: minmax(0, 1.65fr) minmax(360px, 0.9fr);
   gap: 14px;
   overflow: auto;
 }
@@ -541,7 +555,7 @@ onMounted(load);
   width: 150px;
 }
 .appointment-col--doctor {
-  width: 200px;
+  width: 210px;
 }
 .appointment-list {
   overflow: auto;
@@ -600,6 +614,22 @@ onMounted(load);
 .doctor-hint--error {
   color: #8d1f2a;
 }
+.appointment-detail td {
+  padding-top: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dce3e8;
+  color: #4e5c68;
+  font-size: 12px;
+}
+.appointment-detail__label {
+  display: inline-block;
+  min-width: 96px;
+  color: #263c4d;
+  font-weight: 600;
+}
+.appointment-detail__error {
+  margin: 6px 0 0;
+}
 .required {
   margin-left: 3px;
   color: #b02a37;
@@ -617,22 +647,30 @@ onMounted(load);
 }
 .unreserved-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   gap: 8px;
-  align-items: end;
+  align-items: center;
   padding: 9px;
   border: 1px solid #dee2e6;
   background: #f8f9fa;
 }
 .unreserved-row label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
   font-size: 12px;
+  white-space: nowrap;
+}
+.unreserved-row label select {
+  width: 100%;
 }
 .unreserved-row__remove {
   justify-self: end;
-  grid-column: 2;
+}
+.unreserved-entry__error {
+  margin: 5px 0 0;
+  padding: 0 2px;
 }
 .reception-foot {
   display: flex;
