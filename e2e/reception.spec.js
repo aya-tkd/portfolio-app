@@ -27,6 +27,7 @@ test('担当医候補を選択し、手入力履歴を置き換えて受付へ�
   await expect(doctorSelect).toBeEnabled()
   await expect(doctorSelect.locator(`option[value="${data.doctor_id}"]`)).toHaveText(`${batch} 医師`)
   await expect(page.locator('.reception-panel__head .btn')).toHaveCount(0)
+  await expect(page.locator('.panel-note--with-action .btn')).toHaveText('行を追加')
   await page.getByRole('button', { name: '行を追加', exact: true }).click()
   await expect(page.locator('.unreserved-grid-header')).toBeVisible()
   await expect(page.locator('.unreserved-grid-header > span')).toHaveCount(3)

@@ -335,19 +335,17 @@ onMounted(load);
             <div class="reception-panel__head">
               <h1 id="unreserved-reception">予約なし受付</h1>
             </div>
-            <p class="panel-note">
-              診療科と担当医を指定して、当日受付を追加します。
-            </p>
+            <div class="panel-note panel-note--with-action">
+              <span>診療科と担当医を指定して、当日受付を追加します。</span>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                @click="addUnreserved"
+              >
+                行を追加
+              </button>
+            </div>
             <div class="unreserved-list">
-              <div class="unreserved-list__actions">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  @click="addUnreserved"
-                >
-                  行を追加
-                </button>
-              </div>
               <p v-if="!unreserved.length" class="empty">
                 予約なし受付は追加されていません。
             </p>
@@ -536,6 +534,12 @@ onMounted(load);
 .panel-note {
   margin: 10px 12px;
 }
+.panel-note--with-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
 .appointment-list table {
   width: 100%;
   border-collapse: collapse;
@@ -638,10 +642,6 @@ onMounted(load);
   flex-direction: column;
   gap: 8px;
   padding: 0 12px 12px;
-}
-.unreserved-list__actions {
-  display: flex;
-  justify-content: flex-end;
 }
 .unreserved-grid-header {
   display: grid;
