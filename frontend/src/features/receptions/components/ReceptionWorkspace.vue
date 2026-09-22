@@ -260,15 +260,10 @@ onMounted(load);
                     }}
                   </td>
                   <td>
-                    <label
+                    <div
                       v-if="item.kind === 'consultation'"
                       class="doctor-select"
                     >
-                      <span class="doctor-select__label"
-                        >担当医<span class="required" aria-label="必須"
-                          >＊</span
-                        ></span
-                      >
                       <select
                         v-model="doctorSelections[item.id]"
                         class="form-select"
@@ -296,7 +291,7 @@ onMounted(load);
                           item.doctor_name
                         }}（選び直してください）
                       </small>
-                    </label>
+                    </div>
                     <span v-else>－</span>
                   </td>
                   </tr>
@@ -354,55 +349,57 @@ onMounted(load);
             <p v-if="!unreserved.length" class="empty">
               予約なし受付は追加されていません。
             </p>
+            <div v-else class="unreserved-grid-header" aria-hidden="true">
+              <span>診療科<span class="required">＊</span></span>
+              <span>担当医<span class="required">＊</span></span>
+              <span></span>
+            </div>
             <div
               v-for="item in unreserved"
               :key="item.key"
               class="unreserved-entry"
             >
               <div class="unreserved-row">
-                <label
-                  ><span class="unreserved-field__label"
-                    >診療科<span class="required" aria-label="必須">＊</span></span
-                  ><select
-                    v-model="item.department_id"
-                    class="form-select"
-                    @change="resetIneligibleDoctor(item)"
+                <select
+                  v-model="item.department_id"
+                  class="form-select"
+                  aria-label="診療科"
+                  @change="resetIneligibleDoctor(item)"
+                >
+                  <option value="">選択してください</option>
+                  <option
+                    v-for="department in departments"
+                    :key="department.id"
+                    :value="department.id"
                   >
-                    <option value="">選択してください</option>
-                    <option
-                      v-for="department in departments"
-                      :key="department.id"
-                      :value="department.id"
-                    >
-                      {{ department.name }}
-                    </option>
-                  </select></label
-                ><label
-                  ><span class="unreserved-field__label"
-                    >担当医<span class="required" aria-label="必須">＊</span></span
-                  ><select
-                    v-model="item.doctor_user_id"
-                    class="form-select"
-                    :disabled="
-                      !item.department_id ||
-                      !hasEligibleDoctor(item.department_id)
-                    "
+                    {{ department.name }}
+                  </option>
+                </select>
+                <select
+                  v-model="item.doctor_user_id"
+                  class="form-select"
+                  aria-label="担当医"
+                  :disabled="
+                    !item.department_id ||
+                    !hasEligibleDoctor(item.department_id)
+                  "
+                >
+                  <option value="">選択してください</option>
+                  <option
+                    v-for="doctor in doctorsForDepartment(item.department_id)"
+                    :key="doctor.id"
+                    :value="String(doctor.id)"
                   >
-                    <option value="">選択してください</option>
-                    <option
-                      v-for="doctor in doctorsForDepartment(item.department_id)"
-                      :key="doctor.id"
-                      :value="String(doctor.id)"
-                    >
-                      {{ doctor.name }}（ユーザーID {{ doctor.id }}）
-                    </option>
-                  </select> </label
-                ><button
+                    {{ doctor.name }}（ユーザーID {{ doctor.id }}）
+                  </option>
+                </select>
+                <button
                   type="button"
                   class="btn btn-secondary unreserved-row__remove"
+                  aria-label="この行を削除"
                   @click="removeUnreserved(item.key)"
                 >
-                  削除
+                  ×
                 </button>
               </div>
               <p
@@ -552,10 +549,10 @@ onMounted(load);
   width: 54px;
 }
 .appointment-col--department {
-  width: 150px;
+  width: 130px;
 }
 .appointment-col--doctor {
-  width: 210px;
+  width: 170px;
 }
 .appointment-list {
   overflow: auto;
@@ -592,12 +589,7 @@ onMounted(load);
   font-size: 12px;
 }
 .doctor-select {
-  display: flex;
-  flex-direction: column;
-  font-size: 12px;
-}
-.doctor-select__label {
-  margin-bottom: 4px;
+  display: block;
 }
 .doctor-select select {
   width: 100%;
@@ -645,28 +637,35 @@ onMounted(load);
   gap: 8px;
   padding: 0 12px 12px;
 }
+.unreserved-grid-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 28px;
+  gap: 8px;
+  padding: 0 9px 4px;
+  color: #465563;
+  font-size: 12px;
+}
 .unreserved-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 28px;
   gap: 8px;
   align-items: center;
   padding: 9px;
   border: 1px solid #dee2e6;
   background: #f8f9fa;
 }
-.unreserved-row label {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 6px;
-  align-items: center;
-  font-size: 12px;
-  white-space: nowrap;
-}
-.unreserved-row label select {
+.unreserved-row select {
   width: 100%;
 }
 .unreserved-row__remove {
-  justify-self: end;
+  width: 28px;
+  min-width: 0;
+  height: 28px;
+  min-height: 0;
+  padding: 0;
+  color: #59636e;
+  font-size: 20px;
+  line-height: 1;
 }
 .unreserved-entry__error {
   margin: 5px 0 0;
