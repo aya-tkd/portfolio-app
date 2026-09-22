@@ -494,7 +494,7 @@ onMounted(load);
   display: grid;
   flex: 1;
   min-height: 0;
-  grid-template-columns: minmax(0, 1.65fr) minmax(340px, 0.9fr);
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.9fr);
   gap: 14px;
   overflow: auto;
 }
@@ -525,24 +525,23 @@ onMounted(load);
 }
 .appointment-list table {
   width: 100%;
-  min-width: 960px;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
 }
 .appointment-col--select {
-  width: 44px;
+  width: 42px;
 }
 .appointment-col--time {
-  width: 68px;
+  width: 58px;
 }
 .appointment-col--kind {
   width: 54px;
 }
 .appointment-col--department {
-  width: 210px;
+  width: 150px;
 }
 .appointment-col--doctor {
-  width: 250px;
+  width: 200px;
 }
 .appointment-list {
   overflow: auto;
@@ -618,7 +617,7 @@ onMounted(load);
 }
 .unreserved-row {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 8px;
   align-items: end;
   padding: 9px;
@@ -633,6 +632,7 @@ onMounted(load);
 }
 .unreserved-row__remove {
   justify-self: end;
+  grid-column: 2;
 }
 .reception-foot {
   display: flex;
