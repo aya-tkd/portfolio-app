@@ -25,7 +25,7 @@
 | 候補表示 | `GET /api/patients/:id/reception_candidates` | 当日の未受付親予約と子設備、選択可能な医師ユーザーをDTOへ整形する。 |
 | 受付登録 | `POST /api/receptions` | 全対象を一つのDBトランザクションで検証・保存する。 |
 
-候補の`doctor_users`には、有効なユーザーかつ有効な職種で、職種の`occupation_code`が`physician`のユーザーだけを返す。診療科では絞り込まない。一つでも予約済み・患者不一致・必須項目不足・無効または医師以外のユーザー指定などがあれば全件をロールバックする。予約採用では`trn_receptions`を作成し、採用した`trn_appointments.reception_id`と`doctor_user_id`を設定する。設備予約には`trn_equipment_executions`も作成する。
+候補の`doctor_users`には、有効なユーザーかつ有効な職種で、職種の`occupation_code`が`physician`のユーザーだけを返す。DTOには`id`、`name`、`department_id`（未設定はNULL）を含める。Vueは受付行の診療科に一致する医師、または担当診療科未設定の医師だけを選択肢に表示する。予約なし受付では診療科変更時に条件外となった担当医選択を解除する。一つでも予約済み・患者不一致・必須項目不足・無効・別診療科または医師以外のユーザー指定などがあれば、ServiceがDB上で再検証して全件をロールバックする。予約採用では`trn_receptions`を作成し、採用した`trn_appointments.reception_id`と`doctor_user_id`を設定する。設備予約には`trn_equipment_executions`も作成する。
 
 `doctor_name`はクライアントから受け取らない。サーバーが選択されたユーザーの表示名をスナップショットとして保存し、既存の名前だけの履歴は変更しない。画面設計DocのAPI契約表を標準化する作業は、別Issue #60で扱う。
 

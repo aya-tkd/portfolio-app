@@ -34,6 +34,12 @@ class User < ApplicationRecord
     joins(:occupation).where(mst_users: { active: true }, mst_occupations: { active: true, occupation_code: "physician" }).order(:last_name, :first_name, :id)
   end
 
+  # 受付行の診療科に対して選択可能な医師を返す。
+  # 担当診療科が未設定の医師は全診療科で候補に含め、複数診療科の兼務は今回のスコープに含めない。
+  def self.active_physicians_for(department)
+    active_physicians.where("mst_users.department_id = ? OR mst_users.department_id IS NULL", department.id)
+  end
+
   def display_name
     "#{last_name} #{first_name}"
   end

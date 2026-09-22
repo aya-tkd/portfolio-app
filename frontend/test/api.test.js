@@ -86,12 +86,12 @@ test('reception API obtains candidates and posts selected doctor user IDs', asyn
   const calls = []
   globalThis.fetch = async (url, options) => {
     calls.push([url, options])
-    if (calls.length === 1) return { ok: true, json: async () => ({ doctor_users: [{ id: 12, name: '医師 太郎' }] }) }
+    if (calls.length === 1) return { ok: true, json: async () => ({ doctor_users: [{ id: 12, name: '医師 太郎', department_id: 3 }] }) }
     if (calls.length === 2) return { ok: true, json: async () => ({ token: 'test-only' }) }
     return { ok: true, json: async () => ({ receptions: [{ id: 1 }] }) }
   }
 
-  assert.deepEqual(await loadReceptionCandidates(7), { doctor_users: [{ id: 12, name: '医師 太郎' }] })
+  assert.deepEqual(await loadReceptionCandidates(7), { doctor_users: [{ id: 12, name: '医師 太郎', department_id: 3 }] })
   assert.deepEqual(await registerReceptions({ patient_id: 7, targets: [{ type: 'unreserved', department_id: 3, doctor_user_id: 12 }] }), { receptions: [{ id: 1 }] })
   assert.equal(calls[0][0], '/api/patients/7/reception_candidates')
   assert.equal(calls[2][0], '/api/receptions')

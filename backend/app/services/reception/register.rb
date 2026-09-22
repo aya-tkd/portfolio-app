@@ -24,7 +24,7 @@ class Reception::Register
   def self.register_appointment!(patient, target)
     appointment = Appointment.lock.includes(:child_appointments).find(target.fetch(:appointment_id))
     validate_appointment!(appointment, patient)
-    doctor = appointment.appointment_kind == "consultation" ? active_physician!(target[:doctor_user_id]) : nil
+    doctor = appointment.appointment_kind == "consultation" ? active_physician!(target[:doctor_user_id], department: appointment.department) : nil
 
     reception = Reception.create!(patient: patient, department: appointment.department, business_kind: appointment.appointment_kind,
       doctor_user: doctor, doctor_name: doctor&.display_name, received_at: Time.current)
@@ -38,7 +38,7 @@ class Reception::Register
 
   def self.register_unreserved!(patient, target)
     department = Department.find(target.fetch(:department_id))
-    doctor = active_physician!(target[:doctor_user_id])
+    doctor = active_physician!(target[:doctor_user_id], department: department)
 
     Reception.create!(patient: patient, department: department, business_kind: "consultation", doctor_user: doctor,
       doctor_name: doctor.display_name, received_at: Time.current)
@@ -46,10 +46,11 @@ class Reception::Register
   private_class_method :register_unreserved!
 
   # ブラウザが送ったIDを信頼せず、同一トランザクション内で有効な医師ユーザーか確認する。
-  def self.active_physician!(doctor_user_id)
+  # 画面のselectを経由しないPOSTでも、別診療科の医師を担当医として保存させない。
+  def self.active_physician!(doctor_user_id, department:)
     raise InvalidTarget, "有効な医師ユーザーを選択してください。" if doctor_user_id.blank?
 
-    User.active_physicians.lock.find_by(id: doctor_user_id) || raise(InvalidTarget, "有効な医師ユーザーを選択してください。")
+    User.active_physicians_for(department).lock.find_by(id: doctor_user_id) || raise(InvalidTarget, "選択した診療科で有効な医師ユーザーを選択してください。")
   end
   private_class_method :active_physician!
 

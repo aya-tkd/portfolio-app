@@ -15,7 +15,9 @@ module Api
         patient: patient.as_json(only: PatientsController::FIELDS),
         appointments: Reception::CandidatesQuery.call(patient: patient),
         departments: active_departments.as_json(only: %i[id name]),
-        doctor_users: User.active_physicians.map { |user| { id: user.id, name: user.display_name } }
+        # Vueが受付行ごとの診療科で候補を絞れるよう、担当診療科IDも返す。
+        # 候補表示とは別に、保存時はReception::RegisterがDB上で同じ条件を検証する。
+        doctor_users: User.active_physicians.map { |user| { id: user.id, name: user.display_name, department_id: user.department_id } }
       }
     end
 
