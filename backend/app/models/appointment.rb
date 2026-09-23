@@ -6,6 +6,8 @@ class Appointment < ApplicationRecord
   belongs_to :department
   belongs_to :reception, optional: true
   belongs_to :doctor_user, class_name: "User", optional: true
+  # #62で追加した任意の枠参照。既存の枠なし予約はNULLのまま保持し、#64が新規予約時に設定する。
+  belongs_to :reservation_slot, optional: true
   belongs_to :parent_appointment, class_name: "Appointment", optional: true
   has_many :child_appointments, class_name: "Appointment", foreign_key: :parent_appointment_id, dependent: :restrict_with_exception
   has_one :equipment_execution, dependent: :restrict_with_exception

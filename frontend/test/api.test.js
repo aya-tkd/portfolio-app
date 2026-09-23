@@ -5,6 +5,7 @@ import { loadDepartment, saveDepartment, searchDepartments } from '../src/featur
 import { loadOccupation, saveOccupation, searchOccupations } from '../src/features/administration/occupations/api.js'
 import { loadUser, saveUser, searchUsers } from '../src/features/administration/users/api.js'
 import { loadReceptionCandidates, registerReceptions } from '../src/features/receptions/api.js'
+import { loadReservationSlot, loadReservationSlotOptions, saveReservationSlot, searchReservationSlots } from '../src/features/administration/reservation-slots/api.js'
 import { ApiError } from '../src/shared/api/http.js'
 const realFetch = globalThis.fetch
 afterEach(() => { globalThis.fetch = realFetch })
@@ -97,4 +98,22 @@ test('reception API obtains candidates and posts selected doctor user IDs', asyn
   assert.equal(calls[2][0], '/api/receptions')
   assert.equal(calls[2][1].headers['X-CSRF-Token'], 'test-only')
   assert.deepEqual(JSON.parse(calls[2][1].body), { reception: { patient_id: 7, targets: [{ type: 'unreserved', department_id: 3, doctor_user_id: 12 }] } })
+})
+
+test('reservation slot API sends read conditions and saves its complete resource contract', async () => {
+  const calls = []
+  globalThis.fetch = async (url, options) => {
+    calls.push([url, options])
+    if (calls.length === 2) return { ok: true, json: async () => ({ token: 'test-only' }) }
+    return { ok: true, json: async () => calls.length === 1 ? { items: [], total: 0, page: 1, per_page: 50 } : { id: 7 } }
+  }
+  assert.deepEqual(await searchReservationSlots({ keyword: '午前', slotGroup: 'consultation', defaultDepartmentId: '2', active: 'true' }), { items: [], total: 0, page: 1, per_page: 50 })
+  assert.equal(calls[0][0], '/api/reservation_slots?page=1&per_page=50&keyword=%E5%8D%88%E5%89%8D&slot_group=consultation&default_department_id=2&active=true')
+  assert.deepEqual(await saveReservationSlot(null, { name: '午前内科', weekdays: [1], capacity: 5 }), { id: 7 })
+  assert.equal(calls[2][0], '/api/reservation_slots')
+  assert.equal(calls[2][1].headers['X-CSRF-Token'], 'test-only')
+  assert.deepEqual(JSON.parse(calls[2][1].body), { reservation_slot: { name: '午前内科', weekdays: [1], capacity: 5 } })
+  globalThis.fetch = async url => ({ ok: true, json: async () => url.endsWith('/options') ? { departments: [], doctor_users: [] } : { id: 7 } })
+  assert.deepEqual(await loadReservationSlot(7), { id: 7 })
+  assert.deepEqual(await loadReservationSlotOptions(), { departments: [], doctor_users: [] })
 })

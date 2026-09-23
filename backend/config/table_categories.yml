@@ -6,5 +6,6 @@ trn_receptions: transaction
 trn_equipment_executions: transaction
 mst_departments: master
 mst_occupations: master
+mst_reservation_slots: master
 schema_migrations: system
 ar_internal_metadata: system

@@ -32,7 +32,7 @@
 | Ruby構文・JavaScript言語機能 | L1 | 触れた経験・説明あり。単独の言語理解は未観測 | 実際の修正で使う構文だけ説明する |
 | Bootstrap・Tailwindの選択 | L1 | 違いの説明を受けた。自分で選択理由を説明する場面は未観測（#14） | UI要件に対して選ぶ理由を会話で扱う |
 
-更新根拠：[Issue #14の遡及評価](issues/issue-14.md)、[Issue #15の学習ログ](issues/issue-15.md)、[Issue #48の学習ログ](issues/issue-48.md)、[Issue #56の学習ログ](issues/issue-56.md)。既存のC#/.NET・SQL・業務知識は引き続き説明の足場にする。上の段階はWebの対象概念だけの評価である。
+更新根拠：[Issue #14の遡及評価](issues/issue-14.md)、[Issue #15の学習ログ](issues/issue-15.md)、[Issue #48の学習ログ](issues/issue-48.md)、[Issue #56の学習ログ](issues/issue-56.md)、[Issue #62の学習ログ](issues/issue-62.md)。Issue #62では予約枠と予約実績の責務境界を扱ったが、実コードのHTTP→Controller→保存を本人が一続きに説明した新しい根拠はないため、段階は維持する。既存のC#/.NET・SQL・業務知識は引き続き説明の足場にする。上の段階はWebの対象概念だけの評価である。
 
 ## 更新方針
 
