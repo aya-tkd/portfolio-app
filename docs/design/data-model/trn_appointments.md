@@ -14,6 +14,7 @@ Issue #38 / Design #40。[画面・操作](../outpatient/outpatient-list.md)。�
 | doctor_user_id | 任意の`mst_users`外部キー。受付で選択した担当医ユーザーを保持し、削除は制限する |
 | doctor_name | 任意の担当医表示名、最大100文字。選択時の氏名スナップショット。既存の手入力履歴も保持する |
 | status | reserved / cancelled。DB CHECK。診察状態とは別 |
+| reservation_slot_id | 任意の`mst_reservation_slots`外部キー。Issue #62では既存行をNULLのまま保ち、後続の予約取得で新規予約へ設定する |
 | created_at / updated_at | Railsの管理時刻 |
 
 scheduled_at索引。受付に紐づく親なし予約は1件までの部分一意索引。同じ受付に別診察を混ぜない。子は親と患者・科・日付・受付が一致することをModelで検証する。受付登録操作の実装時には親子の一括紐付けをトランザクションで実装する（#38では登録APIなし）。

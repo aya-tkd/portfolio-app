@@ -11,5 +11,8 @@ Rails.application.routes.draw do
     resources :departments, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
     resources :occupations, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
     resources :users, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
+    resources :reservation_slots, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ } do
+      get :options, on: :collection
+    end
   end
 end

@@ -8,21 +8,38 @@ import DepartmentForm from '../departments/components/DepartmentForm.vue'
 import { searchOccupations } from '../occupations/api.js'
 import OccupationForm from '../occupations/components/OccupationForm.vue'
 import UserMasterPane from '../users/components/UserMasterPane.vue'
+import ReservationSlotMasterPane from '../reservation-slots/components/ReservationSlotMasterPane.vue'
 
 const emit = defineEmits(['cancelled'])
 const master = ref('patient'), keyword = ref(''), active = ref(''), rows = ref([]), selectedId = ref(null), busy = ref(false), message = ref('')
 const editingId = ref(null), formOpen = ref(false)
+const reservationSlotPane = ref(null), reservationSlotDirty = ref(false), pendingMaster = ref(null)
 const definitions = {
   patient: { label: '患者マスタ', group: '患者情報', placeholder: '患者番号・氏名・カナ氏名', columns: [['patient_number','患者番号'], ['name','氏名'], ['kana','カナ氏名'], ['birth_date','生年月日'], ['sex','性別']] },
   department: { label: '診療科マスタ', group: '業務マスタ', placeholder: '診療科名・カナ名', columns: [['id','ID'], ['name','診療科名'], ['kana_name','カナ名'], ['abbreviation','略名'], ['display_order','表示順'], ['active','利用状態']] },
   occupation: { label: '職種マスタ', group: '業務マスタ', placeholder: '職種名', columns: [['id','ID'], ['name','職種名'], ['display_order','表示順'], ['active','利用状態']] },
   user: { label: 'ユーザーマスタ', group: '利用者・権限', placeholder: '', columns: [] },
+  reservationSlot: { label: '予約枠マスタ', group: '業務マスタ', placeholder: '', columns: [] },
 }
 const definition = computed(() => definitions[master.value])
 const formComponent = computed(() => ({ patient: PatientForm, department: DepartmentForm, occupation: OccupationForm })[master.value])
 const formIdProp = computed(() => ({ patient: 'patient-id', department: 'department-id', occupation: 'occupation-id' })[master.value])
 const normalizedRows = computed(() => rows.value.map(row => master.value === 'patient' ? ({ ...row, name: `${row.last_name} ${row.first_name}`, kana: `${row.last_name_kana} ${row.first_name_kana}`, sex: ({ male: '男性', female: '女性', other: 'その他' })[row.sex] || '—' }) : ({ ...row, active: row.active ? '利用中' : '停止中' })))
-function select(next) { master.value = next; keyword.value = ''; active.value = ''; selectedId.value = null; editingId.value = null; formOpen.value = false; load() }
+function applyMaster(next) {
+  pendingMaster.value = null
+  master.value = next; keyword.value = ''; active.value = ''; selectedId.value = null; editingId.value = null; formOpen.value = false
+  if (next !== 'user' && next !== 'reservationSlot') load()
+}
+async function select(next) {
+  if (next === master.value) return
+  // 予約枠フォームだけは、設計v0.2どおり左ナビ切替でも未保存の破棄確認を通す。
+  if (master.value === 'reservationSlot' && reservationSlotDirty.value) {
+    pendingMaster.value = next
+    if (!await reservationSlotPane.value?.requestLeave()) return
+  }
+  applyMaster(next)
+}
+function completePendingMaster() { if (pendingMaster.value) applyMaster(pendingMaster.value) }
 async function load() { busy.value = true; message.value = ''; selectedId.value = null; try { rows.value = master.value === 'patient' ? await searchPatients({ patientNumber: /^\d+$/.test(keyword.value) ? keyword.value : '', name: /^\d+$/.test(keyword.value) ? '' : keyword.value }) : master.value === 'department' ? await searchDepartments({ keyword: keyword.value, active: active.value }) : await searchOccupations({ keyword: keyword.value, active: active.value }) } catch (error) { rows.value = []; message.value = error.message || '検索に失敗しました。' } finally { busy.value = false } }
 function openForm(id = null) { editingId.value = id; formOpen.value = true }
 async function closeForm(saved) {
@@ -40,10 +57,11 @@ onMounted(load)
 
 <template>
   <section class="master-settings">
-    <nav class="master-settings__nav" aria-label="設定するマスタ"><strong>マスタ設定</strong><span>患者情報</span><button :class="{ active: master === 'patient' }" @click="select('patient')">患者マスタ</button><span>業務マスタ</span><button :class="{ active: master === 'department' }" @click="select('department')">診療科マスタ</button><button :class="{ active: master === 'occupation' }" @click="select('occupation')">職種マスタ</button><span>利用者・権限</span><button :class="{ active: master === 'user' }" @click="master='user'">ユーザーマスタ</button></nav>
+    <nav class="master-settings__nav" aria-label="設定するマスタ"><strong>マスタ設定</strong><span>患者情報</span><button :class="{ active: master === 'patient' }" @click="select('patient')">患者マスタ</button><span>業務マスタ</span><button :class="{ active: master === 'department' }" @click="select('department')">診療科マスタ</button><button :class="{ active: master === 'occupation' }" @click="select('occupation')">職種マスタ</button><button :class="{ active: master === 'reservationSlot' }" @click="select('reservationSlot')">予約枠マスタ</button><span>利用者・権限</span><button :class="{ active: master === 'user' }" @click="select('user')">ユーザーマスタ</button></nav>
     <main class="master-settings__main">
-      <header v-if="master !== 'user'" class="master-settings__title"><h1>{{ definition.label }}</h1><span>{{ definition.label.replace('マスタ', '') }}を検索し、登録・編集します。</span></header>
+      <header v-if="master !== 'user' && master !== 'reservationSlot'" class="master-settings__title"><h1>{{ definition.label }}</h1><span>{{ definition.label.replace('マスタ', '') }}を検索し、登録・編集します。</span></header>
       <UserMasterPane v-if="master === 'user'" @cancelled="emit('cancelled')" />
+      <ReservationSlotMasterPane v-else-if="master === 'reservationSlot'" ref="reservationSlotPane" @cancelled="emit('cancelled')" @dirty-change="reservationSlotDirty = $event" @form-closed="completePendingMaster" />
       <template v-else-if="!formOpen">
         <form class="master-settings__search" @submit.prevent="load"><label>検索条件<input v-model="keyword" :placeholder="definition.placeholder" autocomplete="off"></label><label v-if="master !== 'patient'">利用状態<select v-model="active"><option value="">すべて</option><option value="true">利用中</option><option value="false">停止中</option></select></label><button class="btn btn-secondary" :disabled="busy">検索</button></form>
         <section class="master-settings__results" aria-live="polite"><header><strong>検索結果</strong><span>{{ normalizedRows.length }}件</span></header><div class="master-settings__grid"><table><thead><tr><th v-for="column in definition.columns" :key="column[0]" scope="col">{{ column[1] }}</th></tr></thead><tbody><tr v-for="row in normalizedRows" :key="row.id" :class="{ selected: selectedId === row.id }" @click="selectedId = row.id"><td v-for="column in definition.columns" :key="column[0]">{{ row[column[0]] ?? '—' }}</td></tr></tbody></table><p v-if="!busy && !normalizedRows.length && !message" class="master-settings__message">該当する{{ definition.label }}はありません。</p><p v-if="message" class="master-settings__message">{{ message }}</p></div></section>

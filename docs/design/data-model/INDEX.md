@@ -13,6 +13,7 @@
 | mst_departments | [mst_departments.md](mst_departments.md) | 診療科の名称・表示順・利用状態 | このブランチに実装あり（Issue #14） |
 | mst_occupations | [mst_occupations.md](mst_occupations.md) | 職種名・表示順・利用状態 | このブランチに実装あり（Issue #15） |
 | mst_users | [mst_users.md](mst_users.md) | 氏名・カナ氏名・診療科・職種・利用状態 | このブランチに実装あり（Issue #16） |
+| mst_reservation_slots | [mst_reservation_slots.md](mst_reservation_slots.md) | 診察・設備の繰り返し時間枠と初期値 | Issue #62 |
 
 ## テーブル命名ルール
 

@@ -52,4 +52,10 @@ Before completing each phase (requirements, design, implementation, tests, PR fe
 
 After PR creation succeeds, record its URL, phase outcomes, feedback and test evidence in the session-log Sub-issue and close that log before reporting PR readiness. Append later PR feedback and merge confirmation to the same closed log; this is not parent Issue completion or human acceptance.
 
+## Continuous execution after an explicit delivery request
+
+Once the user explicitly asks to proceed with an approved Issue, continue the authorized phase through its defined handoff. Do not use a final response merely to report a routine intermediate result such as a file inspection, partial implementation, individual test, or build result.
+
+For an approved implementation phase, the normal handoff is a verified PR with its completed template, tests, local acceptance setup, and session-log record. Stop earlier only when a Human Gate, a material design change, a safety boundary, or a genuine technical blocker requires the user's decision. Use commentary for brief progress updates while continuing the work.
+
 On a merge/completion follow-up, follow the workflow's cleanup checks: verify merge and parent Close, record any required resolution evidence, return to updated main, and delete only the verified merged remote/local task branches. Preserve uncommitted/unpushed work. Do not create a new improvement branch or tracked changes during normal cleanup; record newly discovered ideas for a later authorized task.

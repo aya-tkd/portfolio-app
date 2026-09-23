@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_000100) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_000100) do
   create_table "mst_departments", force: :cascade do |t|
     t.string "abbreviation", limit: 20
     t.boolean "active", default: true, null: false
@@ -53,6 +53,37 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_000100) do
     t.check_constraint "sex IN ('', 'male', 'female', 'other')", name: "patients_sex_values"
   end
 
+  create_table "mst_reservation_slots", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.integer "capacity", null: false
+    t.datetime "created_at", null: false
+    t.integer "default_department_id"
+    t.integer "default_doctor_user_id"
+    t.integer "display_order", default: 0, null: false
+    t.integer "end_minute", null: false
+    t.integer "interval_minutes", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "name", limit: 100, null: false
+    t.string "slot_group", null: false
+    t.integer "start_minute", null: false
+    t.datetime "updated_at", null: false
+    t.date "valid_from", null: false
+    t.date "valid_to", null: false
+    t.integer "weekdays_mask", null: false
+    t.index ["default_department_id"], name: "index_mst_reservation_slots_on_default_department_id"
+    t.index ["default_doctor_user_id"], name: "index_mst_reservation_slots_on_default_doctor_user_id"
+    t.index ["display_order", "id"], name: "index_mst_reservation_slots_on_display_order_and_id"
+    t.check_constraint "active IN (0, 1)", name: "mst_reservation_slots_active_values"
+    t.check_constraint "capacity >= 1", name: "mst_reservation_slots_capacity_positive"
+    t.check_constraint "display_order >= 0", name: "mst_reservation_slots_display_order_nonnegative"
+    t.check_constraint "end_minute BETWEEN 1 AND 1440 AND start_minute < end_minute", name: "mst_reservation_slots_end_minute_range"
+    t.check_constraint "interval_minutes >= 1", name: "mst_reservation_slots_interval_positive"
+    t.check_constraint "slot_group IN ('consultation', 'equipment')", name: "mst_reservation_slots_slot_group_values"
+    t.check_constraint "start_minute BETWEEN 0 AND 1439", name: "mst_reservation_slots_start_minute_range"
+    t.check_constraint "valid_from <= valid_to", name: "mst_reservation_slots_valid_period"
+    t.check_constraint "weekdays_mask BETWEEN 1 AND 127", name: "mst_reservation_slots_weekdays_mask_range"
+  end
+
   create_table "mst_users", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
@@ -78,6 +109,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_000100) do
     t.integer "parent_appointment_id"
     t.integer "patient_id", null: false
     t.integer "reception_id"
+    t.integer "reservation_slot_id"
     t.datetime "scheduled_at", null: false
     t.string "status", default: "reserved", null: false
     t.datetime "updated_at", null: false
@@ -87,6 +119,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_000100) do
     t.index ["patient_id"], name: "index_trn_appointments_on_patient_id"
     t.index ["reception_id"], name: "index_trn_appointments_on_reception_id"
     t.index ["reception_id"], name: "one_root_per_reception", unique: true, where: "parent_appointment_id IS NULL AND reception_id IS NOT NULL"
+    t.index ["reservation_slot_id"], name: "index_trn_appointments_on_reservation_slot_id"
     t.index ["scheduled_at"], name: "index_trn_appointments_on_scheduled_at"
     t.check_constraint "appointment_kind IN ('consultation','equipment')", name: "appointment_kind"
     t.check_constraint "status IN ('reserved','cancelled')", name: "appointment_status"
@@ -132,10 +165,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_000100) do
     t.check_constraint "consultation_status IN ('received','called','consulting','consulted')", name: "reception_status"
   end
 
+  add_foreign_key "mst_reservation_slots", "mst_departments", column: "default_department_id"
+  add_foreign_key "mst_reservation_slots", "mst_users", column: "default_doctor_user_id"
   add_foreign_key "mst_users", "mst_departments", column: "department_id"
   add_foreign_key "mst_users", "mst_occupations", column: "occupation_id"
   add_foreign_key "trn_appointments", "mst_departments", column: "department_id"
   add_foreign_key "trn_appointments", "mst_patients", column: "patient_id"
+  add_foreign_key "trn_appointments", "mst_reservation_slots", column: "reservation_slot_id"
   add_foreign_key "trn_appointments", "mst_users", column: "doctor_user_id"
   add_foreign_key "trn_appointments", "trn_appointments", column: "parent_appointment_id"
   add_foreign_key "trn_appointments", "trn_receptions", column: "reception_id"
