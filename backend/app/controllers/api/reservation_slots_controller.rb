@@ -32,6 +32,28 @@ module Api
       render json: { departments: departments.map { |department| { id: department.id, name: department.name } }, doctor_users: doctors }
     end
 
+    # 予約画面の週間表へ、枠・日時ごとの残数を返す。枠マスタの適用外日時も0件として明示する。
+    def availability
+      week_start = Date.iso8601(params.fetch(:week_start))
+      raise ArgumentError unless week_start.monday?
+
+      slot = ReservationSlot.find(params[:id])
+      counts = slot.appointments.where(status: 'reserved', scheduled_at: week_start.beginning_of_day..(week_start + 6).end_of_day).group(:scheduled_at).count
+      times = (0..6).flat_map do |offset|
+        date = week_start + offset
+        next [] unless slot.active? && slot.valid_from <= date && date <= slot.valid_to && slot.weekdays.include?(date.cwday)
+
+        (slot.start_minute...slot.end_minute).step(slot.interval_minutes).map do |minute|
+          scheduled_at = Time.zone.local(date.year, date.month, date.day, minute / 60, minute % 60)
+          booked = counts.fetch(scheduled_at, 0)
+          { scheduled_at: scheduled_at.iso8601, ends_at: (scheduled_at + slot.interval_minutes.minutes).iso8601, capacity: slot.capacity, booked_count: booked, remaining: [slot.capacity - booked, 0].max }
+        end
+      end
+      render json: { reservation_slot_id: slot.id, week_start: week_start.iso8601, times: }
+    rescue Date::Error, KeyError, ArgumentError
+      render json: { message: "週開始日は月曜日のYYYY-MM-DDで指定してください。" }, status: :bad_request
+    end
+
     def show
       render json: present(ReservationSlot.includes(:default_department, default_doctor_user: :occupation).find(params[:id]))
     end

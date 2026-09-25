@@ -11,6 +11,7 @@ class ReservationSlot < ApplicationRecord
   belongs_to :default_department, class_name: "Department", optional: true
   belongs_to :default_doctor_user, class_name: "User", optional: true
   has_many :appointments, dependent: :restrict_with_exception
+  has_many :reservation_slot_usages, dependent: :restrict_with_exception
 
   validates :name, presence: { message: "入力してください。" }, length: { maximum: 100, message: "100文字以内で入力してください。" }
   validates :slot_group, inclusion: { in: SLOT_GROUPS, message: "選択肢から選んでください。" }

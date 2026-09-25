@@ -1,5 +1,7 @@
 # Data Model Index
 
+予約枠の日時別利用数：[trn_reservation_slot_usages](trn_reservation_slot_usages.md)（Issue #64）。
+
 テーブル設計はテーブル単位で管理します。テーブルを追加・変更する場合は、対応するテーブル設計Docと、影響する画面・操作設計Docを同じPRで更新します。
 
 ## テーブル一覧

@@ -2,6 +2,7 @@
 # 未指定テーブルも未分類に表示し、見落としや推測による誤分類を防ぐ。
 mst_patients: master
 trn_appointments: transaction
+trn_reservation_slot_usages: transaction
 trn_receptions: transaction
 trn_equipment_executions: transaction
 mst_departments: master
