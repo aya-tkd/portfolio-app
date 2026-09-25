@@ -78,7 +78,7 @@ function closeWorkspace() {
 
 function openReception() {
   if (!selectedId.value) return
-  if (props.mode === 'reception') emit('selected', patients.value.find(patient => patient.id === selectedId.value))
+  if (props.mode === 'reception' || props.mode === 'reservation') emit('selected', patients.value.find(patient => patient.id === selectedId.value))
   else window.location.assign(`/receptions/new?patient_id=${selectedId.value}`)
 }
 
@@ -128,7 +128,7 @@ onMounted(() => search())
       </div>
       <div v-else></div>
       <div class="buttons">
-        <button v-if="mode === 'reception'" type="button" class="btn btn-primary" :disabled="!hasSelection" @click="openReception">受付</button>
+        <button v-if="mode === 'reception' || mode === 'reservation'" type="button" class="btn btn-primary" :disabled="!hasSelection" @click="openReception">{{ mode === 'reservation' ? '予約' : '受付' }}</button>
         <button type="button" class="btn btn-secondary" @click="closeWorkspace">閉じる</button>
       </div>
     </footer>

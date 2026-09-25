@@ -6,6 +6,10 @@ Rails.application.routes.draw do
     get "db-schema", to: "sql_schemas#show" if Rails.env.development? || Rails.env.test?
     resources :patients, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ } do
       get :reception_candidates, on: :member, controller: "receptions"
+      get :reservation_booking, on: :member, controller: "appointments"
+    end
+    resources :appointments, only: [] do
+      post :bulk, on: :collection, action: :create_bulk
     end
     resources :receptions, only: :create
     resources :departments, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
@@ -13,6 +17,7 @@ Rails.application.routes.draw do
     resources :users, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ }
     resources :reservation_slots, only: %i[index show create update], constraints: { id: /[1-9][0-9]*/ } do
       get :options, on: :collection
+      get :availability, on: :member
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_000100) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_24_000100) do
   create_table "mst_departments", force: :cascade do |t|
     t.string "abbreviation", limit: 20
     t.boolean "active", default: true, null: false
@@ -165,6 +165,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_000100) do
     t.check_constraint "consultation_status IN ('received','called','consulting','consulted')", name: "reception_status"
   end
 
+  create_table "trn_reservation_slot_usages", force: :cascade do |t|
+    t.integer "booked_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.integer "reservation_slot_id", null: false
+    t.datetime "scheduled_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reservation_slot_id", "scheduled_at"], name: "index_reservation_slot_usages_on_slot_and_time", unique: true
+    t.index ["reservation_slot_id"], name: "index_trn_reservation_slot_usages_on_reservation_slot_id"
+    t.check_constraint "booked_count >= 0", name: "reservation_slot_usages_booked_count_nonnegative"
+  end
+
   add_foreign_key "mst_reservation_slots", "mst_departments", column: "default_department_id"
   add_foreign_key "mst_reservation_slots", "mst_users", column: "default_doctor_user_id"
   add_foreign_key "mst_users", "mst_departments", column: "department_id"
@@ -181,4 +193,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_000100) do
   add_foreign_key "trn_receptions", "mst_departments", column: "department_id"
   add_foreign_key "trn_receptions", "mst_patients", column: "patient_id"
   add_foreign_key "trn_receptions", "mst_users", column: "doctor_user_id"
+  add_foreign_key "trn_reservation_slot_usages", "mst_reservation_slots", column: "reservation_slot_id"
 end

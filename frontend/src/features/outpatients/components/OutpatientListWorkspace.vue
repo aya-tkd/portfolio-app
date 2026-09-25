@@ -5,6 +5,7 @@ import { nextTick, onMounted, ref } from 'vue'
 import { advanceOutpatient, loadOutpatients } from '../api.js'
 import PatientSearchWorkspace from '../../patients/components/PatientSearchWorkspace.vue'
 import ReceptionWorkspace from '../../receptions/components/ReceptionWorkspace.vue'
+import ReservationWorkspace from '../../reservations/components/ReservationWorkspace.vue'
 import OutpatientWorkflowDialog from './OutpatientWorkflowDialog.vue'
 import MasterSettingsWorkspace from '../../administration/components/MasterSettingsWorkspace.vue'
 
@@ -18,6 +19,7 @@ const activeWorkflow = ref(null), selectedPatientId = ref(null)
 function openPatientSearch() { activeWorkflow.value = 'patient-search' }
 function openMasterSettings() { activeWorkflow.value = 'master-settings' }
 function openReception(patient) { selectedPatientId.value = patient.id; activeWorkflow.value = 'reception' }
+function openReservation(patient) { selectedPatientId.value = patient.id; activeWorkflow.value = 'reservation' }
 function closeWorkflow() { activeWorkflow.value = null; selectedPatientId.value = null }
 async function completeReception() { closeWorkflow(); await search() }
 const time = value => value ? new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value)) : '—'
@@ -74,7 +76,7 @@ onMounted(search)
       <nav class="outpatient-nav" aria-label="業務メニュー">
         <span class="nav-group">外来業務</span>
         <a href="/outpatients" aria-current="page"><span aria-hidden="true">▤</span>外来一覧</a>
-        <button disabled><span aria-hidden="true">▦</span>予約<small>準備中</small></button>
+        <button type="button" class="outpatient-nav-action" @click="activeWorkflow = 'reservation-search'"><span aria-hidden="true">▦</span>予約</button>
         <button type="button" class="outpatient-nav-action" @click="openPatientSearch"><span aria-hidden="true">☑</span>受付</button>
         <button disabled><span aria-hidden="true">▣</span>会計<small>準備中</small></button>
         <div class="outpatient-admin"><span class="nav-group">管理</span><button type="button" class="outpatient-nav-action" @click="openMasterSettings"><span aria-hidden="true">⚙</span>マスタ設定</button></div>
@@ -111,6 +113,12 @@ onMounted(search)
   </div>
   <OutpatientWorkflowDialog v-if="activeWorkflow === 'patient-search'" mode="受付">
     <PatientSearchWorkspace modal mode="reception" @selected="openReception" @cancelled="closeWorkflow" />
+  </OutpatientWorkflowDialog>
+  <OutpatientWorkflowDialog v-if="activeWorkflow === 'reservation-search'" mode="予約">
+    <PatientSearchWorkspace modal mode="reservation" @selected="openReservation" @cancelled="closeWorkflow" />
+  </OutpatientWorkflowDialog>
+  <OutpatientWorkflowDialog v-if="activeWorkflow === 'reservation'" mode="予約">
+    <ReservationWorkspace :patient-id="selectedPatientId" @cancelled="closeWorkflow" @completed="completeReception" />
   </OutpatientWorkflowDialog>
   <OutpatientWorkflowDialog v-if="activeWorkflow === 'reception'" mode="受付">
     <ReceptionWorkspace modal :patient-id="selectedPatientId" @completed="completeReception" @cancelled="closeWorkflow" />
