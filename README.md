@@ -2,6 +2,10 @@
 
 医療機関における患者の予約から外来受付、診察待ち、呼び出し、会計完了までの患者導線を管理する、ポートフォリオ・学習用のWebシステムです。
 
+<img width="1915" height="899" alt="image" src="https://github.com/user-attachments/assets/8323f7fb-e650-400a-b808-e12170715f1f" />
+
+<img width="1513" height="901" alt="image" src="https://github.com/user-attachments/assets/3e591bca-a7b9-4157-8416-8dc193ea94c7" />
+
 ## 目的
 
 実際の医療業務を完全に再現することではなく、外来フローを題材にRails/VueによるWeb開発を学習・提示することを目的とします。
