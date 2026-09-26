@@ -1,8 +1,10 @@
-# 全Controllerの共通処理。CSRF検証と既知の例外のJSON化を担当する。
+# 全API Controllerの共通親。継承先へCSRF検証、no-storeヘッダー、既知の例外のJSON応答を適用する。
 # CSRF対策はログイン機能ではなく、ローカル限定という利用条件は変えない。
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
+  # Railsが各actionの前に実行し、患者情報を含む応答をブラウザへ保存させない。
   before_action { response.set_header("Cache-Control", "no-store") }
+  # rescue_fromは各actionで処理されない例外を捕捉し、API用HTTPステータスとJSONへ変換する。
   rescue_from ActiveRecord::RecordNotFound do
     render json: { message: "患者が見つかりません。" }, status: :not_found
   end

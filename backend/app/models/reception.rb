@@ -16,6 +16,7 @@ class Reception < ApplicationRecord
   after_create :assign_number
   attr_readonly :reception_number
 
+  # 一覧表示用の進捗を関連する診察・設備の実績から導出する。表示状態はDBへ保存しない。
   def display_status
     return "paid" if paid_at
     active = equipment_executions.reject(&:cancelled_at)
@@ -27,10 +28,12 @@ class Reception < ApplicationRecord
 
   private
 
+  # before_validation時点で重複しない仮番号を置き、保存時の必須検証を通す。
   def temporary_number
     self.reception_number ||= "pending-#{SecureRandom.uuid}"
   end
 
+  # after_createで確定したDB IDを受付番号に反映し、モデル状態をDBと合わせる。
   def assign_number
     self.class.where(id: id).update_all(reception_number: id.to_s)
     reload

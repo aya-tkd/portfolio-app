@@ -2,11 +2,12 @@
 
 通常記録。親Issue #85、設計 #86、テスト #87、セッションログ #88。
 
-今回の作業は既存コードへのコメント整備であり、ユーザー自身がWebの処理経路を説明したり実装上の概念理解を示したやり取りはない。設計承認・作業完了は学習段階の根拠にしない。
+今回の作業は既存コードへのコメント整備。ユーザーから「VueやRailsのライブラリ、お約束前提の作りは雰囲気しかわからず、理解が薄い」と自己申告があった。概念を自分の言葉で説明した根拠ではないため、理解度は据え置き、次の説明の深さを調整する根拠として扱う。
 
 | 観点 | 根拠 | 前→後 | 確かさ | 次の機会 |
 |---|---|---|---|---|
 | VueからRailsへのHTTP要求の流れ | Issueの対象としてFE API→Rails Controller→Active Recordの境界を整理した。実装はAIによるコメント追加で、ユーザーの説明・理解を示す根拠はない。 | L1維持 | 未確認 | 次の機能で一つの要求を入力から応答まで一緒に追う |
 | Railsの暗黙動作・保存処理 | コールバック、Strong Parameters、CSRF等の説明コメントを見直した。ユーザーが呼出し時点や副作用を自分の言葉で示した根拠はない。 | 現状維持 | 未確認 | 実際の保存処理をControllerからDBまで読む機会に扱う |
+| Vue/Railsのライブラリ・規約 | ユーザー自身が「雰囲気しかわからず、理解が薄い」と説明。具体的な仕組みの理解を示した発言ではない。 | L1維持 | 自己申告あり、個別概念は未確認 | コンポーネントの親子関係、Rails callback/Strong Parametersなど実コードに現れた仕組みを、その都度説明する |
 
-コード上の学習順は `PatientForm.vue` → `frontend/src/features/patients/api.js` → `backend/config/routes.rb` → `patients_controller.rb` → `patient.rb`。このIssueのレビューでコメントを正確化したが、理解度評価は変更しない。
+コード上の学習順は `PatientForm.vue` → `frontend/src/features/patients/api.js` → `backend/config/routes.rb` → `patients_controller.rb` → `patient.rb`。今回のFBを受け、コメントを細かな逐語説明ではなく「クラス・画面の役割」「主要な処理境界」「Vue/Railsの暗黙動作」に厚くする。理解度評価は変更しない。

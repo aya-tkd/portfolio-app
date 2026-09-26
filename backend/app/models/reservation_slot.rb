@@ -35,16 +35,19 @@ class ReservationSlot < ApplicationRecord
     values.sum { |day| WEEKDAY_BITS.fetch(day) }
   end
 
+  # DBのビット集合を画面/APIが使う曜日番号の配列へ戻す。
   def weekdays
     WEEKDAY_BITS.filter_map { |day, bit| day if (weekdays_mask.to_i & bit).positive? }
   end
 
+  # 予約実績がある枠は時間・定員などのスケジュールを変更できない。
   def schedule_editable?
     !appointments.exists?
   end
 
   private
 
+  # 以下のvalidate callback群は、枠の期間・時間・初期マスタと予約後の変更可否をまとめて検証する。
   def valid_period_and_time_range
     errors.add(:valid_to, "開始日以降を指定してください。") if valid_from.present? && valid_to.present? && valid_from > valid_to
     errors.add(:end_time, "開始時刻より後を指定してください。") if start_minute.present? && end_minute.present? && start_minute >= end_minute

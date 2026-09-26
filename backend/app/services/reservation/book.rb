@@ -6,15 +6,18 @@ class Reservation::Book
 
   Plan = Struct.new(:entry_key, :slot, :scheduled_at, :department, :doctor, :parent_entry_key, keyword_init: true)
 
+  # Controllerから保存要求を受け、検証から予約・定員保存までを開始する入口。
   def self.call(patient:, entries:)
     new(patient:, entries:).call
   end
 
+  # DB保存中に使う患者と、ブラウザから届いた仮予約一覧を保持する。
   def initialize(patient:, entries:)
     @patient = patient
     @raw_entries = Array(entries)
   end
 
+  # 予約全体を一つのトランザクションで検証・定員更新・保存する。
   def call
     Appointment.transaction do
       # SQLiteのSELECT FOR UPDATEは行ロックにならない。最初のSQLを更新にして
@@ -32,6 +35,7 @@ class Reservation::Book
 
   attr_reader :patient, :raw_entries
 
+  # 入力を予約計画へ変換し、日時・枠・画面内重複を検査する。
   def build_plans
     raise InvalidBooking, "予約内容を1件以上指定してください。" if raw_entries.empty?
 
@@ -55,6 +59,7 @@ class Reservation::Book
     plans
   end
 
+  # 診察と設備の親子関係を確認し、紐づく設備へ診療科・医師を引き継ぐ。
   def validate_links!(plans)
     by_key = plans.index_by(&:entry_key)
     raw_by_key = raw_entries.map { |entry| entry.to_h.symbolize_keys }.index_by { |entry| entry[:entry_key].to_s }
@@ -82,6 +87,7 @@ class Reservation::Book
     end
   end
 
+  # DBの現在予約数を読み直して定員を消費し、同一患者の重複予約も防ぐ。
   def consume_capacity!(plans)
     plans.each do |plan|
       usage = ReservationSlotUsage.lock.find_or_create_by!(reservation_slot: plan.slot, scheduled_at: plan.scheduled_at)
@@ -94,6 +100,7 @@ class Reservation::Book
     end
   end
 
+  # 診察を先に作成し、その後に親IDを必要とする設備予約を保存する。
   def persist!(plans)
     created = {}
     plans.select { |plan| plan.slot.slot_group == "consultation" }.each { |plan| created[plan.entry_key] = create_appointment!(plan) }
@@ -103,27 +110,32 @@ class Reservation::Book
     plans.map { |plan| created.fetch(plan.entry_key) }
   end
 
+  # 計画1件をAppointmentへ変換して保存する。設備の親予約は任意。
   def create_appointment!(plan, parent: nil)
     Appointment.create!(patient:, reservation_slot: plan.slot, department: plan.department, scheduled_at: plan.scheduled_at,
       appointment_kind: plan.slot.slot_group, equipment_name: plan.slot.slot_group == "equipment" ? plan.slot.name : nil,
       doctor_user: plan.doctor, doctor_name: plan.doctor&.display_name, parent_appointment: parent, status: "reserved")
   end
 
+  # 予約対象として有効な診療科をIDから取得し、無効なら業務エラーにする。
   def resolve_department(value)
     Department.find_by(id: positive_id(value), active: true) || raise(InvalidBooking, "有効な診療科を選択してください。")
   end
 
+  # 診療科に対して選択可能な医師を取得する。医師未定ならnilを返す。
   def resolve_doctor(value, department)
     return nil if value.blank?
 
     User.active_physicians_for(department).find_by(id: positive_id(value)) || raise(InvalidBooking, "選択した診療科で有効な担当医を選択してください。")
   end
 
+  # 外部入力を正の整数IDへ変換し、不正値はnilとして扱う。
   def positive_id(value)
     id = Integer(value, exception: false)
     id if id&.positive?
   end
 
+  # 画面のISO 8601日時をRailsの時間帯付き時刻へ変換する。
   def parse_time(value)
     raise ArgumentError unless value.to_s.match?(/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00(?:Z|[+-]\d{2}:\d{2})\z/)
     Date.iso8601(value[0, 10])
@@ -132,6 +144,7 @@ class Reservation::Book
     raise InvalidBooking, '予約日時を正しく指定してください。'
   end
 
+  # 予約枠の曜日・期間・時刻・間隔に指定日時が合うか確認する。
   def validate_slot_schedule!(slot, scheduled_at)
     minute = scheduled_at.hour * 60 + scheduled_at.min
     available = slot.valid_from <= scheduled_at.to_date && scheduled_at.to_date <= slot.valid_to && slot.weekdays.include?(scheduled_at.to_date.cwday) &&

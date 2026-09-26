@@ -1,16 +1,19 @@
 <script setup>
-// App.vueから職種画面として呼び出されるフォームのホスト。内部ID入力は一覧実装前の取得・編集確認用。
+// App.vueから職種マスタ画面として呼び出され、フォーム表示と完了通知を受け持つ画面ホスト。
+// 内部ID入力は一覧実装前の取得・編集確認用。
 // 保存結果を受けて完了通知を表示し、閉じた後は起動ボタンへフォーカスを戻す。
 import { nextTick, ref } from 'vue'
 import OccupationForm from './OccupationForm.vue'
 
 const active = ref(false), occupationId = ref(null), editId = ref(''), notice = ref(''), opener = ref(null)
+// 入力されたIDを検証し、新規または編集フォームを開く。
 function open(id, event) {
   if (id && !/^[1-9][0-9]*$/.test(String(id))) { notice.value = '内部IDは正の整数で指定してください。'; return }
   opener.value = event?.currentTarget || document.querySelector('#occupation-new')
   occupationId.value = id || null
   active.value = true
 }
+// 保存結果を通知表示に変換し、ダイアログを閉じて起動元へフォーカスを戻す。
 async function close(result) {
   active.value = false
   if (result) {

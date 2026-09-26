@@ -14,6 +14,7 @@ const loading = ref(false), saving = ref(false), message = ref(''), failed = ref
 const draft = ref(null), dialogError = ref(''), modal = ref(null), modalKind = ref('')
 let sequence = 0
 
+// 週カレンダーの日付計算。ブラウザの実行環境に左右されないよう日本時間を明示する。
 function dateKey(date) {
   return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo' }).format(date)
 }
@@ -44,6 +45,7 @@ const parentFor = item => cart.value.find(parent => parent.key === item.parent_e
 const attributes = item => parentFor(item) || item
 const selectedTime = cell => cart.value.some(item => item.slot.id === current.value?.id && item.scheduled_at === cell.scheduled_at)
 
+// current枠または週が変わるとwatchから呼ばれ、その条件の空き時間を再取得する。
 // 古い週の応答で新しい週を上書きしない。失敗時も前週の空きを選べないよう先にクリアする。
 async function reload() {
   const requestSequence = ++sequence
@@ -57,6 +59,7 @@ async function reload() {
     if (requestSequence === sequence) { message.value = error.message || '空き時間を取得できませんでした。'; failed.value = true }
   } finally { if (requestSequence === sequence) loading.value = false }
 }
+// Vueのwatchで選択枠・週の変更を監視し、表示カレンダーを同期する。
 watch([() => current.value?.id, week], reload)
 function changeWeek(event) { if (event.target.value) week.value = monday(event.target.value) }
 function toggle(id) {
@@ -70,6 +73,7 @@ async function showModal(kind) {
   modal.value.showModal()
 }
 function dismiss() { if (saving.value) return; modal.value.close(); modalKind.value = ''; draft.value = null }
+// 空きセルから仮予約を作り、診療科・医師・設備の紐付けを行うdialogを開く。
 function openTime(cell) {
   if (selectedTime(cell)) return
   const slot = current.value
@@ -77,12 +81,14 @@ function openTime(cell) {
   resetDoctor()
   showModal('entry')
 }
+// 予約内容ペインから登録前の設備紐付けを編集する。
 function editLink(item) { draft.value = { ...item }; showModal('entry') }
 function resetDoctor() { if (!doctors.value.some(doctor => doctor.id === draft.value.doctor_user_id)) draft.value.doctor_user_id = '' }
 function inheritParent() {
   const parent = parentFor(draft.value)
   if (parent) { draft.value.department_id = parent.department_id; draft.value.doctor_user_id = parent.doctor_user_id }
 }
+// dialogで確定した内容を画面内カートへ反映する。DB登録はsaveまで行わない。
 function confirmEntry() {
   inheritParent()
   if (!draft.value.department_id) { dialogError.value = '診療科を選択してください。'; return }
@@ -91,6 +97,7 @@ function confirmEntry() {
   else cart.value[index] = { ...draft.value }
   dismiss()
 }
+// カートから1件外す。診察を外す場合も子設備は残して親との紐付けだけ解除する。
 function remove(item) {
   // 親を除去しても設備予約は残し、引き継いだ診療科・医師を保持して紐付けだけ解除する。
   cart.value = cart.value.filter(value => value.key !== item.key).map(value => value.parent_entry_key === item.key ? { ...value, department_id: item.department_id, doctor_user_id: item.doctor_user_id, parent_entry_key: '' } : value)
@@ -99,8 +106,10 @@ function leave() {
   if (props.patientId) emit('cancelled')
   else window.location.assign('/outpatients')
 }
+// 登録中は閉じず、未登録内容がある場合は破棄確認を挟む。
 function close() { if (saving.value) return; if (cart.value.length) showModal('discard'); else leave() }
 function beforeUnload(event) { if (cart.value.length) { event.preventDefault(); event.returnValue = '' } }
+// カート内容を一括POSTし、DBの最終検証後に登録済み予約を再取得する。
 async function save() {
   if (saving.value || !cart.value.length) return
   saving.value = true
@@ -123,6 +132,7 @@ async function save() {
   catch { message.value = '予約は登録済みです。登録済み予約の再表示に失敗しました。'; failed.value = true }
 }
 onMounted(async () => {
+  // 初回表示時に患者・枠等を取得し、ブラウザ遷移時は未登録内容を保護する。
   window.addEventListener('beforeunload', beforeUnload)
   try { data.value = await loadReservationBooking(patientId) }
   catch (error) { message.value = error.message || '患者を読み込めませんでした。'; failed.value = true }
@@ -132,10 +142,12 @@ onBeforeUnmount(() => { sequence++; window.removeEventListener('beforeunload', b
 
 <template>
   <main class="reservation-workspace">
+    <!-- 患者の特定情報と通信・保存メッセージ。 -->
     <PatientBanner v-if="data" :patient="data.patient" />
     <p v-if="message" class="reservation-message" :class="{ error: failed }" role="status">{{ message }}</p>
     <p v-if="!data && !message" role="status">読み込み中です。</p>
     <section v-if="data" class="reservation-layout">
+      <!-- 診察／設備に分類した枠を複数選択する領域。 -->
       <section class="reservation-panel" aria-label="予約枠">
         <header class="panel-head"><h1>予約枠</h1><span>複数選択可</span></header>
         <div class="panel-scroll slot-tree">
@@ -148,6 +160,7 @@ onBeforeUnmount(() => { sequence++; window.removeEventListener('beforeunload', b
           </details>
         </div>
       </section>
+      <!-- 共通の週操作と、選択枠の空き時間カレンダー。 -->
       <section class="reservation-panel" aria-label="空き時間">
         <header class="panel-head"><h1>空き時間</h1><span>{{ week.replaceAll('-', '/') }}〜{{ days[6].slice(5).replace('-', '/') }}</span></header>
         <div class="week-controls">
@@ -174,6 +187,7 @@ onBeforeUnmount(() => { sequence++; window.removeEventListener('beforeunload', b
         </div>
       </section>
       <div class="reservation-right">
+        <!-- 時間選択後に画面内で確定した内容と設備の紐付けを編集する。 -->
         <section class="reservation-panel" aria-label="予約内容">
           <header class="panel-head"><h1>予約内容</h1><span>{{ cart.length }}件</span></header>
           <div class="panel-scroll booking-list">
@@ -184,6 +198,7 @@ onBeforeUnmount(() => { sequence++; window.removeEventListener('beforeunload', b
             </article>
           </div>
         </section>
+        <!-- DB登録済み予約を、今回の未登録カートと区別して表示する。 -->
         <section class="reservation-panel" aria-label="登録済み予約">
           <header class="panel-head"><h1>登録済み予約</h1><span>{{ data.appointments.length }}件</span></header>
           <div class="panel-scroll booking-list">
@@ -194,6 +209,7 @@ onBeforeUnmount(() => { sequence++; window.removeEventListener('beforeunload', b
       </div>
     </section>
     <footer class="reservation-foot"><span>予約対象 {{ cart.length }}件</span><div class="buttons"><button type="button" class="btn btn-primary" :disabled="!cart.length || saving" @click="showModal('register')">登録</button><button type="button" class="btn btn-secondary" :disabled="saving" @click="close">閉じる</button></div></footer>
+    <!-- 時間選択後の診療科・医師設定、登録前の最終確認、破棄確認を共通dialogで扱う。 -->
     <dialog ref="modal" class="reservation-modal" @cancel.prevent="dismiss">
       <template v-if="modalKind === 'entry' && draft">
         <header class="modal-head"><h2>時間枠を確定</h2></header>

@@ -5,6 +5,7 @@ module Outpatient
   class ListQuery
     STATUSES = %w[reserved received called consulting equipment_wait execution_wait billing_wait paid].freeze
 
+    # 日付・絞り込み条件を受け、一覧に出す受付済み行と未受付予約行を返す。
     def self.call(date:, department_id: nil, statuses: STATUSES)
       raise ArgumentError unless date.to_s.match?(/\A\d{4}-\d{2}-\d{2}\z/)
       day = Date.iso8601(date.to_s)

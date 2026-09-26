@@ -1,7 +1,8 @@
 # 患者検索から受付画面へ渡す、当日・未受付の予約候補を組み立てるQueryである。
-# ReceptionsController#candidates が呼び出し、DBの予約レコードを画面専用DTOへ変換する。
+# ReceptionsController#reception_candidates が呼び出し、DBの予約を画面専用DTOへ変換する。
 # 診察予約の子である設備予約は親へ要約して返し、単独設備予約は独立した候補として返す。
 class Reception::CandidatesQuery
+  # 患者と診療日を受け取り、受付可能な親予約と設備要約を画面DTOとして返す。
   def self.call(patient:, date: Date.current)
     start_at = Time.zone.local(date.year, date.month, date.day)
     appointments = Appointment.includes(:department, :doctor_user, :child_appointments)

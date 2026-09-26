@@ -12,6 +12,7 @@ export function searchPatients({ patientNumber = '', name = '' } = {}) {
   const suffix = query.toString()
   return request(`/api/patients${suffix ? `?${suffix}` : ''}`)
 }
+// 新規はPOST、既存はPATCHで患者を保存し、Railsの項目別エラーを呼び出し元へ返す。
 export async function savePatient(id, patient) {
   // Rails発行のトークンをCookieと共に保存要求へ付け、RailsのCSRF検証を通す。
   const { token } = await request('/api/csrf')

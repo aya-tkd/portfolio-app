@@ -15,8 +15,7 @@ class Patient < ApplicationRecord
   before_create :set_temporary_number
   after_create :assign_patient_number
 
-  # 患者番号の完全一致、または氏名・カナ氏名を連結した部分一致で患者を絞り込む読取責務。
-  # 呼び出し元はPatientsController#index。入力値は空白を除いて照合し、値はプレースホルダでDBへ渡すためSQL注入を許さない。
+  # PatientsController#indexから呼ばれ、患者番号・氏名・カナ名の条件を組み合わせて患者を検索する。
   def self.search(patient_number:, name:)
     scope = order(:id)
     number = patient_number.to_s.strip
@@ -36,11 +35,13 @@ class Patient < ApplicationRecord
 
   private
 
+  # 氏名の部分一致に使う検索キーから全角・半角スペースを除く。
   def self.normalize_search_name(value)
     value.to_s.delete(" 　")
   end
   private_class_method :normalize_search_name
 
+  # Railsのvalidate callbackから呼ばれ、入力前の値も使って生年月日の形式と未来日を検証する。
   def valid_birth_date
     # 型変換後は不正な日付もnilになり得るため、「未入力」と区別できる元の値を検証する。
     raw = birth_date_before_type_cast
@@ -61,6 +62,7 @@ class Patient < ApplicationRecord
     self.patient_number = "pending-#{SecureRandom.uuid}"
   end
 
+  # after_createでDB採番IDを患者番号に反映する。通常更新ではattr_readonlyで変更させない。
   def assign_patient_number
     # 初期化だけはreadonlyを迂回する。通常の編集では番号を変更できない。
     self.class.where(id: id).update_all(patient_number: id.to_s)
