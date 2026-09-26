@@ -1,5 +1,6 @@
 <script setup>
-// 職種フォームの呼び出し元。保存結果を受けて親画面の完了通知に表示する。
+// App.vueから職種画面として呼び出されるフォームのホスト。内部ID入力は一覧実装前の取得・編集確認用。
+// 保存結果を受けて完了通知を表示し、閉じた後は起動ボタンへフォーカスを戻す。
 import { nextTick, ref } from 'vue'
 import OccupationForm from './OccupationForm.vue'
 

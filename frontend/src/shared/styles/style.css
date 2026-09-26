@@ -1,4 +1,5 @@
 :root { color: #212529; background: #f1f3f5; font-synthesis: none; }
+/* 全機能で共有する画面の基礎スタイル。個別機能の配置・状態表現は各Workspace側に置く。 */
 body { margin: 0; background: #f1f3f5; font: 14px/1.5 "Yu Gothic UI", Meiryo, system-ui, sans-serif; }
 .workflow-overlay { position: fixed; inset: 0; z-index: 20; overflow: auto; background: #29323b80; padding: 5vh max(16px, calc((100vw - 1160px) / 2)); }
 .workflow-overlay > .app-head, .workflow-overlay > .workspace { max-width: 1100px; margin-right: auto; margin-left: auto; background: #f1f3f5; }

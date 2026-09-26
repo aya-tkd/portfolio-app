@@ -32,12 +32,14 @@ module Api
       render json: { departments: departments.map { |department| { id: department.id, name: department.name } }, doctor_users: doctors }
     end
 
-    # 予約画面の週間表へ、枠・日時ごとの残数を返す。枠マスタの適用外日時も0件として明示する。
+    # 予約画面の週間表へ、枠の適用対象となる日時ごとの残数を返す。
     def availability
       week_start = Date.iso8601(params.fetch(:week_start))
       raise ArgumentError unless week_start.monday?
 
       slot = ReservationSlot.find(params[:id])
+      # 予約済み件数を日時ごとに一括集計し、各時間枠で定員から差し引く。
+      # 枠の曜日・有効期間外は時間候補自体を生成せず、レスポンスにも含めない。
       counts = slot.appointments.where(status: 'reserved', scheduled_at: week_start.beginning_of_day..(week_start + 6).end_of_day).group(:scheduled_at).count
       times = (0..6).flat_map do |offset|
         date = week_start + offset

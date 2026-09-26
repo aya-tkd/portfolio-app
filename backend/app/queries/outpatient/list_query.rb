@@ -1,6 +1,7 @@
 module Outpatient
   # Controllerから日付・診療科・進捗を受け、受付行と未受付予約行を統合する読取処理。
   # 同一受付に採用済みの予約を除外し、SQL値はActive Recordのパラメータとして渡す。
+  # 取得元の異なる2種類のレコードをRowPresenterで同じ画面DTOに揃えてから、表示対象の進捗で絞る。
   class ListQuery
     STATUSES = %w[reserved received called consulting equipment_wait execution_wait billing_wait paid].freeze
 
