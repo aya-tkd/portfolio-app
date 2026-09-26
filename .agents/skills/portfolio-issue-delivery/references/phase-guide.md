@@ -9,7 +9,7 @@ Before each phase handoff, including every PR feedback round, run the workflow's
 - Create reviewed design, test, and session-log Sub-issues if they do not exist.
 - Move the parent Project Status to `設計レビュー` when the Project is configured.
 - Write As-Is / To-Be, scope, data CRUD, state changes, settings impact, test plan, and unresolved decisions in the design Sub-issue.
-- Before proposing structure or mocks, read the relevant UI guidelines, data-model index (including table prefixes), repository-structure guide, and code-readability rules. Explain the concrete FE → HTTP → BE → DB path and file responsibilities when new to the user; do not duplicate those rules into the Skill.
+- Before proposing structure or mocks, inspect the relevant design documents, existing screen implementations, shared components/styles, data-model index (including table prefixes), repository-structure guide, and code-readability rules. In the design Sub-issue and screen-operation document, name the reference screens/components, the patterns and captions to reuse, and each intentional difference with its reason. Explain the concrete FE → HTTP → BE → DB path and file responsibilities when new to the user; do not duplicate those rules into the Skill.
 - Run PdM, domain, and developer review passes and record their outcomes.
 - Create a local static HTML mock under `tmp/design-mocks/issue-<number>/` when a UI change is involved.
 - Stop and wait for the user to close the design Sub-issue.
@@ -26,6 +26,7 @@ Before each phase handoff, including every PR feedback round, run the workflow's
   - one document for each changed table;
   - affected HTML mocks and both design indexes.
 - If a material change is needed, record it in the design and session-log Sub-issues and return to design review before continuing.
+- Keep the approved mock consistent with the repository's shared screen frame, components, styles, and button vocabulary. Review the mock beside the named reference screens before requesting design approval; document intentional departures rather than treating them as implicit.
 
 ## 3. Test
 
@@ -34,6 +35,7 @@ Before each phase handoff, including every PR feedback round, run the workflow's
 - Run requirement traceability, design consistency, code-quality/security, and automated-test passes.
 - Record commands, results, failures, and resolutions in the test Sub-issue.
 - Map AC IDs to tests and record the tested commit or dirty state and environment. Test visible behavior, boundaries, and relevant regressions; distinguish not-run from pass. UI changes need actual rendered-screen verification in addition to the mock when the runtime is available.
+- For every UI change, run a dedicated independent reviewer using the `portfolio-ui-consistency-review` Skill. Provide the approved mock and design, named reference screen(s), and rendered implementation screenshots at matching viewport sizes and representative data density. Check both visual consistency (including labels/captions, alignment, wrapping, widths, scrolling, and reachable actions) and whether each design requirement/AC is demonstrably present. Record evidence and findings in the test Sub-issue; resolve material mismatches before PR. If an independent reviewer is unavailable, the Lead runs a separate review pass and labels it self-review. Missing screenshots or other required inputs leave the review incomplete, which blocks PR preparation. This review complements functional tests; it does not replace them.
 - Do not move to PR preparation while required tests fail.
 - For tables or long forms, check a realistically large result set, scroll headers, reachable actions, pagination boundaries, and keyboard operation where applicable. For DB renames, verify data/identity/constraints and migration reversibility in isolation, not only fresh schema creation.
 

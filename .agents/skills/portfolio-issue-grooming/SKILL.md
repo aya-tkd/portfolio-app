@@ -21,7 +21,7 @@ Read `AGENTS.md`, `docs/project/product-requirements.md`, `docs/development/issu
 
 Turn the user's conversational request into a parent Issue draft for one coherent, deliverable unit of work. Preserve the user's terminology, but make the objective, acceptance criteria, exclusions, and open decisions unambiguous.
 
-For UI work, use the screen/operation boundary in the issue workflow: list/search and registration/editing are separate Issues; new/edit may share one form and Issue. Do not bundle an entire business domain or speculative future features into the first screen.
+For UI work, split Issues by a user-visible business capability and the end-to-end work the user needs to complete, not automatically by CRUD operation or screen. Keep search, selection, registration/editing, and confirmation together when they form one coherent workflow and can be accepted as one outcome. Split work when each part is independently useful and can be designed, implemented, and accepted without leaving the user's intended workflow incomplete. Do not bundle an entire business domain or speculative future features into the first Issue.
 
 Use [the parent Issue format](references/parent-issue.md). Propose three Sub-issues: design, automated test, and session log. Do not split the parent Issue into implementation Sub-issues unless the work cannot be delivered safely as one unit.
 
