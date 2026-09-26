@@ -2,6 +2,7 @@ module Api
   # ローカル開発DBの確認用API。CSRF検証はApplicationControllerから継承する。
   # ブラウザからDBパスを受け取らず、現在のRails環境のDBだけを読み取る。
   class SqlQueriesController < ApplicationController
+    # 開発・テスト環境に限り、読み取りSQLをServiceへ渡して結果か入力エラーを返す。
     def create
       return head :not_found unless Rails.env.development? || Rails.env.test?
       render json: Development::SqlQuery.new.call(params[:sql], page: params.fetch(:page, 1))

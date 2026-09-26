@@ -2,6 +2,7 @@ module Outpatient
   # ローカル受入とE2E用の架空データを追加する。既存データの消去・再初期化は行わない。
   # 同一batch/日付では追加済み患者を再利用せず処理を省略し、進捗を巻き戻さない。
   class DemoData
+    # 受入確認用の架空患者・受付一式を、指定batchが未作成の場合だけ追加する。
     def self.call(batch: Date.current.to_s)
       marker = "外来デモ#{batch}"
       return if Patient.exists?(last_name: marker)

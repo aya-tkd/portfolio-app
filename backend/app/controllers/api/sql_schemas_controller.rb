@@ -1,7 +1,9 @@
 module Api
   # 開発用のテーブル一覧/列情報を返すHTTP窓口。DB内容の更新は行わない。
   class SqlSchemasController < ApplicationController
+    # tableの有無に応じてDB一覧または列情報を返し、存在しないテーブルは404にする。
     def show
+      # 開発・テスト時の確認機能であり、別環境では画面/APIの両方から使えないよう404にする。
       return head :not_found unless Rails.env.development? || Rails.env.test?
       render json: Development::SqlSchema.new.call(params[:table])
     rescue ActiveRecord::RecordNotFound

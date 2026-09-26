@@ -10,6 +10,7 @@ const editId = ref('')
 const notice = ref('')
 const opener = ref(null)
 
+// 内部IDを検証し、新規または編集フォームを開いて起動元を記録する。
 function open(id, event) {
   if (id && !/^[1-9][0-9]*$/.test(String(id))) {
     notice.value = '内部IDは正の整数で指定してください。'
@@ -20,6 +21,7 @@ function open(id, event) {
   active.value = true
 }
 
+// 子フォームの保存結果を完了通知へ変換し、閉じた後に起動ボタンへ戻る。
 async function close(result) {
   active.value = false
   if (result) {

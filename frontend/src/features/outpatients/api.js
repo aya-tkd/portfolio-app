@@ -2,6 +2,7 @@
 // 進捗の確定はRailsで行い、自動再送による二重処理を避ける。
 import { request } from '../../shared/api/http.js'
 
+// 日付・診療科・進捗を送り、一覧行と検索用の診療科を取得する。
 export function loadOutpatients({ date, departmentId = '', statuses } = {}) {
   const query = new URLSearchParams()
   if (date) query.set('date', date)
@@ -11,6 +12,7 @@ export function loadOutpatients({ date, departmentId = '', statuses } = {}) {
   return request(`/api/outpatients?${query}`)
 }
 
+// 一覧行のversionと操作を送り、受付または設備の進捗を更新した行を返す。
 export async function advanceOutpatient(row, action, equipmentId = null) {
   const { token } = await request('/api/csrf')
   return request(`/api/outpatients/${row.reception_id}`, {

@@ -30,6 +30,7 @@ const scheduleDisabled = computed(() => props.slotId && !values.schedule_editabl
 function snapshot() { return JSON.stringify(values) }
 function focusFirst() { form.value?.querySelector('#reservation-slot-name')?.focus() }
 function beforeUnload(event) { if (dirty.value || busy.value) { event.preventDefault(); event.returnValue = '' } }
+// APIへ送る前に、未選択の診療科・医師を空文字からnullへ揃える。
 function normalizeForSave() { return { ...values, default_department_id: values.default_department_id || null, default_doctor_user_id: values.default_doctor_user_id || null } }
 function doctorName(id) { return props.doctors.find(doctor => String(doctor.id) === String(id))?.name || '—' }
 
@@ -41,11 +42,13 @@ async function close() {
   resume.value?.focus()
   return false
 }
+// 破棄確認から編集へ戻り、DOM更新後に入力へフォーカスを戻す。
 async function resumeEdit() { discard.value = false; await nextTick(); focusFirst() }
 function handleKeydown(event) {
   if (event.key === 'Enter' && event.target.tagName === 'INPUT') event.preventDefault()
   if (event.key === 'Escape') { event.preventDefault(); close() }
 }
+// 入力値をAPIへ保存し、入力エラーと保存結果が不確かな通信失敗を分けて扱う。
 async function save() {
   if (busy.value || discard.value || loadFailed.value || uncertain.value) return
   busy.value = true; errors.value = {}; message.value = ''
@@ -63,7 +66,9 @@ async function save() {
   }
 }
 
+// 親のマスタ画面へ未保存状態を通知し、別マスタへ移る際の確認に使う。
 watch(dirty, value => emit('dirty-change', value), { immediate: true })
+// 診療科変更時に担当医候補を絞り、対象外になった医師選択は解除する。
 watch(() => values.default_department_id, () => {
   // 詳細取得中は停止済みの既存医師を表示用に保持する。利用者による診療科変更時だけ候補外を解除する。
   if (hydrating.value) return
@@ -103,10 +108,12 @@ defineExpose({ close, doctorName })
     <header class="dialog-head"><h2 id="reservation-slot-dialog-title">{{ slotId ? '予約枠編集' : '予約枠登録' }}</h2><span class="mode">{{ slotId ? '編集' : '新規' }}</span></header>
     <form ref="form" novalidate @submit.prevent="save" @keydown="handleKeydown">
       <div class="dialog-body">
+        <!-- 識別情報とサーバーからのエラー・処理中状態をフォーム先頭に表示する。 -->
         <div class="identity">枠ID <strong>{{ number }}</strong><span>基本情報</span></div>
         <p v-if="message" class="form-message" role="alert">{{ message }}</p><p v-if="busy" role="status">処理中です…</p>
         <p v-if="scheduleDisabled" class="form-message reservation-slot-form__notice">予約に使用された枠です。曜日・期間・時間・定員は変更できません。</p>
         <p class="section-heading">基本情報</p>
+        <!-- 枠名・グループなど、予約枠そのものの属性。 -->
         <fieldset class="fields" :disabled="busy || loadFailed">
           <div class="field field-wide"><label for="reservation-slot-name">枠名<span class="required" aria-label="必須">＊</span></label><div><input id="reservation-slot-name" v-model="values.name" class="form-control" maxlength="100" required autocomplete="off" :aria-invalid="!!errors.name" aria-describedby="reservation-slot-name-error"><p id="reservation-slot-name-error" class="field-error">{{ errors.name?.join(' ') }}</p></div></div>
           <div class="field"><label for="reservation-slot-group">枠グループ<span class="required" aria-label="必須">＊</span></label><div><select id="reservation-slot-group" v-model="values.slot_group" class="form-select" :disabled="scheduleDisabled" :aria-invalid="!!errors.slot_group" aria-describedby="reservation-slot-group-error"><option value="consultation">診察</option><option value="equipment">設備</option></select><p id="reservation-slot-group-error" class="field-error">{{ errors.slot_group?.join(' ') }}</p></div></div>
@@ -114,6 +121,7 @@ defineExpose({ close, doctorName })
           <div class="field"><label for="reservation-slot-display-order">表示順<span class="required" aria-label="必須">＊</span></label><div><input id="reservation-slot-display-order" v-model.number="values.display_order" class="form-control" type="number" min="0" required inputmode="numeric" :aria-invalid="!!errors.display_order" aria-describedby="reservation-slot-display-order-error"><p id="reservation-slot-display-order-error" class="field-error">{{ errors.display_order?.join(' ') }}</p></div></div>
         </fieldset>
         <p class="section-heading">利用日・時間</p>
+        <!-- 曜日、有効期間、時間間隔、定員から予約可能な時間を定義する。 -->
         <fieldset class="fields" :disabled="busy || loadFailed || scheduleDisabled">
           <div class="field field-wide"><span class="reservation-slot-form__label">曜日<span class="required" aria-label="必須">＊</span></span><div><div class="reservation-slot-form__days"><label v-for="day in weekdays" :key="day.value"><input v-model="values.weekdays" type="checkbox" :value="day.value">{{ day.label }}</label></div><p class="field-error">{{ errors.weekdays?.join(' ') || errors.weekdays_mask?.join(' ') }}</p></div></div>
           <div class="field"><label for="reservation-slot-valid-from">有効開始日<span class="required" aria-label="必須">＊</span></label><div><input id="reservation-slot-valid-from" v-model="values.valid_from" class="form-control" type="date" required :aria-invalid="!!errors.valid_from" aria-describedby="reservation-slot-valid-from-error"><p id="reservation-slot-valid-from-error" class="field-error">{{ errors.valid_from?.join(' ') }}</p></div></div>
@@ -125,6 +133,7 @@ defineExpose({ close, doctorName })
         </fieldset>
         <p class="field-help reservation-slot-form__help">{{ values.interval_minutes || '—' }}分ごとの各枠に{{ values.capacity || '—' }}人まで。診療科・医師によらず定員を共有します。</p>
         <p class="section-heading">予約の初期値</p>
+        <!-- 診療科・医師は予約時の初期選択値であり、予約時に変更できる。 -->
         <fieldset class="fields" :disabled="busy || loadFailed">
           <div class="field"><label for="reservation-slot-department">初期診療科</label><div><select id="reservation-slot-department" v-model="values.default_department_id" class="form-select" :aria-invalid="!!errors.default_department_id" aria-describedby="reservation-slot-department-error"><option value="">未設定</option><option v-for="department in departmentOptions" :key="department.id" :value="department.id">{{ department.name }}</option></select><p id="reservation-slot-department-error" class="field-error">{{ errors.default_department_id?.join(' ') }}</p></div></div>
           <div class="field"><label for="reservation-slot-doctor">初期医師</label><div><select id="reservation-slot-doctor" v-model="values.default_doctor_user_id" class="form-select" :aria-invalid="!!errors.default_doctor_user_id" aria-describedby="reservation-slot-doctor-error"><option value="">未設定</option><option v-for="doctor in doctorOptions" :key="doctor.id" :value="doctor.id">{{ doctor.name }}</option></select><p id="reservation-slot-doctor-error" class="field-error">{{ errors.default_doctor_user_id?.join(' ') }}</p></div></div>

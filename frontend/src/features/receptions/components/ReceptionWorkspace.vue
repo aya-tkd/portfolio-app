@@ -26,6 +26,7 @@ const patientId = computed(
   () =>
     props.patientId || new URLSearchParams(location.search).get("patient_id"),
 );
+// 受付対象件数、必須担当医、送信可否を画面状態から導出する。
 const selectedAppointments = computed(() =>
   appointments.value.filter((item) => selectedIds.value.includes(item.id)),
 );
@@ -73,6 +74,7 @@ const canSubmit = computed(
     !results.value.length,
 );
 
+// 予約枠を使わない当日受付の行を画面内へ追加する。
 function addUnreserved() {
   unreserved.value.push({
     key: crypto.randomUUID(),
@@ -92,6 +94,7 @@ function goOutpatients() {
   else window.location.assign("/outpatients");
 }
 
+// 患者IDを使って予約候補・診療科・医師を取得し、選択状態を初期化する。
 async function load() {
   if (!patientId.value) {
     error.value = true;
@@ -125,6 +128,7 @@ async function load() {
   }
 }
 
+// 必須項目を満たす予約・予約なし行を一括登録し、完了結果を保持する。
 async function submit() {
   if (saving.value || !canSubmit.value) return;
   saving.value = true;
@@ -165,6 +169,7 @@ onMounted(load);
 
 <template>
   <main class="reception-workspace">
+    <!-- 対象患者と読み込み・エラー状態を表示する。 -->
     <p v-if="patient" class="reception-breadcrumb">
       患者検索　›　患者No. {{ patient.patient_number }}　›　外来受付
     </p>
@@ -199,6 +204,7 @@ onMounted(load);
         有効な医師ユーザーが登録されていません。ユーザーマスタを確認してください。
       </p>
       <section class="reception-layout">
+        <!-- 既存予約を選び、行ごとに受付担当医を確定する領域。 -->
         <section
           class="reception-panel"
           aria-labelledby="appointment-reception"
@@ -331,6 +337,7 @@ onMounted(load);
             </table>
           </div>
         </section>
+          <!-- 予約なし受付は診療科・医師の組を追加行として入力する。 -->
           <section class="reception-panel" aria-labelledby="unreserved-reception">
             <div class="reception-panel__head">
               <h1 id="unreserved-reception">予約なし受付</h1>
@@ -413,6 +420,7 @@ onMounted(load);
           </div>
         </section>
       </section>
+      <!-- 全件登録成功後に受付番号を確認して外来一覧へ戻る。 -->
       <div
         v-if="results.length"
         class="reception-complete"

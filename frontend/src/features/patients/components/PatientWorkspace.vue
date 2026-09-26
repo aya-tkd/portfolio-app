@@ -5,6 +5,7 @@ import { ref, onMounted, nextTick } from 'vue'
 import PatientForm from './PatientForm.vue'
 
 const active = ref(false), patientId = ref(null), editId = ref(''), notice = ref(''), opener = ref(null)
+// パスに応じた新規・編集フォームを開き、直URLからも画面を再現できるようURLを揃える。
 function open(id, event) {
   if (id && !/^[1-9][0-9]*$/.test(String(id))) { notice.value = '内部IDは正の整数で指定してください。'; return }
   opener.value = event?.currentTarget || document.getElementById('new')
@@ -12,6 +13,7 @@ function open(id, event) {
   active.value = true
   history.replaceState(null, '', id ? `/patients/${id}/edit` : '/patients/new')
 }
+// 保存結果を通知へ変換し、URLをトップへ戻してから起動元へフォーカスを戻す。
 async function close(saved) {
   active.value = false
   history.replaceState(null, '', '/')
@@ -20,6 +22,7 @@ async function close(saved) {
   await nextTick()
   opener.value?.focus()
 }
+// 直URLで患者フォームを開いた場合も、ボタン操作と同じ状態遷移に通す。
 onMounted(() => {
   const path = location.pathname
   if (path === '/patients/new') open(null)

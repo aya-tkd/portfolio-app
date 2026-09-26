@@ -10,6 +10,7 @@ module Development
       @database_path = database_path
     end
 
+    # 読み取り専用SQLite接続でSQLを実行し、ページ単位のJSON向け結果を返す。
     def call(sql, page: 1)
       raise InvalidQuery, "SQLを入力してください（最大10,000文字）。" unless sql.is_a?(String) && sql.strip.present? && sql.length <= 10_000
       raise InvalidQuery, "ページ番号が不正です。" unless page.to_s.match?(/\A[1-9][0-9]{0,6}\z/)

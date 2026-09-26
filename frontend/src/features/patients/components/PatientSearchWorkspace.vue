@@ -25,10 +25,12 @@ const opener = ref(null)
 const resultHeading = ref(null)
 const hasSelection = computed(() => selectedId.value !== null)
 
+// 一覧で選んだ患者IDを保持し、編集や次の業務へ渡す。
 function select(patient) {
   selectedId.value = patient.id
 }
 
+// 検索条件をAPIへ送り、結果・選択中患者・通信状態を更新する。
 async function search(preferredId = null, focusResult = false) {
   if (loading.value) return
   loading.value = true
@@ -50,16 +52,19 @@ async function search(preferredId = null, focusResult = false) {
   }
 }
 
+// formのEnter送信を検索処理へつなぎ、必要なら結果見出しへフォーカスを移す。
 function submitSearch() {
   return search(null, true)
 }
 
+// 新規または選択患者の編集フォームを開き、閉じた後のフォーカス先を記録する。
 function open(patientId, event) {
   opener.value = event?.currentTarget || document.getElementById('patient-search-button')
   editingId.value = patientId
   active.value = true
 }
 
+// 保存成功なら同じ条件で検索し直して選択を保ち、閉じた後に起動元へ戻る。
 async function closeForm(saved) {
   active.value = false
   if (saved) {
@@ -70,12 +75,14 @@ async function closeForm(saved) {
   opener.value?.focus()
 }
 
+// 埋め込み利用は親へ閉じるイベントを返し、単独画面は患者入口へ移動する。
 function closeWorkspace() {
   // この画面は患者業務の入口から開かれる想定のため、閉じると既存の患者管理入口へ戻す。
   if (props.modal) emit('cancelled')
   else window.location.assign('/')
 }
 
+// 選択患者を受付／予約導線へ渡す。管理モードでは受付画面へ直接遷移する。
 function openReception() {
   if (!selectedId.value) return
   if (props.mode === 'reception' || props.mode === 'reservation') emit('selected', patients.value.find(patient => patient.id === selectedId.value))
@@ -89,6 +96,7 @@ onMounted(() => search())
   <main class="workspace patient-search">
     <h1>患者検索</h1>
 
+    <!-- 検索条件を入力し、submitSearchからAPI検索を開始する領域。 -->
     <form class="search-panel" @submit.prevent="submitSearch">
       <h2>検索条件</h2>
       <div class="search-fields">
@@ -100,6 +108,7 @@ onMounted(() => search())
       <div class="search-actions"><button id="patient-search-button" type="submit" class="btn btn-secondary" :disabled="loading">検索</button></div>
     </form>
 
+    <!-- 検索中・エラー・患者一覧を同じ結果ペインで切り替える領域。 -->
     <section class="result-panel" aria-labelledby="patient-search-result">
       <h2 id="patient-search-result" ref="resultHeading" tabindex="-1">検索結果</h2>
       <p v-if="loading" role="status">検索中です。</p>
@@ -121,6 +130,7 @@ onMounted(() => search())
       </div>
     </section>
 
+    <!-- モードに応じた編集・受付導線と、患者フォームの表示領域。 -->
     <footer class="screen-foot">
       <div v-if="mode !== 'reception'" class="buttons">
         <button type="button" class="btn btn-secondary" @click="open(null, $event)">新規</button>
