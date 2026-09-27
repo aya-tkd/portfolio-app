@@ -20,16 +20,21 @@
 - 閉じる/Escapeで未保存なら破棄確認。戻るで入力継続、警告付き中止で破棄。背面クリックは閉じない。
 - Tabはダイアログ内で循環。閉じた後は呼び出し元へフォーカスを戻す。入力欄のEnterでは送信しない。
 
-## 処理・HTTP・状態
+## 処理・API連携・状態
 
 `/patients/new`と`/patients/:id/edit`は同じVueフォームを使う。ホストの内部ID指定は一覧実装までの呼び出し確認用途。画面URLはreplaceStateで変更し、ダイアログ操作の履歴は追加しない。閉じる/保存成功後は`/`へ戻す。再読込・ページ離脱では未保存/送信中ならbeforeunloadを使うが、ブラウザ都合で表示が保証されるものではない。
 
-| HTTP | 処理 | 成功 | 失敗 |
+### API連携
+
+フォームの読込・保存で使うAPIの画面向け概要。CSRF検証とJSONエラー共通処理は[アーキテクチャ概要](../../architecture/overview.md)を参照。
+
+| HTTP method / URL | Request（主要項目） | Response（主要データ） | 主なエラーと画面の扱い |
 |---|---|---|---|
-| GET /api/csrf | CSRFトークン取得 | 200 | 通信エラー |
-| GET /api/patients/:id | 内部IDで取得 | 200＋患者JSON | 404 |
-| POST /api/patients | 登録 | 201＋患者JSON | 422項目エラー、403 CSRF |
-| PATCH /api/patients/:id | 編集 | 200＋患者JSON | 422、403、404 |
+| GET `/api/patients/:id` | path: 内部患者ID | 200: `id`, `patient_number`, 氏名・カナ、生年月日、性別 | 404: 読込失敗を表示し保存不可 |
+| POST `/api/patients` | JSON `patient`: 必須stringの氏名4項目、任意dateの生年月日・任意の性別 | 201: 保存した患者 | 422: 項目エラーを表示、403: 再読込を案内 |
+| PATCH `/api/patients/:id` | path: integer内部ID、body: POSTと同じ項目 | 200: 更新後の患者 | 422: 項目エラーを表示、403/404: 保存失敗を表示 |
+
+書込APIは`GET /api/csrf`で取得したtokenを`X-CSRF-Token`で送る。通信結果が不明な場合は自動再送しない。
 
 Vue → api.js → Railsルート → Controller → Patient → SQLite → JSON → Vueの順。保存中は入力・保存・閉じるを無効化。成功後は患者IDと表示Noを親へ通知して閉じる。入力不正は入力を保持して最初のエラーへフォーカス。読み込み失敗は登録不可、閉じるは可能。通信結果不明は入力を保持し、自動再送せず保存を無効化する（再確認方法の高度化は将来課題）。通信は15秒でタイムアウトするが、DB処理が取り消されたとはみなさない。
 

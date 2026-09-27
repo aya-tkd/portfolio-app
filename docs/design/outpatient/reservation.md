@@ -25,15 +25,29 @@
 
 実画面の回帰検証は `e2e/reservation-layout.spec.js` で、30枠・登録済み20件・24時間行を表示し、スクロール範囲と設備先行の紐付け変更、登録確認を確認する。
 
-## API契約
+## API連携
 
-| 用途 | URL / HTTPメソッド | Input | Output | 主なエラー |
-| --- | --- | --- | --- | --- |
-| 予約初期表示 | `GET /api/patients/:id/reservation_booking` | 患者ID | 患者、予約枠、診療科・医師、対象患者の登録済み予約 | 404: 患者なし |
-| 空き照会 | `GET /api/reservation_slots/:id/availability?week_start=YYYY-MM-DD` | 枠ID、週開始日（月曜） | 日時ごとの定員・予約数・残数 | 400: 日付不正、404: 枠なし |
-| 一括登録 | `POST /api/appointments/bulk` | `patient_id`、画面内キー・枠ID・日時・診療科ID・任意の医師ID・任意の親画面内キー | 作成した予約 | 422: 入力・マスタ・紐付け不整合、409: 定員超過・同一枠同時刻の重複 |
+| HTTP method / URL | Request（主要条件・項目） | Response（主要データ） | 主なエラーと画面の扱い |
+| --- | --- | --- | --- |
+| GET `/api/patients/:id/reservation_booking` | path: integer患者ID | 200: `patient`, 有効な`reservation_slots`, `departments`, `doctor_users`, 登録済み`appointments` | 404: 患者なしを表示 |
+| GET `/api/reservation_slots/:id/availability?week_start=YYYY-MM-DD` | path: integer枠ID、query: 月曜のISO date | 200: `times[]`（ISO datetime、integerの定員/予約数/残数） | 400: 月曜形式を案内、404: 枠なしを表示 |
+| POST `/api/appointments/bulk` | JSON `reservation`: integer `patient_id`、`entries[]`（string `entry_key`, integer枠/科ID、ISO datetime、任意integer医師ID、任意string親キー） | 201: 登録した`appointments[]` | 403: CSRF、422: 入力/関連不整合、409: 定員競合。内容を保持し空きを再確認 |
 
-設備の親画面内キーは診察予約を指す。画面の確定順に依存せず、サーバが診察予約を先に作成してから設備予約へ設定する。
+一括登録のrequest例（親キーで診察と設備の関係を表す）：
+
+```json
+{
+  "reservation": {
+    "patient_id": 12,
+    "entries": [
+      {"entry_key": "visit-1", "reservation_slot_id": 3, "scheduled_at": "2026-10-05T09:00:00+09:00", "department_id": 2},
+      {"entry_key": "mri-1", "reservation_slot_id": 8, "scheduled_at": "2026-10-05T10:00:00+09:00", "department_id": 2, "parent_entry_key": "visit-1"}
+    ]
+  }
+}
+```
+
+書込APIは`GET /api/csrf`でtokenを取得し`X-CSRF-Token`で送る。画面内の設備親キーは同じrequest内の診察予約を指す。サーバは画面上の確定順に依存せず関連を保存する。
 
 ## 保存時の整合性
 

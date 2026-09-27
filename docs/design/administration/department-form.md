@@ -19,16 +19,15 @@
 - フッターは「登録」（青、DB保存）→「閉じる」（グレー）。閉じるは最右に置く。
 - 閉じる/Escapeで未保存なら破棄確認を出す。Tabはダイアログ内で循環し、閉じた後は呼び出し元へフォーカスを戻す。入力欄のEnterでは送信しない。
 
-## 処理・HTTP・状態
+## 処理・API連携・状態
 
-| HTTP | 処理 | 成功 | 失敗 |
+| HTTP method / URL | Request（主要項目） | Response（主要データ） | 主なエラーと画面の扱い |
 |---|---|---|---|
-| GET /api/csrf | CSRFトークン取得 | 200 | 通信エラー |
-| GET /api/departments/:id | 編集対象を取得 | 200＋診療科JSON | 404 |
-| POST /api/departments | 新規登録 | 201＋診療科JSON | 422項目エラー、403 CSRF |
-| PATCH /api/departments/:id | 編集保存 | 200＋診療科JSON | 422、403、404 |
+| GET `/api/departments/:id` | path: 診療科ID | 200: `id`, `name`, `kana_name`, `abbreviation`, `display_order`, `active` | 404: 編集対象なしを表示 |
+| POST `/api/departments` | JSON `department`: 必須string `name`、任意string `kana_name`/`abbreviation`、必須integer `display_order`・boolean `active` | 201: 保存した診療科 | 422: 項目エラーを表示、403: CSRFエラーを表示 |
+| PATCH `/api/departments/:id` | path: integer診療科ID、body: POSTと同じ項目 | 200: 更新後の診療科 | 422: 項目エラー、403/404: 保存失敗を表示 |
 
-Vueは`api.js`を通じてCSRFトークン付きで要求する。RailsはRouteからController、Modelへ渡し、ActiveRecordが`mst_departments`を更新する。成功時のJSONに含まれる`id`と`name`を親画面の通知へ表示する。422では入力を保持して項目別エラーを表示し、通信結果不明時は自動再送しない。
+Vueは`api.js`を通じて要求する。書込APIは`GET /api/csrf`で取得したtokenを`X-CSRF-Token`で送る。RailsはRouteからController、Modelへ渡し、成功時は保存値をJSONで返す。422では入力を保持して項目別エラーを表示し、通信結果不明時は自動再送しない。
 
 ## CRUD・責務・設定
 

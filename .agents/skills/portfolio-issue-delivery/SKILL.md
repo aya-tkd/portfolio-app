@@ -42,6 +42,8 @@ During design review, create static HTML mocks only in `tmp/design-mocks/issue-<
 
 After design approval, preserve the reviewed mock under `docs/design/<area>/mocks/<screen>.html` and update the corresponding screen-operation and table documents in the implementation PR. Follow `docs/design/INDEX.md`; update existing documents rather than creating a new copy per Issue.
 
+For API changes or new API-using screens, follow the API documentation rule in `docs/development/issue-workflow.md`: identify impacted screen-operation docs, update their consumer-facing API integration summary in the same Issue/PR (or link the canonical API specification), and verify it against the frontend API call and Rails route/controller request and response. Record the review evidence in the test or session-log Sub-issue. Do not duplicate a separate API specification or update docs for an internal refactor that does not change the external contract or screen behavior.
+
 ## Learning and portfolio
 
 Read `docs/ai/working-agreement.md`, `docs/learning/user-technical-profile.md`, and `docs/learning/progress-rules.md`. Tie one or two Web concepts to the actual change and explain the request-to-DB-to-screen path with concrete files. Evaluate natural questions, paraphrases and review decisions; do not introduce assessment quizzes or require manual coding. Before PR creation and before completing each PR feedback round, update the Issue-specific learning log and review the concept-level profile using the rubric. Record a reason when levels remain unchanged. Do not infer mastery from an OK or a completed task.

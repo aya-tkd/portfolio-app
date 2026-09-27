@@ -33,13 +33,14 @@
 
 `PatientForm.vue`、`DepartmentForm.vue`、`OccupationForm.vue` は単独画面で使うダイアログとしての振る舞いを保ちつつ、`embedded` 指定時は右ペイン内フォームとして表示する。保存の検証・CSRF・再送しない扱いは既存フォームと同じである。
 
-## HTTPとデータ
+## API連携（一覧検索）
 
-| HTTP | 用途 | 条件 |
-|---|---|---|
-| GET `/api/patients` | 患者一覧 | `patient_number` は完全一致、`name` は部分一致 |
-| GET `/api/departments` | 診療科一覧 | `keyword` は名称・カナ名の部分一致、`active` は完全一致 |
-| GET `/api/occupations` | 職種一覧 | `keyword` は名称の部分一致、`active` は完全一致 |
-| GET `/api/reservation_slots` | 予約枠一覧 | 枠名部分一致、グループ・初期診療科・状態のAND、50件ページング |
+| HTTP method / URL | Request（queryの主要条件） | Response（画面で使う値） | 主なエラーと画面の扱い |
+|---|---|---|---|
+| GET `/api/patients` | `patient_number`完全一致、`name`部分一致（任意） | 200: 患者基本情報、当日予約有無 | 通信エラー: 一覧領域に失敗を表示 |
+| GET `/api/departments` | `keyword`名称・カナ部分一致、`active`状態（任意） | 200: 診療科基本情報 | 通信エラー: 一覧領域に失敗を表示 |
+| GET `/api/occupations` | `keyword`名称部分一致、`active`状態（任意） | 200: 職種基本情報 | 通信エラー: 一覧領域に失敗を表示 |
+
+ユーザーと予約枠は専用DocにAPI連携概要を記載する：[ユーザーマスタ](user-master.md)、[予約枠マスタ](reservation-slot-master.md)。
 
 既存の `mst_patients`、`mst_departments`、`mst_occupations` を参照・更新する。テーブル定義やMigration、削除、認証・認可はこの画面の対象外である。

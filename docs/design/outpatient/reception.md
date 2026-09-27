@@ -18,16 +18,18 @@
 4. 下部固定バーに対象数・発番予定数を表示する。`受付`はDBを更新する青色の主ボタン、`閉じる`は最右端の灰色ボタンとする。
 5. 登録成功時は診療科と受付No.を表示し、利用者が`外来一覧へ`で次業務へ進む。受付票印刷は対象外である。
 
-## APIとデータ更新
+## API連携とデータ更新
 
-| 操作 | API | 処理 |
-|---|---|---|
-| 候補表示 | `GET /api/patients/:id/reception_candidates` | 当日の未受付親予約と子設備、選択可能な医師ユーザーをDTOへ整形する。 |
-| 受付登録 | `POST /api/receptions` | 全対象を一つのDBトランザクションで検証・保存する。 |
+| HTTP method / URL | Request（主要条件・項目） | Response（主要データ） | 主なエラーと画面の扱い |
+|---|---|---|---|
+| GET `/api/patients/:id/reception_candidates` | path: integer患者ID | 200: 患者、当日の`appointments`、`departments`、`doctor_users`（ID・氏名・診療科ID） | 404: 患者なしを表示 |
+| POST `/api/receptions` | JSON `reception`: integer `patient_id`、`targets[]`（string `type`。予約対象は`appointment_id`、予約なし対象は`department_id`と`doctor_user_id`） | 201: `receptions[]`（ID、受付No.、診療科名） | 403: CSRF、422: 対象/入力不整合。入力を保持 |
+
+登録APIは選択内容全体を一括処理する。書込前に`GET /api/csrf`でtokenを取得し`X-CSRF-Token`で送る。
 
 候補の`doctor_users`には、有効なユーザーかつ有効な職種で、職種の`occupation_code`が`physician`のユーザーだけを返す。DTOには`id`、`name`、`department_id`（未設定はNULL）を含める。Vueは受付行の診療科に一致する医師、または担当診療科未設定の医師だけを選択肢に表示する。予約なし受付では診療科変更時に条件外となった担当医選択を解除する。一つでも予約済み・患者不一致・必須項目不足・無効・別診療科または医師以外のユーザー指定などがあれば、ServiceがDB上で再検証して全件をロールバックする。予約採用では`trn_receptions`を作成し、採用した`trn_appointments.reception_id`と`doctor_user_id`を設定する。設備予約には`trn_equipment_executions`も作成する。
 
-`doctor_name`はクライアントから受け取らない。サーバーが選択されたユーザーの表示名をスナップショットとして保存し、既存の名前だけの履歴は変更しない。画面設計DocのAPI契約表を標準化する作業は、別Issue #60で扱う。
+`doctor_name`はクライアントから受け取らない。サーバーが選択されたユーザーの表示名をスナップショットとして保存し、既存の名前だけの履歴は変更しない。
 
 ## テスト観点
 

@@ -29,17 +29,17 @@
 
 フッターの左から登録（DBを変更する色付きボタン）、閉じる（遷移のみのグレーボタン）を置き、閉じるは画面右下端に統一する。
 
-## 処理とHTTP
+## 処理とAPI連携
 
 Vueの`OccupationForm.vue`が画面の入力状態を管理し、`api.js`を通してRails APIを呼ぶ。Railsの`Api::OccupationsController`が`Occupation` Active Recordモデルを使い、`mst_occupations`へ保存する。保存後はJSONを同じ経路でVueへ返す。
 
-| HTTP | 用途 | 成功 | 主な失敗 |
+| HTTP method / URL | Request（主要項目） | Response（主要データ） | 主なエラーと画面の扱い |
 |---|---|---|---|
-| GET `/api/occupations/:id` | 編集前の取得 | 200 | 404 |
-| POST `/api/occupations` | 新規登録 | 201 | 403, 422 |
-| PATCH `/api/occupations/:id` | 更新 | 200 | 403, 404, 422 |
+| GET `/api/occupations/:id` | path: 職種ID | 200: `id`, `name`, `display_order`, `active`, `occupation_code` | 404: 編集対象なしを表示 |
+| POST `/api/occupations` | JSON `occupation`: 必須string `name`・`occupation_code`、必須integer `display_order`・boolean `active` | 201: 保存した職種 | 422: 項目エラー、403: CSRFエラーを表示 |
+| PATCH `/api/occupations/:id` | path: integer職種ID、body: POSTと同じ項目 | 200: 更新後の職種 | 422: 項目エラー、403/404: 保存失敗を表示 |
 
-CSRFトークンは保存前に`GET /api/csrf`で取得する。再送による二重登録を避けるため、通信結果が不明な場合は自動再送しない。
+書込APIでは`GET /api/csrf`で取得したtokenを`X-CSRF-Token`で送る。再送による二重登録を避けるため、通信結果が不明な場合は自動再送しない。
 
 ## CRUD・関連ファイル
 
