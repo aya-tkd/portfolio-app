@@ -25,11 +25,13 @@ const definition = computed(() => definitions[master.value])
 const formComponent = computed(() => ({ patient: PatientForm, department: DepartmentForm, occupation: OccupationForm })[master.value])
 const formIdProp = computed(() => ({ patient: 'patient-id', department: 'department-id', occupation: 'occupation-id' })[master.value])
 const normalizedRows = computed(() => rows.value.map(row => master.value === 'patient' ? ({ ...row, name: `${row.last_name} ${row.first_name}`, kana: `${row.last_name_kana} ${row.first_name_kana}`, sex: ({ male: '男性', female: '女性', other: 'その他' })[row.sex] || '—' }) : ({ ...row, active: row.active ? '利用中' : '停止中' })))
+// 選択先の状態を初期化し、検索可能なマスタなら新しい条件で一覧を取得する。
 function applyMaster(next) {
   pendingMaster.value = null
   master.value = next; keyword.value = ''; active.value = ''; selectedId.value = null; editingId.value = null; formOpen.value = false
   if (next !== 'user' && next !== 'reservationSlot') load()
 }
+// マスタ切替の窓口。予約枠フォームが未保存なら、子の確認が終わるまで切替を保留する。
 async function select(next) {
   if (next === master.value) return
   // 予約枠フォームだけは、設計v0.2どおり左ナビ切替でも未保存の破棄確認を通す。
@@ -39,9 +41,13 @@ async function select(next) {
   }
   applyMaster(next)
 }
+// 予約枠フォームの破棄確認が完了した後、保留していた切替先を反映する。
 function completePendingMaster() { if (pendingMaster.value) applyMaster(pendingMaster.value) }
+// 選択中マスタに応じたAPIを呼び、検索結果と通信状態を更新する。
 async function load() { busy.value = true; message.value = ''; selectedId.value = null; try { rows.value = master.value === 'patient' ? await searchPatients({ patientNumber: /^\d+$/.test(keyword.value) ? keyword.value : '', name: /^\d+$/.test(keyword.value) ? '' : keyword.value }) : master.value === 'department' ? await searchDepartments({ keyword: keyword.value, active: active.value }) : await searchOccupations({ keyword: keyword.value, active: active.value }) } catch (error) { rows.value = []; message.value = error.message || '検索に失敗しました。' } finally { busy.value = false } }
+// 選択中マスタのフォームを新規または既存IDで表示する。
 function openForm(id = null) { editingId.value = id; formOpen.value = true }
+// 保存結果を受けて一覧を再検索し、更新したレコードを選び直す。
 async function closeForm(saved) {
   editingId.value = null
   formOpen.value = false
@@ -57,9 +63,11 @@ onMounted(load)
 
 <template>
   <section class="master-settings">
+    <!-- 左ナビでマスタを選択し、selectが未保存フォームの切替確認を行う。 -->
     <nav class="master-settings__nav" aria-label="設定するマスタ"><strong>マスタ設定</strong><span>患者情報</span><button :class="{ active: master === 'patient' }" @click="select('patient')">患者マスタ</button><span>業務マスタ</span><button :class="{ active: master === 'department' }" @click="select('department')">診療科マスタ</button><button :class="{ active: master === 'occupation' }" @click="select('occupation')">職種マスタ</button><button :class="{ active: master === 'reservationSlot' }" @click="select('reservationSlot')">予約枠マスタ</button><span>利用者・権限</span><button :class="{ active: master === 'user' }" @click="select('user')">ユーザーマスタ</button></nav>
     <main class="master-settings__main">
       <header v-if="master !== 'user' && master !== 'reservationSlot'" class="master-settings__title"><h1>{{ definition.label }}</h1><span>{{ definition.label.replace('マスタ', '') }}を検索し、登録・編集します。</span></header>
+      <!-- ユーザー・予約枠は専用ペイン、それ以外は共通検索一覧と編集フォームを使う。 -->
       <UserMasterPane v-if="master === 'user'" @cancelled="emit('cancelled')" />
       <ReservationSlotMasterPane v-else-if="master === 'reservationSlot'" ref="reservationSlotPane" @cancelled="emit('cancelled')" @dirty-change="reservationSlotDirty = $event" @form-closed="completePendingMaster" />
       <template v-else-if="!formOpen">

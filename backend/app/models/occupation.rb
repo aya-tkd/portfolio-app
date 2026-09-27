@@ -12,6 +12,7 @@ class Occupation < ApplicationRecord
   validates :active, inclusion: { in: [true, false], message: "選択肢から選んでください。" }
   validates :occupation_code, inclusion: { in: OCCUPATION_CODES, message: "選択肢から選んでください。" }
 
+  # 受付で担当医候補に含める職種かを返す。ログイン権限や医師資格の判定ではない。
   def physician?
     occupation_code == "physician"
   end

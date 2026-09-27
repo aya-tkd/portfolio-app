@@ -16,6 +16,7 @@ const rows = ref([]), departments = ref([]), expanded = ref(new Set())
 const busy = ref(false), message = ref(''), failed = ref(false), stale = ref(false), summary = ref(null), applied = ref('')
 const activeWorkflow = ref(null), selectedPatientId = ref(null)
 
+// 左メニューから受付・予約の患者検索フローを開く。
 function openPatientSearch() { activeWorkflow.value = 'patient-search' }
 function openMasterSettings() { activeWorkflow.value = 'master-settings' }
 function openReception(patient) { selectedPatientId.value = patient.id; activeWorkflow.value = 'reception' }
@@ -31,6 +32,7 @@ function toggle(row) {
   expanded.value = next
 }
 
+// 日付・診療科・進捗をAPIへ渡し、一覧と検索条件の表示状態を更新する。
 async function search() {
   if (busy.value) return
   busy.value = true; message.value = ''; failed.value = false
@@ -49,6 +51,7 @@ async function search() {
   } finally { busy.value = false }
 }
 
+// 行の次操作を保存し、成功時は返却DTOでその行だけを置き換える。
 async function advance(row, action, equipmentId = null) {
   if (busy.value || stale.value) return
   busy.value = true; message.value = ''; failed.value = false
@@ -73,6 +76,7 @@ onMounted(search)
   <div class="outpatient-app">
     <header class="outpatient-head"><strong>医療機関業務システム</strong><h1>外来一覧</h1></header>
     <div class="outpatient-layout">
+      <!-- 画面間の業務導線と、管理機能を開くナビゲーション。 -->
       <nav class="outpatient-nav" aria-label="業務メニュー">
         <span class="nav-group">外来業務</span>
         <a href="/outpatients" aria-current="page"><span aria-hidden="true">▤</span>外来一覧</a>
@@ -82,6 +86,7 @@ onMounted(search)
         <div class="outpatient-admin"><span class="nav-group">管理</span><button type="button" class="outpatient-nav-action" @click="openMasterSettings"><span aria-hidden="true">⚙</span>マスタ設定</button></div>
       </nav>
       <main class="outpatient-main">
+        <!-- 一覧APIへ渡す診療日・診療科・進捗条件をまとめる。 -->
         <form class="outpatient-conditions" @submit.prevent="search">
           <fieldset :disabled="busy">
             <div class="outpatient-filters">
@@ -93,6 +98,7 @@ onMounted(search)
           </fieldset>
         </form>
         <p v-if="message" :class="['outpatient-message', { error: failed }]" role="status">{{ message }}</p>
+        <!-- サーバーDTOの受付・予約行を表示し、次の進捗操作を提供する。 -->
         <section class="outpatient-results" aria-label="外来患者">
           <div class="outpatient-results-head"><h2>外来患者</h2><span>{{ applied }}</span></div>
           <div class="outpatient-scroll" tabindex="0" role="region" aria-label="外来一覧・スクロール可能" :aria-busy="busy">
@@ -111,6 +117,7 @@ onMounted(search)
       </main>
     </div>
   </div>
+  <!-- 患者検索、受付、予約、マスタ設定を外来一覧上のダイアログとして切り替える。 -->
   <OutpatientWorkflowDialog v-if="activeWorkflow === 'patient-search'" mode="受付">
     <PatientSearchWorkspace modal mode="reception" @selected="openReception" @cancelled="closeWorkflow" />
   </OutpatientWorkflowDialog>

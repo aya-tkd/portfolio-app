@@ -12,6 +12,7 @@ module Api
       render json: { message: "対象の受付または設備が見つかりません。" }, status: :not_found
     end
 
+    # 日付・診療科・進捗の条件をQueryへ渡し、一覧行と診療科選択肢を返す。
     def index
       render json: { rows: Outpatient::ListQuery.call(date: params[:date] || Date.current.to_s,
         department_id: params[:department_id], statuses: params.key?(:statuses) ? params[:statuses] : Outpatient::ListQuery::STATUSES),
@@ -21,6 +22,7 @@ module Api
         today: Date.current.to_s }
     end
 
+    # 画面操作名とversionを受け、状態遷移の可否・保存をServiceへ委譲する。
     def update
       input = params.expect(operation: %i[action version equipment_id])
       render json: Outpatient::Advance.call(id: params[:id], action: input[:action], version: input[:version], equipment_id: input[:equipment_id])

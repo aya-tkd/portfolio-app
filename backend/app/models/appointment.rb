@@ -20,6 +20,8 @@ class Appointment < ApplicationRecord
 
   private
 
+  # DB制約だけでは表しにくい親子予約・受付間の業務上の整合性を保存時に検証する。
+  # 設備予約を診察予約へ紐づける場合も、患者・診療科・日付・受付が一致する必要がある。
   def consistent_links
     if parent_appointment
       valid_parent = appointment_kind == "equipment" && parent_appointment.appointment_kind == "consultation" &&

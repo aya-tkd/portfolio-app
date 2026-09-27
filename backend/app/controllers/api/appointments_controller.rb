@@ -17,6 +17,7 @@ module Api
       render json: { message: '別の登録処理と競合しました。予約内容と空きを確認してください。' }, status: :conflict
     end
 
+    # 患者・予約枠・診療科・医師・既存予約を、予約画面の初期表示DTOとして返す。
     def reservation_booking
       patient = Patient.find(params[:id])
       render json: {
@@ -28,6 +29,7 @@ module Api
       }
     end
 
+    # 画面内で確定した複数予約を受け、業務検証・一括保存をReservation::Bookへ委譲する。
     def create_bulk
       input = params.require(:reservation).permit(:patient_id, entries: %i[entry_key reservation_slot_id scheduled_at department_id doctor_user_id parent_entry_key])
       patient = Patient.find(input.fetch(:patient_id))
@@ -37,6 +39,7 @@ module Api
 
     private
 
+    # 予約画面で選択できる有効枠だけを、表示に必要な項目へ絞って返す。
     def booking_slots
       ReservationSlot.where(active: true).includes(:default_department, :default_doctor_user).order(:slot_group, :display_order, :id).map do |slot|
         { id: slot.id, name: slot.name, slot_group: slot.slot_group, default_department_id: slot.default_department_id,
@@ -44,10 +47,12 @@ module Api
       end
     end
 
+    # 対象患者に登録済みの予約を取得し、同じ画面DTOへ変換する。
     def existing_appointments(patient)
       Appointment.where(patient:, status: "reserved").includes(:department, :doctor_user, :reservation_slot).order(:scheduled_at, :id).map { |appointment| present(appointment) }
     end
 
+    # Active Recordの予約をフロントエンドが扱うJSON項目へ変換する。
     def present(appointment)
       { id: appointment.id, reservation_slot_id: appointment.reservation_slot_id, reservation_slot_name: appointment.reservation_slot&.name,
         scheduled_at: appointment.scheduled_at.iso8601, kind: appointment.appointment_kind, equipment_name: appointment.equipment_name,

@@ -1,6 +1,7 @@
 module Outpatient
   # Query/Serviceが取得したレコードをVue用DTOへ変換する。DBへの書込は行わない。
   class RowPresenter
+    # 受付モデルを画面用の一覧DTOへ変換し、進捗と設備実施をまとめる。
     def self.reception(record)
       roots = record.appointments.select { |item| item.parent_appointment_id.nil? && item.status == "reserved" }
       equipment = record.equipment_executions.reject(&:cancelled_at).sort_by { |item| [item.scheduled_at || record.received_at, item.id] }
@@ -16,6 +17,7 @@ module Outpatient
       )
     end
 
+    # 未受付の予約モデルを、受付済み行と同じ形の一覧DTOへ変換する。
     def self.appointment(record)
       equipment = record.appointment_kind == "equipment" ? [record] : record.child_appointments.select { |item| item.status == "reserved" }
       common(record).merge(key: "appointment-#{record.id}", reception_id: nil, version: nil,
@@ -25,6 +27,7 @@ module Outpatient
           scheduled_at: item.scheduled_at.iso8601, status: "reserved", next_action: nil } })
     end
 
+    # 受付と予約に共通する患者・診療科情報を組み立てる。
     def self.common(record)
       { patient_number: record.patient.patient_number, patient_name: "#{record.patient.last_name} #{record.patient.first_name}",
         department_id: record.department_id, department_name: record.department.name }

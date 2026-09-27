@@ -10,6 +10,7 @@ class EquipmentExecution < ApplicationRecord
 
   private
 
+  # 実施予定を受付・設備予約へ結び付けるときの業務整合性を検証する。
   def consistent_links
     if reception&.business_kind == "equipment" && reception.equipment_executions.where.not(id: id).exists?
       errors.add(:reception, "検査のみの受付には設備を1件だけ指定してください。")

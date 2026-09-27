@@ -17,6 +17,7 @@ const timeLabel = row => `${row.start_time}〜${row.end_time}／${row.interval_m
 const periodLabel = row => `${row.valid_from}〜${row.valid_to}`
 const weekdayLabel = days => Array(days).map(day => ({ 1: '月', 2: '火', 3: '水', 4: '木', 5: '金', 6: '土', 7: '日' }[day] || '')).filter(Boolean).join('・')
 
+// 検索条件とページをAPIへ渡し、検索結果・選択状態・画面メッセージを更新する。
 async function load({ resetPage = false, preserveId = null } = {}) {
   if (resetPage) page.value = 1
   // 初期検索・保存後再検索など複数の非同期応答が逆順に返っても、古い結果で一覧を上書きしない。
@@ -33,22 +34,27 @@ async function load({ resetPage = false, preserveId = null } = {}) {
     rows.value = []; total.value = 0; selectedId.value = null; message.value = error.message || '検索に失敗しました。'
   } finally { if (sequence === loadSequence) busy.value = false }
 }
+// フォームで使う診療科・医師候補を親画面の初期表示時にまとめて取得する。
 async function loadOptions() {
   optionBusy.value = true
   try { const options = await loadReservationSlotOptions(); departments.value = options.departments; doctors.value = options.doctor_users }
   catch (error) { message.value = error.message || '診療科・医師の選択肢を取得できませんでした。' }
   finally { optionBusy.value = false }
 }
+// 新規または選択行の編集フォームへ切り替える。
 function open(id = null) { if (optionBusy.value) return; editingId.value = id; editing.value = true; message.value = '' }
+// 保存後は検索結果を再取得し、保存行が現在の条件内なら選択状態に戻す。
 async function closeForm(saved) {
   editing.value = false; editingId.value = null
   if (saved?.id) { await load({ resetPage: true, preserveId: saved.id }); if (!message.value) message.value = '保存しました。検索結果を更新しました。' }
   else emit('form-closed')
 }
+// 件数と現在ページの範囲内だけページ移動を許可する。
 async function changePage(next) { if (next < 1 || next > pageCount.value || busy.value) return; page.value = next; await load() }
 
 // 左ナビ切替時の未保存保護。フォームが破棄確認を出した場合は切替を保留する。
 async function requestLeave() { if (!editing.value) return true; return formRef.value?.close() || false }
+// フォームの未保存状態を左ナビ側へ伝え、切替前の確認に使う。
 function setDirty(value) { emit('dirty-change', value) }
 onMounted(async () => { await Promise.all([loadOptions(), load()]) })
 defineExpose({ requestLeave })
@@ -58,10 +64,13 @@ defineExpose({ requestLeave })
   <section class="reservation-slot-pane">
     <header class="reservation-slot-pane__title"><h1>予約枠マスタ</h1><span>予約枠を検索し、登録・編集します。</span></header>
     <template v-if="!editing">
+      <!-- 検索条件はこのペインで保持し、検索ボタンとEnterキーで一覧を更新する。 -->
       <form class="reservation-slot-pane__search" @submit.prevent="load({ resetPage: true })">
         <label>枠名<input v-model="conditions.keyword" autocomplete="off"></label><label>枠グループ<select v-model="conditions.slotGroup"><option value="">すべて</option><option value="consultation">診察</option><option value="equipment">設備</option></select></label><label>初期診療科<select v-model="conditions.defaultDepartmentId"><option value="">すべて</option><option v-for="department in departments" :key="department.id" :value="department.id">{{ department.name }}</option></select></label><label>利用状態<select v-model="conditions.active"><option value="">すべて</option><option value="true">有効</option><option value="false">無効</option></select></label><button class="btn btn-secondary" :disabled="busy">検索</button>
       </form>
+      <!-- 結果行の選択が編集対象を決める。表本体だけをスクロールし、ページ操作は下部に固定する。 -->
       <section class="reservation-slot-pane__results" aria-live="polite"><header><strong>検索結果</strong><span>{{ total }}件</span><small>診療科・医師は予約時の初期値です。</small></header><div class="reservation-slot-pane__grid"><table><thead><tr><th>ID</th><th>枠名</th><th>グループ</th><th>曜日 / 有効期間</th><th>時間 / 間隔</th><th>各枠定員</th><th>初期診療科 / 医師</th><th>状態</th></tr></thead><tbody><tr v-for="row in rows" :key="row.id" :class="{ selected: selectedId === row.id }" tabindex="0" @click="selectedId = row.id" @keydown.enter.prevent="selectedId = row.id" @keydown.space.prevent="selectedId = row.id"><td>{{ row.id }}</td><td>{{ row.name }}</td><td>{{ groupLabel(row.slot_group) }}</td><td>{{ weekdayLabel(row.weekdays) }}<small>{{ periodLabel(row) }}</small></td><td>{{ timeLabel(row) }}</td><td>{{ row.capacity }}人</td><td>{{ row.default_department_name || '—' }}<small>{{ row.default_doctor_name || '—' }}</small></td><td>{{ activeLabel(row.active) }}</td></tr></tbody></table><p v-if="!busy && !rows.length && !message" class="reservation-slot-pane__message">該当する予約枠はありません。</p><p v-if="message" class="reservation-slot-pane__message">{{ message }}</p></div></section>
+      <!-- ページ移動・新規・選択行の編集と、親画面へ戻る操作をまとめる。 -->
       <footer class="reservation-slot-pane__footer"><span>{{ page }} / {{ pageCount }} ページ（{{ perPage }}件ずつ）</span><div><button type="button" class="btn btn-secondary" :disabled="page <= 1 || busy" @click="changePage(page - 1)">前へ</button><button type="button" class="btn btn-secondary" :disabled="page >= pageCount || busy" @click="changePage(page + 1)">次へ</button><button type="button" class="btn btn-secondary reservation-slot-pane__new" :disabled="optionBusy" @click="open()">新規</button><button type="button" class="btn btn-secondary" :disabled="!selectedId || optionBusy" @click="open(selectedId)">編集</button><button type="button" class="btn btn-secondary reservation-slot-pane__close" @click="emit('cancelled')">閉じる</button></div></footer>
     </template>
     <ReservationSlotForm v-else ref="formRef" :slot-id="editingId" :departments="departments" :doctors="doctors" @close="closeForm" @dirty-change="setDirty" />

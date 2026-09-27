@@ -14,6 +14,7 @@ onMounted(async () => {
   try { tables.value = (await request('/api/db-schema')).tables }
   catch (failure) { schemaError.value = message(failure) }
 })
+// 選択テーブルの列定義を取得し、dialog内でスキーマ情報を表示する。
 async function showSchema(table) {
   if (schemaBusy.value) return
   schema.value = { table, columns: [] }; schemaError.value = ''; schemaBusy.value = true
@@ -22,6 +23,7 @@ async function showSchema(table) {
   catch (failure) { schemaError.value = message(failure) }
   finally { schemaBusy.value = false }
 }
+// 編集中SQLを実行対象として確定し、APIへ送り結果またはエラーを表示する。
 async function execute(page = 1) {
   if (busy.value) return
   if (page === 1) executedSql.value = sql.value
@@ -39,6 +41,7 @@ async function execute(page = 1) {
 <template>
   <header class="app-head"><strong>開発ツール</strong><span>DB確認</span></header>
   <main class="sql-console">
+    <!-- テーブル分類から列情報を開くナビゲーション。SQL実行とは別APIで取得する。 -->
     <aside aria-label="テーブル一覧">
       <h2>テーブル</h2>
       <p v-if="schemaError && !dialog?.open" role="alert">{{ schemaError }}</p>
@@ -50,6 +53,7 @@ async function execute(page = 1) {
     </aside>
     <div class="sql-workspace">
       <h1>DB確認 <small>読み取り専用</small></h1>
+      <!-- SQL入力とページ送り可能な実行結果。未実行の編集内容ではページを切り替えない。 -->
       <form @submit.prevent="execute()">
         <label for="sql-input">SQL</label>
         <textarea id="sql-input" v-model="sql" spellcheck="false" maxlength="10000" :disabled="busy" />
@@ -72,6 +76,7 @@ async function execute(page = 1) {
       </section>
     </div>
   </main>
+  <!-- テーブル名から開く列・型の詳細ダイアログ。 -->
   <dialog ref="dialog" aria-labelledby="schema-title">
     <header class="dialog-head"><h2 id="schema-title">{{ schema?.table }} — スキーマ</h2></header>
     <div class="dialog-body">

@@ -9,6 +9,7 @@ module Development
       @database_path, @categories = database_path, categories
     end
 
+    # テーブル一覧、または指定テーブルの列情報を読み取り専用で返す。
     def call(table = nil)
       payload = nil
       SQLite3::Database.new(@database_path, readonly: true) do |database|

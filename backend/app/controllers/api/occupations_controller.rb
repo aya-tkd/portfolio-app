@@ -17,14 +17,17 @@ module Api
       render json: occupations.as_json(only: FIELDS)
     end
 
+    # 内部IDで職種1件を取得し、編集フォーム用のJSONを返す。
     def show
       render json: Occupation.find(params[:id]).as_json(only: FIELDS)
     end
 
+    # 許可済み入力から職種を新規作成し、成功または項目別エラーを返す。
     def create
       persist Occupation.new(occupation_params), :created
     end
 
+    # 内部IDの職種に許可済み入力を適用し、保存結果を返す。
     def update
       occupation = Occupation.find(params[:id])
       occupation.assign_attributes(occupation_params)
@@ -33,11 +36,13 @@ module Api
 
     private
 
+    # Strong Parametersで職種の登録・更新を許可する項目を限定する。
     def occupation_params
       # 自動採番IDはブラウザから更新できない。
       params.expect(occupation: %i[name display_order active occupation_code])
     end
 
+    # Active Recordの保存結果を作成・更新のHTTP応答へ共通変換する。
     def persist(occupation, status)
       if occupation.save
         render json: occupation.as_json(only: FIELDS), status: status

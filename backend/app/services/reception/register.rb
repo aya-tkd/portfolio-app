@@ -4,6 +4,7 @@
 class Reception::Register
   class InvalidTarget < StandardError; end
 
+  # 複数の受付対象を検証・登録し、どれかが失敗すれば全件を取り消す入口。
   def self.call(patient:, targets:)
     raise InvalidTarget, "受付対象を1件以上選択してください。" if targets.blank?
 
@@ -12,6 +13,7 @@ class Reception::Register
     end
   end
 
+  # 予約あり／予約なしの受付種別に応じて、登録処理を振り分ける。
   def self.register_target!(patient, target)
     case target.fetch(:type)
     when "appointment" then register_appointment!(patient, target)
@@ -21,6 +23,7 @@ class Reception::Register
   end
   private_class_method :register_target!
 
+  # 予約とその設備を受付へ結び付け、必要な設備実施レコードを作成する。
   def self.register_appointment!(patient, target)
     appointment = Appointment.lock.includes(:child_appointments).find(target.fetch(:appointment_id))
     validate_appointment!(appointment, patient)
@@ -36,6 +39,7 @@ class Reception::Register
   end
   private_class_method :register_appointment!
 
+  # 予約枠を使わない当日受付を作成する。
   def self.register_unreserved!(patient, target)
     department = Department.find(target.fetch(:department_id))
     doctor = active_physician!(target[:doctor_user_id], department: department)
@@ -45,8 +49,7 @@ class Reception::Register
   end
   private_class_method :register_unreserved!
 
-  # ブラウザが送ったIDを信頼せず、同一トランザクション内で有効な医師ユーザーか確認する。
-  # 画面のselectを経由しないPOSTでも、別診療科の医師を担当医として保存させない。
+  # 受付に割り当てる医師IDをDBで再確認し、画面候補だけでなく診療科との整合性も検証する。
   def self.active_physician!(doctor_user_id, department:)
     raise InvalidTarget, "有効な医師ユーザーを選択してください。" if doctor_user_id.blank?
 
@@ -54,12 +57,14 @@ class Reception::Register
   end
   private_class_method :active_physician!
 
+  # 受付に採用する予約が対象患者の未受付予約か確認する。
   def self.validate_appointment!(appointment, patient)
     raise InvalidTarget, "選択した予約はこの患者のものではありません。" unless appointment.patient_id == patient.id
     raise InvalidTarget, "選択した予約はすでに受付済みか、利用できません。" unless appointment.status == "reserved" && appointment.reception_id.nil? && appointment.parent_appointment_id.nil?
   end
   private_class_method :validate_appointment!
 
+  # 診察予約の子設備を同じ受付へ結び付け、設備実施予定へ展開する。
   def self.attach_children!(appointment, reception)
     children = Appointment.lock.where(parent_appointment_id: appointment.id, status: "reserved", reception_id: nil).to_a
     Appointment.where(id: children.map(&:id)).update_all(reception_id: reception.id, updated_at: Time.current)
@@ -70,6 +75,7 @@ class Reception::Register
   end
   private_class_method :attach_children!
 
+  # 受付後に進捗管理する設備実施レコードを予約から作成する。
   def self.create_execution!(appointment, reception)
     EquipmentExecution.create!(reception: reception, appointment: appointment, department: reception.department,
       equipment_name: appointment.equipment_name, scheduled_at: appointment.scheduled_at)

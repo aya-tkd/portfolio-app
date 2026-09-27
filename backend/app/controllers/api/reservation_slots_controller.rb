@@ -32,12 +32,14 @@ module Api
       render json: { departments: departments.map { |department| { id: department.id, name: department.name } }, doctor_users: doctors }
     end
 
-    # 予約画面の週間表へ、枠・日時ごとの残数を返す。枠マスタの適用外日時も0件として明示する。
+    # 予約画面の週間表へ、枠の適用対象となる日時ごとの残数を返す。
     def availability
       week_start = Date.iso8601(params.fetch(:week_start))
       raise ArgumentError unless week_start.monday?
 
       slot = ReservationSlot.find(params[:id])
+      # 予約済み件数を日時ごとに一括集計し、各時間枠で定員から差し引く。
+      # 枠の曜日・有効期間外は時間候補自体を生成せず、レスポンスにも含めない。
       counts = slot.appointments.where(status: 'reserved', scheduled_at: week_start.beginning_of_day..(week_start + 6).end_of_day).group(:scheduled_at).count
       times = (0..6).flat_map do |offset|
         date = week_start + offset
@@ -54,15 +56,18 @@ module Api
       render json: { message: "週開始日は月曜日のYYYY-MM-DDで指定してください。" }, status: :bad_request
     end
 
+    # 内部IDの枠と関連マスタ名を読み込み、編集フォーム用JSONを返す。
     def show
       render json: present(ReservationSlot.includes(:default_department, default_doctor_user: :occupation).find(params[:id]))
     end
 
+    # Strong Parametersで許可した項目から枠を作成し、検証結果を返す。
     def create
       # 新規時のlock_versionはDB/Railsが0から管理する。ブラウザは任意値を指定できない。
       persist(ReservationSlot.new(slot_attributes), :created)
     end
 
+    # 編集版番号を受けて枠を更新し、同時編集なら409を返す。
     def update
       if params.dig(:reservation_slot, :lock_version).nil?
         render json: { message: "更新版を指定してください。再読み込みしてから操作してください。" }, status: :bad_request
@@ -75,6 +80,7 @@ module Api
 
     private
 
+    # JSON入力を許可項目に絞り、時刻文字列と曜日をDB用の分値・ビット集合に変換する。
     def slot_attributes(include_lock_version: false)
       fields = %i[name slot_group valid_from valid_to start_time end_time interval_minutes capacity default_department_id default_doctor_user_id display_order active]
       fields << :lock_version if include_lock_version
@@ -83,6 +89,7 @@ module Api
       raw.merge(weekdays_mask:, start_minute: to_minute(raw.delete(:start_time), allow_24: false), end_minute: to_minute(raw.delete(:end_time), allow_24: true))
     end
 
+    # HH:MMの画面入力を午前0時からの分へ変換し、終了時だけ24:00を許可する。
     def to_minute(value, allow_24:)
       matched = /\A([01]\d|2[0-3]):([0-5]\d)\z/.match(value.to_s)
       return 1440 if allow_24 && value == "24:00"
@@ -91,6 +98,7 @@ module Api
       matched[1].to_i * 60 + matched[2].to_i
     end
 
+    # URL queryのページ指定を整数化し、許容範囲を確認する。
     def page_params
       page = Integer(params.fetch(:page, 1))
       per_page = Integer(params.fetch(:per_page, 50))
@@ -99,6 +107,7 @@ module Api
       [page, per_page]
     end
 
+    # URL queryのtrue/falseだけを真偽値へ変換し、それ以外は入力不正にする。
     def parse_boolean!(value)
       return true if value == "true"
       return false if value == "false"
@@ -106,6 +115,7 @@ module Api
       raise ArgumentError
     end
 
+    # Modelの保存結果を、JSONの成功応答または画面項目別エラーへ変換する。
     def persist(slot, status)
       if slot.save
         render json: present(slot), status:
@@ -114,6 +124,7 @@ module Api
       end
     end
 
+    # 分値・曜日maskの内部形式を、編集フォームが使う表示用JSONへ戻す。
     def present(slot)
       slot.as_json(only: FIELDS).merge(
         weekdays: slot.weekdays,
@@ -125,6 +136,7 @@ module Api
       )
     end
 
+    # DB内部の分値を、フォーム入力で使うHH:MMへ変換する。
     def minute_to_time(value)
       return "24:00" if value == 1440
 

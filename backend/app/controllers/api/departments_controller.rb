@@ -21,14 +21,17 @@ module Api
       render json: departments.as_json(only: FIELDS)
     end
 
+    # 内部IDで診療科1件を取得し、編集フォーム用のJSONを返す。
     def show
       render json: Department.find(params[:id]).as_json(only: FIELDS)
     end
 
+    # 許可済み入力から診療科を新規作成し、成功または項目別エラーを返す。
     def create
       persist Department.new(department_params), :created
     end
 
+    # 内部IDの診療科に許可済み入力を適用し、保存結果を返す。
     def update
       department = Department.find(params[:id])
       department.assign_attributes(department_params)
@@ -37,11 +40,13 @@ module Api
 
     private
 
+    # Strong Parametersで診療科の登録・更新を許可する項目を限定する。
     def department_params
       # ブラウザから改変して送られても、DBが自動採番する内部IDは更新対象に含めない。
       params.expect(department: %i[name kana_name abbreviation display_order active])
     end
 
+    # Active Recordの保存結果を作成・更新のHTTP応答へ共通変換する。
     def persist(department, status)
       if department.save
         render json: department.as_json(only: FIELDS), status: status

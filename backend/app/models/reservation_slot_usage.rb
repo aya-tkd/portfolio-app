@@ -1,5 +1,5 @@
 # 予約枠・日時単位の定員消費を表すモデル。
-# Reservation::Book と ReservationSlotsController#availability が利用し、予約枠全体で定員を共有する。
+# Reservation::Bookが予約登録時の定員消費数を保持するために使う。空き照会はAppointmentを集計する。
 class ReservationSlotUsage < ApplicationRecord
   self.table_name = "trn_reservation_slot_usages"
 

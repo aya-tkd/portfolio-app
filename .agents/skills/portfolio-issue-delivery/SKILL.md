@@ -11,7 +11,7 @@ Do not activate delivery after grooming or Issue creation alone. A newly created
 
 ## Read first
 
-Read `AGENTS.md`, `docs/development/issue-workflow.md`, `docs/development/definition-of-done.md`, `docs/security/development-guidelines.md`, `docs/design/INDEX.md`, and all documents relevant to the target Issue.
+Read `AGENTS.md`, `docs/development/issue-workflow.md`, `docs/development/definition-of-done.md`, `docs/development/code-readability.md`, `docs/security/development-guidelines.md`, `docs/design/INDEX.md`, and all documents relevant to the target Issue.
 
 Use [the phase guide](references/phase-guide.md) for phase-specific deliverables and stopping conditions.
 
@@ -20,6 +20,8 @@ Use [the phase guide](references/phase-guide.md) for phase-specific deliverables
 Act as the Lead. Follow the review roles in `docs/development/issue-workflow.md`. Use independent reviewers when available; otherwise disclose role-based self-review. Record evidence, findings, resolutions, and remaining issues rather than only approval votes.
 
 Keep the parent Issue as the unit of delivery. Its required Sub-issues are design, automated test, and session log.
+
+For new or changed source, apply `docs/development/code-readability.md`: briefly orient the reader to each class, Vue component, or major module; summarize important business/async entry points; and, for non-trivial Vue templates, label only the major screen regions. Explain Rails/Vue behavior at the point where framework conventions or automatic callbacks/events obscure when a step runs or which layer owns it. Do not annotate every field, tag, or obvious line. Review added and existing comments for accuracy, stale claims, and duplication before the implementation/PR handoff.
 
 ## Human gates
 

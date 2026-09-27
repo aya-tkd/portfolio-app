@@ -5,12 +5,13 @@ module Outpatient
     class Conflict < StandardError; end
     STEPS = { "call" => ["received", "called", :called_at], "start" => ["called", "consulting", :started_at], "finish" => ["consulting", "consulted", :finished_at] }.freeze
 
+    # 画面操作とversionを受け、受付または設備の進捗を許可された状態へ更新する。
     def self.call(id:, action:, version:, equipment_id: nil)
       raise ArgumentError unless version.to_s.match?(/\A\d+\z/) && (STEPS.key?(action) || action == "complete")
       Reception.transaction do
         record = Reception.find(id)
         raise Conflict unless record.lock_version == version.to_i && !record.paid_at
-        # SQLiteにも有効な条件付きUPDATEで受付の更新権を先に取る。
+        # version条件付きUPDATEの成功件数で、並行操作による更新競合を検出する。
         changed = Reception.where(id: id, lock_version: version.to_i).update_all(lock_version: version.to_i + 1, updated_at: Time.current)
         raise Conflict unless changed == 1
         record.reload

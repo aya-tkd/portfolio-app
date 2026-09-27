@@ -40,12 +40,14 @@ class User < ApplicationRecord
     active_physicians.where("mst_users.department_id = ? OR mst_users.department_id IS NULL", department.id)
   end
 
+  # 一覧や選択肢で使う姓・名の表示文字列を返す。
   def display_name
     "#{last_name} #{first_name}"
   end
 
   private
 
+  # Railsのvalidate callbackとして呼ばれ、関連付けた診療科・職種の有効状態を確認する。
   def selected_masters_are_active
     # IDだけが送られた場合も、関連先が存在し利用中であることを確認する。
     errors.add(:department_id, "利用中の診療科を選択してください。") if department_id.present? && !department&.active?
