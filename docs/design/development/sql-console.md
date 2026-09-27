@@ -15,9 +15,17 @@ PR #5への追加をユーザーが依頼。対象はローカル開発DBの状�
 - テーブル名のダブルクリック（キーボードはEnter/Space）で列名・型・NULL許容・主キーをダイアログに表示する。閉じるは右下、Escapeでも閉じられる。
 - 実行は読み取りなのでグレー。DB内容やSQL結果はHTMLとして解釈せず、Vueのテキスト表示を用いる。
 
-## APIと責務
+## API連携と責務
 
-`POST /api/sql-query`へ`{ sql: string, page: integer }`を送る（page省略時1）。通常のCSRFトークンを必要とする。成功200でcolumns/rows/has_next/page/page_size、SQL・ページ不正・実行拒否422でmessageを返す。
+この画面専用APIの画面向け概要。すべてdevelopment/test限定。
+
+| HTTP method / URL | Request（主要項目） | Response（主要データ） | 主なエラーと画面の扱い |
+|---|---|---|---|
+| GET `/api/db-schema` | なし | 200: `tables[]`（`name`, `category`） | 404: この環境では利用不可 |
+| GET `/api/db-schema?table=<name>` | query: テーブル名 | 200: `table`, `columns[]`（`name`, `type`, `nullable`, `primary_key`） | 404: 環境外またはテーブルなし |
+| POST `/api/sql-query` | JSON string `sql`（最大10,000文字）, 任意integer `page`（既定1） | 200: `columns`, `rows`, `has_next`, `page`, `page_size` | 403: CSRF、404: 環境外、422: SQL/ページ不正を表示しSQLを保持 |
+
+書込メソッドを使うのはSQL実行APIのみで、`GET /api/csrf`のtokenを`X-CSRF-Token`で送る。SQL実行は読取専用である。
 
 元SQLを加工せずページごとに再実行し、前ページ分を読み飛ばす。ORDER BYで一意に並べることを推奨する。閲覧中にDBが変わるとページ間に重複・抜けが起こり得る。深いページは読み飛ばし分の負荷があるため、大量データ用途は対象外。
 

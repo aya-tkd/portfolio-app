@@ -48,7 +48,7 @@ SQLとRDBの基本は既習であり、今回の主な学習対象はWeb開発�
 - Bootstrap 5＋共通CSS：画面の基本スタイルと業務向け密度・色・文言の統一。
 - Node.js＋Vite：Vueの開発・ビルド用。第二の業務バックエンドではない。現行Node 22.17で動くVite 6.4.3を固定。
 
-ブラウザ → Vite（127.0.0.1:5173）→ `/api`プロキシ → Rails/Puma（127.0.0.1:3000）→ SQLite。プロキシはHostを保持し、ブラウザから同一オリジンで通信する。ログインなしだがRailsのCSRFトークン・Origin検証とサーバー側入力検証は維持する。development/test以外の起動は拒否する。CORS全許可や外部公開設定は追加しない。
+ブラウザ → Vite（127.0.0.1:5173）→ `/api`プロキシ → Rails/Puma（127.0.0.1:3000）→ SQLite。プロキシはHostを保持し、ブラウザから同一オリジンで通信する。書込APIは`GET /api/csrf`で`{token: string}`を取得し、`X-CSRF-Token`ヘッダーに付けて送る。RailsはCSRF・Origin検証とサーバー側入力検証を維持する（ログイン機能とは別）。development/test以外の起動は拒否する。CORS全許可や外部公開設定は追加しない。
 
 Ruby 4.0.6環境で依存関係を検証した。JSON 3とRailsの解析処理に互換性問題を確認したためGemfileでJSON 2系に制限し、解決版をlockfileへ固定した。具体的な起動方法は[README](../../README.md)、画面契約は[患者登録・編集](../design/patient/patient-form.md)を参照する。
 

@@ -25,14 +25,14 @@
 |---|---|---|---|
 | Vueと画面処理・APIの分担 | L2 | 確認あり：画面処理をVue、通信をapi.jsへ分けると整理（#14）。#64の学習会話では、watchのコールバック先が`reload`であること、Templateがリアクティブな状態に応じて表示し、変更に応じたDOM更新をVueが行うことを自分の言葉で整理した。`times`をAPI応答そのものと最初に捉えた点は訂正後に理解（チャット、2026-09-27） | 別画面でも、状態・watch・非同期取得・Templateのつながりを実コードで説明する |
 | HTTPメソッド・非同期処理 | L1 | POST/PATCH/GET/DELETEの説明を受けた。PATCHを新規と捉えた誤解の訂正後は未確認（#14）。#64では非同期reloadとwatchの関係を質問したが、「watchがイベント呼出を行い即時にコントロールだけ差し替える」という整理には説明中に修正が必要だった。同期／非同期の境界を実コード全体で説明した根拠はまだない（チャット、2026-09-27） | 次の機能でURL・メソッド・操作を読み、await前後の処理を説明する |
-| API契約・FE/BEの責務 | L2 | 確認あり：API契約をFE/BE間の受け渡し条件と捉え、画面設計DocにInput・Output・エラーを置く運用を選択（#56）。#64ではFE状態とBE由来JSONを区別する必要性を指摘し、型のないJSONはDictionary/Objectに近く読み取りづらいこと、JSON形状の型情報があればFE側で利用項目を明確にできるという考えを整理した（チャット、2026-09-27）。本リポジトリはJavaScriptであり、TypeScript Interfaceの実装箇所や実行時検証まで理解したとは扱わない | 実コード一件の入力→Controller→応答を一続きに説明し、JSDoc等の型情報と実行時検証の違いを確認する |
+| API契約・FE/BEの責務 | L2 | 確認あり：API契約をFE/BE間の受け渡し条件と捉え、画面設計DocにInput・Output・エラーを置く運用を選択（#56）。#64ではFE状態とBE由来JSONを区別する必要性を指摘し、型のないJSONはDictionary/Objectに近く読み取りづらいこと、JSON形状の型情報があればFE側で利用項目を明確にできるという考えを整理した。#60では「操作」「呼出元→受け先」は画面設計側の文脈で、API契約と分けるのが妥当か問い、一般的な責務分担に基づきIssueの記載要件を組み替える判断をした（チャット、2026-09-27）。本リポジトリはJavaScriptであり、TypeScript Interfaceの実装箇所や実行時検証まで理解したとは扱わない | 実コード一件の入力→Controller→応答を一続きに説明し、JSDoc等の型情報と実行時検証の違いを確認する |
 | Vite→Railsルート→Controller | L2 | 暫定：Viteの受け渡しとroutes.rbのController選択を捉えて具体的な対応を質問（#14） | 一つのAPIについてメソッド・URL・actionをつなぐ |
 | Active Recordの永続化 | L1 | 継承とsave/find/newの説明を受けた。自身の説明による定着は未確認（#14） | Controllerからsaveまでの呼び出しを読む |
 | Model・Service・DTOの責務 | L2 | 暫定：複数テーブル処理の分担を言い換え、結合した予約データのモデル化を質問（#14） | 「1テーブルならModel」という限定を外し、ルールと表示用途を区別する |
 | Ruby構文・JavaScript言語機能 | L1 | 触れた経験・説明あり。単独の言語理解は未観測 | 実際の修正で使う構文だけ説明する |
 | Bootstrap・Tailwindの選択 | L1 | 違いの説明を受けた。自分で選択理由を説明する場面は未観測（#14） | UI要件に対して選ぶ理由を会話で扱う |
 
-更新根拠：[Issue #14の遡及評価](issues/issue-14.md)、[Issue #15の学習ログ](issues/issue-15.md)、[Issue #48の学習ログ](issues/issue-48.md)、[Issue #56の学習ログ](issues/issue-56.md)、[Issue #62の学習ログ](issues/issue-62.md)、[Issue #64の学習ログ](issues/issue-64.md)。Issue #62では予約枠と予約実績の責務境界を扱ったが、実コードのHTTP→Controller→保存を本人が一続きに説明した新しい根拠はないため、段階は維持する。既存のC#/.NET・SQL・業務知識は引き続き説明の足場にする。上の段階はWebの対象概念だけの評価である。
+更新根拠：[Issue #14の遡及評価](issues/issue-14.md)、[Issue #15の学習ログ](issues/issue-15.md)、[Issue #48の学習ログ](issues/issue-48.md)、[Issue #56の学習ログ](issues/issue-56.md)、[Issue #60の学習ログ](issues/issue-60.md)、[Issue #62の学習ログ](issues/issue-62.md)、[Issue #64の学習ログ](issues/issue-64.md)。Issue #62・#60ではWeb機能/画面設計の責務境界を扱ったが、実コードのHTTP→Controller→保存を本人が一続きに説明した新しい根拠はないため、段階は維持する。既存のC#/.NET・SQL・業務知識は引き続き説明の足場にする。上の段階はWebの対象概念だけの評価である。
 
 ## 更新方針
 

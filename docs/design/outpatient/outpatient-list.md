@@ -40,9 +40,14 @@ DBへ保存するので青ボタン。行の主ボタンは最大1つ。予約�
 
 受付行は受付日時、未受付予約行は予約日時で日付を絞る。取得順は受付日時/ID順、その後に未受付予約日時/ID順。受付済み予約を再び親行にしない。診療科と担当医は受付/予約の正本から返す。医師マスタ未整備のためdoctor_nameは表示名のみ（識別・権限には使用しない）。
 
-`OutpatientListWorkspace.vue → api.js → GET /api/outpatients → OutpatientsController#index → ListQuery → RowPresenter → JSON` が一覧取得の経路。Queryがレコードを選び、Presenterが画面用DTOへ変換する。
+## API連携
 
-更新は `PATCH /api/outpatients/:受付ID`、本文 `operation: {action, version, equipment_id}`。ControllerがAdvanceへ渡し、受付のversionを条件付きUPDATEで取得してから診察または設備を同じトランザクションで更新する。設備IDはその受付の関連からだけ検索する。二重/古い操作は409で拒否し、重複記録しない。不正形式400、対象なし404、CSRF不正403。受付DTOを返し、ブラウザの状態値を保存に流用しない。
+| HTTP method / URL | Request（主要条件・項目） | Response（主要データ） | 主なエラーと画面の扱い |
+|---|---|---|---|
+| GET `/api/outpatients` | 任意ISO date `date`（省略時は今日）、integer `department_id`、string配列`statuses[]` | 200: `rows`, 検索用`departments`, `today` | 400: 条件不正を表示。検索失敗時は前の結果を保持し更新を止める |
+| PATCH `/api/outpatients/:reception_id` | path: integer受付ID、JSON `operation`: string `action`、integer `version`、任意integer `equipment_id` | 200: 更新後の受付DTO | 400: 操作形式不正、403: CSRF、404: 対象なし、409: 状態競合。再検索まで操作停止 |
+
+一覧取得は`OutpatientListWorkspace.vue → api.js → OutpatientsController#index → ListQuery → RowPresenter → JSON`の順。更新は`operation`をServiceへ渡し、versionの一致確認後に受付または設備を更新する。書込APIは`GET /api/csrf`でtokenを取得し`X-CSRF-Token`で送る。画面はサーバー応答のDTOで更新し、ブラウザの状態値を保存に流用しない。
 
 `lock_version`は受付単位の競合検出用。診察・設備操作が同じ受付へ同時に届いても最新versionだけを受け付ける。設備更新でも受付versionを進める。状態履歴ログや認証は追加しない。
 

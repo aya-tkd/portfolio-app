@@ -23,3 +23,16 @@ PR #53の表示差異への指摘を受け、登録・編集は `UserForm.vue` �
 - 変更後の閉じるは「戻る／中止」の破棄確認を表示する。保存結果不明時は再送を止め、一覧確認を案内する。
 
 今回の修正は既存マスタに見せ方を合わせる依頼に基づく。API・DB契約は変更しない。
+
+## API連携
+
+ユーザー画面で利用するAPIの概要。診療科・職種の選択肢は既存の各マスタAPIを利用し、ここではユーザー操作に必要な項目に絞る。
+
+| HTTP method / URL | Request（query / bodyの主要項目） | Response（主要データ） | 主なエラーと画面の扱い |
+|---|---|---|---|
+| GET `/api/users` | 任意string `user_id`/`name`、integer `department_id`/`occupation_id` query（複数指定はAND） | 200: ユーザー基本情報、診療科名・職種名の配列 | 通信エラー: 一覧領域に失敗を表示 |
+| GET `/api/users/:id` | path: integer内部ユーザーID | 200: ユーザー基本情報と関連名 | 404: 編集対象なしを表示 |
+| POST `/api/users` | JSON `user`: 必須string姓名・カナ、任意integer `department_id`/`occupation_id`、必須boolean `active` | 201: 保存したユーザー | 422: 項目エラー、403: CSRFエラーを表示 |
+| PATCH `/api/users/:id` | path: integer内部ID、body: POSTと同じ項目 | 200: 更新後のユーザー | 422: 項目エラー、403/404: 保存失敗を表示 |
+
+検索条件用の選択肢は`GET /api/departments?active=true`と`GET /api/occupations?active=true`を使用する。書込APIでは`GET /api/csrf`でtokenを取得して送信する。

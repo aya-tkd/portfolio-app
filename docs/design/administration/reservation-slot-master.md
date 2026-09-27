@@ -28,17 +28,17 @@
 - 枠が予約から一度でも参照されると、グループ・曜日・期間・時間・間隔・定員を変更できない。名称・表示順・初期値・状態は変更でき、既存予約には波及しない。停止は新規予約対象外にするだけで既存予約を取消さない。
 - 既存の文字列設備名・枠なし予約は変更しない。#64で旧未来予約を定員へ扱う前に、明示的な対応付けまたは利用開始日の運用判断を行う。
 
-## API契約
+## API連携
 
-| 操作 | HTTP / URL | Input | Output | 主なエラーと画面の扱い |
-|---|---|---|---|---|
-| 検索 | GET `/api/reservation_slots` | keyword, slot_group, default_department_id, active, page, per_page（1〜100） | `{items,total,page,per_page}` | 400: 条件エラーを全体表示 |
-| 選択肢 | GET `/api/reservation_slots/options` | なし | 有効なdepartments、doctor_users（id/name/department_id） | 取得失敗を全体表示 |
-| 詳細 | GET `/api/reservation_slots/:id` | path id | Slot | 404: 全体表示して保存不可 |
-| 新規 | POST `/api/reservation_slots` | `reservation_slot`の全入力 | 201 Slot | 403 CSRF、422項目エラー、409競合。入力を保持 |
-| 更新 | PATCH `/api/reservation_slots/:id` | 新規項目＋lock_version | 200 Slot | 404、409古い版、422参照済み定義変更。入力を保持 |
+| HTTP method / URL | Request（主要条件・項目） | Response（主要データ） | 主なエラーと画面の扱い |
+|---|---|---|---|
+| GET `/api/reservation_slots` | 任意string `keyword`/`slot_group`、integer `default_department_id`/`page`/`per_page`、boolean文字列`active`（per_page 1〜100、既定50） | 200: `items`, `total`, `page`, `per_page` | 400: 検索条件を表示 |
+| GET `/api/reservation_slots/options` | なし | 200: 有効な`departments`と`doctor_users`（`id`, `name`, `department_id`） | 通信エラー: 選択肢を表示できない旨を表示 |
+| GET `/api/reservation_slots/:id` | path: integer予約枠ID | 200: 枠の入力値、関連表示名、`schedule_editable`, `lock_version` | 404: 編集対象なしを表示 |
+| POST `/api/reservation_slots` | JSON `reservation_slot`: 必須string名称/グループ・date期間・string時刻・integer間隔/定員/表示順・integer曜日配列・boolean状態、任意integer初期科/医師ID | 201: 作成した枠 | 403: CSRF、422: 項目エラー。入力を保持 |
+| PATCH `/api/reservation_slots/:id` | path: integer枠ID、body: POST項目＋必須integer `lock_version` | 200: 更新後の枠 | 400: 更新版不足、404: 枠なし、409: 古い版、422: 入力/参照制約。入力を保持 |
 
-Slotは入力項目に加え、`id`、曜日配列、開始/終了時刻、初期値の表示名、`schedule_editable`、`lock_version`を返す。関連表示名・ID・予約数は書込対象にしない。422は`{errors:{field:[message]}}`、409は`{message}`で返す。
+書込APIは`GET /api/csrf`でtokenを取得し`X-CSRF-Token`で送る。応答の開始/終了は`HH:MM`、曜日は配列であり、DB用の分値・bit maskとは異なる。関連表示値やIDを編集入力へ流用しない。422は`{errors:{field:[message]}}`、競合等は`{message}`で返す。
 
 ## 処理・責務
 

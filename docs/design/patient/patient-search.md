@@ -21,9 +21,13 @@
 
 検索・新規・編集・閉じるはDBを即時更新しない処理のため、共通UI規約どおりグレーのボタンとする。登録・編集ダイアログ内でDBを更新する`登録`だけは色付きとする。
 
-## APIと処理範囲
+## API連携と処理範囲
 
-`GET /api/patients?patient_number=<患者番号>&name=<氏名・カナ>` を利用する。Viteが同一オリジンのAPI要求をRailsへ転送し、`backend/config/routes.rb` の `resources :patients, only: %i[index show create update]` が `Api::PatientsController#index` を選ぶ。Controllerは許可済みの二つのクエリだけを `Patient.search` へ渡す。
+| HTTP method / URL | Request（query） | Response（主要データ） | 主なエラーと画面の扱い |
+|---|---|---|---|
+| GET `/api/patients?patient_number=…&name=…` | 任意string query。患者番号は完全一致、氏名・カナは部分一致 | 200: 患者の基本情報とbooleanの`has_today_reservation`を含む配列 | 通信エラー: 結果領域に失敗を表示 |
+
+この表は検索画面からの利用概要である。Viteが同一オリジンの要求をRailsへ転送し、Controllerは許可済みのクエリを`Patient.search`へ渡す。
 
 `Patient.search` は `mst_patients` を `id` 昇順で読む。患者番号は完全一致、氏名とカナ氏名は姓・名を連結した値への部分一致である。検索値はプレースホルダとして渡し、SQL文字列の組み立てに利用しない。新規テーブル、migration、外部連携、認証・認可、削除、ページング・ソートは本Issueの対象外とする。
 
