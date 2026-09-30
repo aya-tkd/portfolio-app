@@ -16,7 +16,7 @@
 
 | 業務領域 | 設計Doc | HTMLモック | 状態 |
 |---|---|---|---|
-| 外来一覧・進捗更新 | [外来一覧](outpatient/outpatient-list.md) | [HTML](outpatient/mocks/outpatient-list.html) | このブランチに実装あり（Issue #38） |
+| 外来一覧・進捗更新 | [外来一覧](outpatient/outpatient-list.md) | [HTML](outpatient/mocks/outpatient-list.html) | Issue #38の実装を基礎に、Issue #103の自動更新を追加中 |
 | マスタ設定（検索・一覧・登録編集導線） | [マスタ設定ワークスペース](administration/master-settings.md) | [HTML](administration/mocks/master-settings.html) | このブランチに実装あり（Issue #48） |
 | ユーザーマスタ | [ユーザーマスタ](administration/user-master.md) | [HTML](administration/mocks/user-master.html) | このブランチに実装あり（Issue #16） |
 | 患者マスタ（登録・編集） | [患者登録・編集](patient/patient-form.md) | [HTML](patient/mocks/patient-form.html) | 実装・受入済み（Issue #1／PR #5 merge済み） |
@@ -38,7 +38,7 @@
 
 ## HTMLモック
 
-設計レビュー中は`tmp/design-mocks/issue-<番号>/`にAs-Is（既存画面がある場合）とTo-Beを置き、設計版・変更点・開き方を設計Sub-issueへ記録します。新規画面はAs-Isなしと明記します。ローカルでのみ閲覧し、外部サービスや実データへ接続しません。
+設計レビュー中は`tmp/design-mocks/issue-<番号>/`にAs-Is（既存画面がある場合）とTo-Beを置き、設計版・変更点・開き方を設計Sub-issueへ記録します。新規画面はAs-Isなしと明記します。GitHubでの閲覧用にPNGを添付する場合は、このHTMLから生成した同一版の派生プレビューとして、viewportとHTMLパスを設計Sub-issueへ対応づけて記録します。HTMLが設計の正本であり、PNGは仕様や実装検証の代替になりません。ローカルモックと画像は実データへ接続せず、実データを含めません。
 
 承認後は`docs/design/<業務領域>/mocks/<画面名>.html`へ保存します。画面・操作設計は`docs/design/<業務領域>/<画面・操作名>.md`、テーブル設計は`docs/design/data-model/<テーブル名>.md`とします。例えば患者一覧と患者登録は別文書にし、それぞれに画面・処理・CRUD・クラス責務・設定をまとめます。
 

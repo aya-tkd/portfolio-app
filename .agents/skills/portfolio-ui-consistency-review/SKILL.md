@@ -10,7 +10,7 @@ Use this review skill for UI changes during the automated-test phase of `portfol
 ## Required inputs
 
 - Parent Issue acceptance criteria and the approved design revision / design Sub-issue.
-- Screen-operation design document and its approved HTML mock.
+- Screen-operation design document and its approved HTML mock. The HTML is the design source; if the design Sub-issue has attached PNG previews, use the previews only as a quick visual view of that same revision.
 - Reference screen documents or screenshots and the shared components/styles the design says to follow.
 - Rendered implementation screenshots at the same viewport dimensions, using representative data density. Include relevant interaction states and scroll positions for long or pane-based layouts.
 - Test evidence or running local UI when available.
@@ -22,7 +22,7 @@ Use fictional data in screenshots and evidence; do not request or expose real pa
 ## Review steps
 
 1. Confirm the implementation is being compared with the currently approved design revision. Identify its source and any post-approval change that may need renewed human review.
-2. Compare the mock and implementation at matching viewport sizes. Compare the implementation with named existing screens/components where consistency is expected.
+2. Compare the approved HTML mock and implementation at matching viewport sizes. Use corresponding attached PNG previews to inspect the approved appearance, and confirm they match the referenced HTML revision; never treat an unlinked or stale PNG as a separate design authority. Compare the implementation with named existing screens/components where consistency is expected.
 3. Check screen frame and entry/return flow; information hierarchy; component reuse; labels and button captions; alignment and widths; wrapping and horizontal overflow; panel height and scrolling; error placement; and visibility/reachability of primary and close actions.
 4. Trace every screen requirement and applicable AC to visible evidence or a test. Mark missing, ambiguous, or unobservable requirements explicitly.
 5. Separate functional failures from visual/design mismatches. A passing interaction test does not establish visual fidelity.

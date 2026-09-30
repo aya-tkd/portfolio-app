@@ -27,6 +27,16 @@ DBへ保存するので青ボタン。行の主ボタンは最大1つ。予約�
 
 操作後は取得済み行を更新して保持し、次の検索で絞込を再適用する。通信中は二重操作を止める。成功後にDB応答で描画し、件数欄へフォーカスする。失敗・タイムアウト・競合時は再検索まで更新ボタンを無効にし、自動再送しない。検索と状態変更を並行実行しない。
 
+## 自動更新（親Issue #103、設計Sub-issue #104承認）
+
+外来一覧を表示すると自動更新はONで始まり、30秒ごとに既存の一覧取得を呼ぶ。「自動更新」チェックを外すと停止し、再度ONにすると30秒周期を開始する。結果ヘッダには有効/停止と、直近で成功した取得時刻（JST）を表示する。検索ボタンは条件エリアの右端、自動更新チェックはその左側に置く。
+
+検索フォーム編集中の条件はまだ適用しない。最後に「検索」した日付・診療科・進捗を別に保持し、自動取得はその条件を使う。適用済み条件によるGETには既存の`loadOutpatients`を使い、API契約・Rails処理・DBは変更しない。最終取得時刻は成功した一覧GETのときだけ更新する。
+
+手動検索または状態更新で一覧がbusyの間は、その周期の自動GETをスキップする。外来業務の共通ダイアログを示す`activeWorkflow`が設定されている間と、ブラウザタブが非表示の間はタイマーを停止する。自動GET中にダイアログが開くかタブが隠れた場合、返答は背後の一覧へ反映しない。タブを表示へ戻すと直ちに最新化して30秒周期を再開する。ダイアログを閉じてキャンセルした場合は周期を再開し、完了時は通常処理の検索を優先する。
+
+自動取得が失敗したら既存の行と最終成功時刻を保持し、エラーを表示して行操作を止め、自動更新をOFFにする。自動再試行はしない。手動検索で最新状態を取得できるまでは自動更新チェックを操作不可とし、その後、利用者が必要に応じて再開する。検索・状態更新も同じ`busy`で直列化し、応答の巻き戻りと並行更新を避ける。
+
 ## データ・責務
 
 | データ | C | R | U | D |
@@ -47,12 +57,12 @@ DBへ保存するので青ボタン。行の主ボタンは最大1つ。予約�
 | GET `/api/outpatients` | 任意ISO date `date`（省略時は今日）、integer `department_id`、string配列`statuses[]` | 200: `rows`, 検索用`departments`, `today` | 400: 条件不正を表示。検索失敗時は前の結果を保持し更新を止める |
 | PATCH `/api/outpatients/:reception_id` | path: integer受付ID、JSON `operation`: string `action`、integer `version`、任意integer `equipment_id` | 200: 更新後の受付DTO | 400: 操作形式不正、403: CSRF、404: 対象なし、409: 状態競合。再検索まで操作停止 |
 
-一覧取得は`OutpatientListWorkspace.vue → api.js → OutpatientsController#index → ListQuery → RowPresenter → JSON`の順。更新は`operation`をServiceへ渡し、versionの一致確認後に受付または設備を更新する。書込APIは`GET /api/csrf`でtokenを取得し`X-CSRF-Token`で送る。画面はサーバー応答のDTOで更新し、ブラウザの状態値を保存に流用しない。
+一覧取得は`OutpatientListWorkspace.vue → api.js → OutpatientsController#index → ListQuery → RowPresenter → JSON`の順。初回・手動・30秒ごとの自動取得はいずれも`loadOutpatients`で同じGET契約を使い、自動取得は最後に適用した条件を渡す。状態更新は`operation`をServiceへ渡し、versionの一致確認後に受付または設備を更新する。書込APIは`GET /api/csrf`でtokenを取得し`X-CSRF-Token`で送る。画面はサーバー応答のDTOで更新し、ブラウザの状態値を保存に流用しない。
 
 `lock_version`は受付単位の競合検出用。診察・設備操作が同じ受付へ同時に届いても最新versionだけを受け付ける。設備更新でも受付versionを進める。状態履歴ログや認証は追加しない。
 
 ## 検証・設定
 
-`backend/test/controllers/outpatients_test.rb` と `e2e/outpatients.spec.js` で同日複数受診、予約との重複防止、親子表示、状態遷移、完了順、別タブ競合、検索、永続化を確認。既存Rails/FE/E2Eも回帰検証。画面ヘッダと右端操作列は固定し、横スクロール中も操作へ到達できる。
+`backend/test/controllers/outpatients_test.rb` と `e2e/outpatients.spec.js` で同日複数受診、予約との重複防止、親子表示、状態遷移、完了順、別タブ競合、検索、永続化を確認。`e2e/outpatient-auto-refresh.spec.js` は適用済み条件、30秒周期、停止・復帰、業務ダイアログと非表示タブ中の停止、busy競合、取得失敗を確認する。既存Rails/FE/E2Eも回帰検証。画面ヘッダと右端操作列は固定し、横スクロール中も操作へ到達できる。
 
 `backend`で `bundle exec ruby bin/rails db:prepare`、`bundle exec ruby bin/rails db:seed` により当日の架空データを追加。同日の再実行で既存の進捗を初期化しない。テーブル分類設定にも3テーブルを追加。設計議論は#40、テスト証跡は#39、作業記録は#41を参照。

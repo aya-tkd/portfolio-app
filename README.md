@@ -59,7 +59,7 @@
 
 | 機能 | このブランチでできること | 画面 | 関連Issue |
 |---|---|---|---|
-| 外来一覧 | 日付・科・複数進捗検索、設備子行の開閉、呼出・診察開始/終了・設備実施、会計待ち判定 | `/outpatients` | [#38](https://github.com/aya-tkd/portfolio-app/issues/38) |
+| 外来一覧 | 日付・科・複数進捗検索、30秒間隔の自動更新、設備子行の開閉、呼出・診察開始/終了・設備実施、会計待ち判定 | `/outpatients` | [#38](https://github.com/aya-tkd/portfolio-app/issues/38) / [#103](https://github.com/aya-tkd/portfolio-app/issues/103) |
 | マスタ設定 | 外来一覧から患者・診療科・職種・ユーザーを検索し、選択した登録・編集フォームへ遷移 | `/outpatients` の「マスタ設定」 | [#48](https://github.com/aya-tkd/portfolio-app/issues/48) |
 | 患者マスタ | 新規登録・編集・SQLite保存 | `/` | [#1](https://github.com/aya-tkd/portfolio-app/issues/1) |
 | 患者検索 | 患者番号の完全一致、氏名・カナ氏名の部分一致、選択患者の編集起動 | `/patients` | [#33](https://github.com/aya-tkd/portfolio-app/issues/33) |
